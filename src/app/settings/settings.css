@@ -1,0 +1,31 @@
+.set-genre-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 6px;
+}
+.set-genre-chip {
+  font-family: var(--font-ibm-plex), sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--color-ink-2, #3a3830);
+  background: #fff;
+  border: 1px solid rgba(15, 14, 11, 0.16);
+  border-radius: 100px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.set-genre-chip:hover { border-color: var(--color-ink, #0f0e0b); }
+.set-genre-chip.on {
+  background: var(--color-ink, #0f0e0b);
+  color: #fff;
+  border-color: var(--color-ink, #0f0e0b);
+}
+.set-range {
+  width: 100%;
+  max-width: 420px;
+  accent-color: var(--color-accent, #b84200);
+  cursor: pointer;
+}

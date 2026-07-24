@@ -1,0 +1,179 @@
+/* ============================================================
+   Editorial design system — shared across discovery & detail pages.
+   Mirrors the HTML prototype's cream / warm-ink / burnt-orange palette
+   and its Playfair / Crimson / IBM Plex / Lora typographic voice.
+   ============================================================ */
+
+.ed-page {
+  background: var(--color-paper, #f2ede3);
+  color: var(--color-ink, #0f0e0b);
+  min-height: 100vh;
+}
+
+.ed-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 52px;
+}
+@media (max-width: 768px) {
+  .ed-container { padding: 0 24px; }
+}
+
+/* ── Page header (editorial hero) ── */
+.ed-header {
+  padding: 96px 0 56px;
+  border-bottom: 1px solid rgba(15, 14, 11, 0.1);
+}
+.ed-eyebrow {
+  font-family: var(--font-ibm-plex), sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-accent, #b84200);
+  display: block;
+  margin-bottom: 20px;
+}
+.ed-title {
+  font-family: var(--font-playfair), serif;
+  font-size: clamp(40px, 6vw, 82px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+  color: var(--color-ink, #0f0e0b);
+  margin-bottom: 24px;
+  max-width: 14ch;
+}
+.ed-lede {
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: clamp(17px, 1.6vw, 21px);
+  line-height: 1.6;
+  color: var(--color-ink-2, #3a3830);
+  max-width: 58ch;
+}
+.ed-lede em { font-style: italic; color: var(--color-ink, #0f0e0b); }
+
+/* ── Section rhythm ── */
+.ed-section { padding: 72px 0; }
+.ed-section-label {
+  font-family: var(--font-ibm-plex), sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-3, #8a8780);
+  display: block;
+  margin-bottom: 14px;
+}
+.ed-section-title {
+  font-family: var(--font-crimson), serif;
+  font-size: clamp(28px, 3.4vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--color-ink, #0f0e0b);
+  margin-bottom: 12px;
+}
+.ed-section-sub {
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: 16px;
+  font-style: italic;
+  color: var(--color-ink-3, #8a8780);
+  max-width: 60ch;
+}
+
+/* ── Editorial cards / tiles ── */
+.ed-grid {
+  display: grid;
+  gap: 28px;
+}
+.ed-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.ed-grid-2 { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 900px) { .ed-grid-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .ed-grid-3, .ed-grid-2 { grid-template-columns: 1fr; } }
+
+.ed-card {
+  background: #fff;
+  border: 1px solid rgba(15, 14, 11, 0.08);
+  border-radius: 3px;
+  padding: 34px 32px;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
+}
+.ed-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px -20px rgba(15, 14, 11, 0.35);
+}
+.ed-card-num {
+  font-family: var(--font-ibm-plex), sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--color-accent, #b84200);
+  margin-bottom: 18px;
+}
+.ed-card-title {
+  font-family: var(--font-crimson), serif;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink, #0f0e0b);
+  margin-bottom: 10px;
+}
+.ed-card-body {
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-ink-2, #3a3830);
+}
+
+/* ── Buttons / links ── */
+.ed-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-ibm-plex), sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--color-ink, #0f0e0b);
+  border: none;
+  border-radius: 3px;
+  padding: 15px 26px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.ed-btn:hover { opacity: 0.88; transform: translateX(2px); }
+.ed-link {
+  font-family: var(--font-ibm-plex), sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-accent, #b84200);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.ed-link:hover { border-color: var(--color-accent, #b84200); }
+
+/* ── Prose (legal / long-form pages) ── */
+.ed-prose {
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--color-ink-2, #3a3830);
+  max-width: 68ch;
+}
+.ed-prose h2 {
+  font-family: var(--font-crimson), serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--color-ink, #0f0e0b);
+  margin: 48px 0 16px;
+}
+.ed-prose p { margin-bottom: 20px; }
+.ed-prose a { color: var(--color-accent, #b84200); }
+.ed-prose ul { margin: 0 0 20px 22px; }
+.ed-prose li { margin-bottom: 8px; }

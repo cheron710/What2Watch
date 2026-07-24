@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Lora:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --gray-1: #f8f8f8;
+      --gray-2: #e8e8e8;
+      --gray-3: #d0d0d0;
+      --gray-4: #808080;
+      --gray-5: #404040;
+      --dark-bg: #3a3a3a;
+      --summer: #d4a537;
+      --fall: #a0714f;
+      --winter: #6ba3c8;
+      --spring: #7cb342;
+      --ink: #0f0e0b;
+      --ink-2: #3a3830;
+      --ink-3: #8a8780;
+      --what2watch-orange: #FF4D2D;
+      --muted-label: #6B6B6B;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ========== HEADER (EXACT MATCH FROM HOMEPAGE WITH SEARCH) ========== */
+    header { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      z-index: 100; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 22px 52px; 
+      background: #F0EBE0; 
+      border-bottom: 0.5px solid rgba(15,14,11,0.1); 
+    }
+
+    .brand { 
+      font-family: 'Inter', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      display: inline-flex; 
+      align-items: baseline;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .brand .what2 { color: var(--ink); transition: color 0.2s ease; }
+    .brand .watch-number { color: var(--ink); transition: color 0.2s ease; }
+    .brand:hover .watch-number { color: var(--ink); }
+    .brand:hover .what2 { color: var(--ink); }
+
+    nav {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .nav-a {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      text-decoration: none;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background: var(--ink);
+      transition: width 0.25s ease;
+    }
+
+    .nav-a:hover {
+      color: var(--ink);
+    }
+
+    .nav-a:hover::after {
+      width: 100%;
+    }
+
+    .nav-a.on {
+      color: var(--ink);
+    }
+
+    .nav-a.on::after {
+      width: 100%;
+    }
+
+    /* SEARCH CONTAINER */
+    .search-container { 
+      position: relative; 
+      display: flex; 
+      align-items: center; 
+    }
+    .search-icon { 
+      background: none; 
+      border: none; 
+      cursor: pointer; 
+      color: var(--ink); 
+      transition: color 0.2s; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 8px; 
+    }
+    .search-icon:hover { 
+      color: var(--ink); 
+    }
+
+    /* SEARCH OVERLAY */
+    .search-overlay { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 45vh; 
+      background: #0A0A0A; 
+      z-index: 1000; 
+      transform: translateY(-100%); 
+      transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1); 
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center; 
+      padding: 0 10vw; 
+    }
+    .search-overlay.active { 
+      transform: translateY(0); 
+    }
+    .search-overlay-inner { 
+      width: 100%; 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      position: relative; 
+    }
+    .search-input-wrapper { 
+      display: flex; 
+      align-items: baseline; 
+      gap: 16px; 
+      width: 100%; 
+    }
+    .search-overlay-input { 
+      flex: 1; 
+      background: transparent; 
+      border: none; 
+      border-bottom: 2px solid #FFFFFF; 
+      font-family: 'Inter', sans-serif; 
+      font-size: 56px; 
+      font-weight: 600; 
+      color: #EDEDED; 
+      padding: 0.2em 0 0.3em 0; 
+      outline: none; 
+      letter-spacing: -0.02em; 
+    }
+    .search-overlay-input::placeholder { 
+      color: transparent; 
+    }
+    .search-submit-btn { 
+      background: none; 
+      border: none; 
+      cursor: pointer; 
+      color: rgba(255,255,255,0.7); 
+      font-size: 28px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 0 0 6px 0; 
+      transition: color 0.2s, transform 0.2s; 
+      line-height: 1; 
+    }
+    .search-submit-btn:hover { 
+      color: #FFFFFF; 
+      transform: translateX(4px); 
+    }
+    .search-close-overlay { 
+      position: absolute; 
+      top: -20px; 
+      right: 0; 
+      background: none; 
+      border: none; 
+      font-size: 28px; 
+      cursor: pointer; 
+      color: rgba(237,237,237,0.6); 
+      transition: color 0.2s; 
+    }
+    .search-close-overlay:hover { 
+      color: #FFFFFF; 
+    }
+    .search-results-overlay { 
+      margin-top: 32px; 
+      max-height: 160px; 
+      overflow-y: auto; 
+      padding-right: 12px; 
+    }
+    .search-results-overlay::-webkit-scrollbar { 
+      width: 3px; 
+      background: rgba(255,255,255,0.15); 
+    }
+    .search-results-overlay::-webkit-scrollbar-thumb { 
+      background: #8a8780; 
+    }
+    .search-result-item { 
+      padding: 12px 0; 
+      border-bottom: 0.5px solid rgba(255,255,255,0.08); 
+      font-family: 'Inter', sans-serif; 
+      font-size: 18px; 
+      font-weight: 500; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: baseline; 
+      cursor: pointer; 
+      transition: all 0.2s; 
+      color: #EDEDED; 
+    }
+    .search-result-item:hover { 
+      padding-left: 12px; 
+      color: #8a8780; 
+      border-bottom-color: #8a8780; 
+    }
+    .search-result-title { 
+      font-weight: 600; 
+      letter-spacing: -0.2px; 
+    }
+    .search-result-year { 
+      font-family: 'Inter', sans-serif; 
+      font-size: 13px; 
+      font-weight: 400; 
+      color: rgba(237,237,237,0.5); 
+    }
+    .no-results { 
+      padding: 20px 0; 
+      color: rgba(237,237,237,0.5); 
+      font-family: 'Inter', sans-serif; 
+      font-size: 15px; 
+    }
+
+    main {
+      margin-top: 90px;
+    }
+
+    /* ========== HERO SECTION ========== */
+    .page-hero {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--white);
+      overflow: hidden;
+      border-bottom: 1px solid var(--gray-2);
+      padding: 64px 56px 52px;
+    }
+
+    .page-hero-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      max-width: 1000px;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .page-hero-label {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray-4);
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .page-hero-h {
+      font-family: 'Crimson Text', serif;
+      font-size: clamp(42px, 6.5vw, 72px);
+      font-weight: 600;
+      letter-spacing: -1.5px;
+      color: var(--black);
+      line-height: 1;
+      margin-bottom: 18px;
+    }
+
+    .page-hero-sub {
+      font-family: 'Lora', serif;
+      font-size: clamp(15px, 1.8vw, 19px);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--gray-5);
+      line-height: 1.7;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* Director credit, folded into the hero as a compact byline */
+    .hero-byline {
+      margin: 28px auto 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      padding: 6px 20px 6px 6px;
+      border: 1px solid var(--gray-2);
+      border-radius: 100px;
+      background: var(--gray-1);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .hero-byline:hover {
+      border-color: var(--gray-3);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+
+    .hero-byline-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--white);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .hero-byline-text {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.01em;
+      color: var(--gray-5);
+    }
+
+    .hero-byline-text strong {
+      color: var(--black);
+      font-weight: 600;
+    }
+
+    /* ========== WATCH CATEGORIES SECTION ========== */
+    .watch-categories-section {
+      padding: 56px 56px 64px;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-2);
+    }
+
+    .watch-categories-container {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .watch-intro {
+      text-align: center;
+      margin-bottom: 36px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .watch-intro-label {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray-4);
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .watch-intro-h {
+      font-family: 'Crimson Text', serif;
+      font-size: clamp(30px, 4vw, 44px);
+      font-weight: 600;
+      letter-spacing: -1px;
+      color: var(--black);
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+
+    .watch-intro-sub {
+      font-family: 'Lora', serif;
+      font-size: 14.5px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--gray-5);
+      line-height: 1.6;
+    }
+
+    /* Watch Categories Grid — five compact cards, one row on desktop */
+    .watch-categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .watch-card {
+      display: flex;
+      flex-direction: column;
+      padding: 22px 20px;
+      background: var(--gray-1);
+      border: 1px solid var(--gray-2);
+      border-radius: 8px;
+      transition: all 0.35s ease;
+      cursor: default;
+    }
+
+    .watch-card:hover {
+      border-color: var(--gray-3);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    }
+
+    .watch-card-title {
+      font-family: 'Crimson Text', serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: var(--black);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .watch-card-desc {
+      font-family: 'Lora', serif;
+      font-size: 12.5px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--gray-5);
+      line-height: 1.5;
+      margin-bottom: 14px;
+      flex-grow: 1;
+    }
+
+    .watch-examples {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      color: var(--gray-4);
+      line-height: 1.5;
+      padding-top: 12px;
+      border-top: 1px solid var(--gray-2);
+    }
+
+    /* ========== SEASONAL SECTION - EDITORIAL MAGAZINE ========== */
+    .seasonal-section {
+      padding: 80px 56px 100px;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-2);
+    }
+
+    .seasonal-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .seasonal-intro {
+      text-align: center;
+      margin-bottom: 64px;
+      max-width: 850px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .seasonal-intro-label {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray-4);
+      display: block;
+      margin-bottom: 24px;
+    }
+
+    .seasonal-intro-h {
+      font-family: 'Crimson Text', serif;
+      font-size: clamp(44px, 7vw, 76px);
+      font-weight: 600;
+      letter-spacing: -1px;
+      color: var(--black);
+      margin-bottom: 28px;
+      line-height: 1;
+    }
+
+    .seasonal-intro-sub {
+      font-family: 'Lora', serif;
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--gray-5);
+      line-height: 1.85;
+    }
+
+    /* Editorial Magazine Grid - 2x2 */
+    .seasons-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 48px;
+      margin-bottom: 0;
+    }
+
+    .season-card {
+      display: flex;
+      flex-direction: column;
+      padding: 64px 56px;
+      background: linear-gradient(135deg, rgba(212, 165, 55, 0.08) 0%, rgba(212, 165, 55, 0) 100%);
+      border: 1.5px solid var(--gray-2);
+      border-radius: 0;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      min-height: 280px;
+      justify-content: space-between;
+    }
+
+    /* Seasonal background gradients */
+    .season-card[data-season="summer"] {
+      background: linear-gradient(135deg, rgba(212, 165, 55, 0.06) 0%, rgba(212, 165, 55, 0) 100%);
+      border-color: rgba(212, 165, 55, 0.2);
+    }
+
+    .season-card[data-season="fall"] {
+      background: linear-gradient(135deg, rgba(160, 113, 79, 0.06) 0%, rgba(160, 113, 79, 0) 100%);
+      border-color: rgba(160, 113, 79, 0.2);
+    }
+
+    .season-card[data-season="winter"] {
+      background: linear-gradient(135deg, rgba(107, 163, 200, 0.06) 0%, rgba(107, 163, 200, 0) 100%);
+      border-color: rgba(107, 163, 200, 0.2);
+    }
+
+    .season-card[data-season="spring"] {
+      background: linear-gradient(135deg, rgba(124, 179, 66, 0.06) 0%, rgba(124, 179, 66, 0) 100%);
+      border-color: rgba(124, 179, 66, 0.2);
+    }
+
+    /* Hover effects */
+    .season-card[data-season="summer"]:hover {
+      background: linear-gradient(135deg, rgba(212, 165, 55, 0.12) 0%, rgba(212, 165, 55, 0) 100%);
+      border-color: rgba(212, 165, 55, 0.35);
+      box-shadow: 0 12px 48px rgba(212, 165, 55, 0.12);
+    }
+
+    .season-card[data-season="fall"]:hover {
+      background: linear-gradient(135deg, rgba(160, 113, 79, 0.12) 0%, rgba(160, 113, 79, 0) 100%);
+      border-color: rgba(160, 113, 79, 0.35);
+      box-shadow: 0 12px 48px rgba(160, 113, 79, 0.12);
+    }
+
+    .season-card[data-season="winter"]:hover {
+      background: linear-gradient(135deg, rgba(107, 163, 200, 0.12) 0%, rgba(107, 163, 200, 0) 100%);
+      border-color: rgba(107, 163, 200, 0.35);
+      box-shadow: 0 12px 48px rgba(107, 163, 200, 0.12);
+    }
+
+    .season-card[data-season="spring"]:hover {
+      background: linear-gradient(135deg, rgba(124, 179, 66, 0.12) 0%, rgba(124, 179, 66, 0) 100%);
+      border-color: rgba(124, 179, 66, 0.35);
+      box-shadow: 0 12px 48px rgba(124, 179, 66, 0.12);
+    }
+
+    .season-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .season-title {
+      font-family: 'Crimson Text', serif;
+      font-size: clamp(36px, 5vw, 52px);
+      font-weight: 600;
+      letter-spacing: -0.8px;
+      color: var(--black);
+      margin-bottom: 32px;
+      line-height: 1;
+      margin-top: 0;
+    }
+
+    .season-contexts {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .season-context {
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .season-context:hover {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(0, 0, 0, 0.1);
+      transform: translateX(4px);
+    }
+
+    .season-context-title {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-4);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .season-context-desc {
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--gray-5);
+      line-height: 1.6;
+    }
+
+    .season-arrow {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      color: var(--gray-4);
+      margin-top: 32px;
+      transition: all 0.3s ease;
+    }
+
+    .season-card:hover .season-arrow {
+      color: var(--black);
+      transform: translateX(6px);
+    }
+
+    /* ========== PICKER FLOW: STEP 1 SEASON CARD CONTENT ========== */
+    .season-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .season-icon {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      color: var(--ink);
+      opacity: 0.5;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .season-card:hover .season-icon,
+    .season-card.is-selected .season-icon {
+      opacity: 0.95;
+      transform: scale(1.08) rotate(-4deg);
+    }
+
+    .season-tagline {
+      font-family: 'Lora', serif;
+      font-size: 15px;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--gray-5);
+      line-height: 1.75;
+      margin-top: 18px;
+      max-width: 36ch;
+    }
+
+    .season-pick-hint {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-4);
+      margin-top: 28px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.3s ease;
+    }
+
+    .season-pick-hint svg {
+      width: 13px;
+      height: 13px;
+      transition: transform 0.3s ease;
+    }
+
+    .season-card:hover .season-pick-hint,
+    .season-card.is-selected .season-pick-hint {
+      color: var(--black);
+    }
+
+    .season-card:hover .season-pick-hint svg,
+    .season-card.is-selected .season-pick-hint svg {
+      transform: translateX(4px);
+    }
+
+    .season-card.is-selected {
+      transform: translateY(-8px);
+    }
+
+    .season-card[data-season="summer"].is-selected {
+      background: linear-gradient(135deg, rgba(212, 165, 55, 0.16) 0%, rgba(212, 165, 55, 0) 100%);
+      border-color: var(--summer);
+      box-shadow: 0 14px 48px rgba(212, 165, 55, 0.2);
+    }
+    .season-card[data-season="fall"].is-selected {
+      background: linear-gradient(135deg, rgba(160, 113, 79, 0.16) 0%, rgba(160, 113, 79, 0) 100%);
+      border-color: var(--fall);
+      box-shadow: 0 14px 48px rgba(160, 113, 79, 0.2);
+    }
+    .season-card[data-season="winter"].is-selected {
+      background: linear-gradient(135deg, rgba(107, 163, 200, 0.16) 0%, rgba(107, 163, 200, 0) 100%);
+      border-color: var(--winter);
+      box-shadow: 0 14px 48px rgba(107, 163, 200, 0.2);
+    }
+    .season-card[data-season="spring"].is-selected {
+      background: linear-gradient(135deg, rgba(124, 179, 66, 0.16) 0%, rgba(124, 179, 66, 0) 100%);
+      border-color: var(--spring);
+      box-shadow: 0 14px 48px rgba(124, 179, 66, 0.2);
+    }
+
+    /* ========== STEP 2: WATCHING WITH ========== */
+    .with-step {
+      max-width: 1000px;
+      margin: 0 auto;
+      margin-top: 0;
+      text-align: center;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.5s ease, max-height 0.6s ease, margin-top 0.5s ease;
+    }
+
+    .with-step.is-active {
+      opacity: 1;
+      max-height: 420px;
+      margin-top: 56px;
+    }
+
+    .with-step-eyebrow {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray-4);
+      display: block;
+      margin-bottom: 18px;
+    }
+
+    .with-step-h {
+      font-family: 'Crimson Text', serif;
+      font-size: clamp(28px, 3.4vw, 40px);
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      color: var(--black);
+      margin-bottom: 36px;
+    }
+
+    .with-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .with-pill {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--ink-2);
+      background: var(--gray-1);
+      border: 1.5px solid var(--gray-2);
+      padding: 16px 30px;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .with-pill:hover {
+      border-color: var(--gray-4);
+      transform: translateY(-2px);
+    }
+
+    .with-pill.is-active {
+      background: var(--black);
+      border-color: var(--black);
+      color: var(--white);
+    }
+
+    /* ========== RESULTS PANEL ========== */
+    .results-step {
+      max-width: 1400px;
+      margin: 0 auto;
+      margin-top: 0;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.7s ease, max-height 1s ease, margin-top 0.7s ease;
+    }
+
+    .results-step.is-active {
+      opacity: 1;
+      max-height: 6000px;
+      margin-top: 64px;
+    }
+
+    .results-panel {
+      position: relative;
+      border-radius: 6px;
+      border: 1px solid var(--gray-2);
+      padding: 56px 48px;
+      overflow: hidden;
+      background: var(--gray-1);
+    }
+
+    .results-panel[data-season="summer"] { background: linear-gradient(180deg, rgba(212,165,55,0.2), rgba(212,165,55,0.03) 55%); }
+    .results-panel[data-season="fall"]   { background: linear-gradient(180deg, rgba(160,113,79,0.22), rgba(160,113,79,0.03) 55%); }
+    .results-panel[data-season="winter"] { background: linear-gradient(180deg, rgba(107,163,200,0.24), rgba(107,163,200,0.04) 55%); }
+    .results-panel[data-season="spring"] { background: linear-gradient(180deg, rgba(124,179,66,0.22), rgba(124,179,66,0.03) 55%); }
+
+    .results-fx {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .results-panel[data-season="summer"] .results-fx::before {
+      content: '';
+      position: absolute;
+      width: 65%;
+      height: 65%;
+      top: -15%;
+      right: -10%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,165,55,0.22), transparent 70%);
+      animation: fxSunDrift 16s ease-in-out infinite alternate;
+    }
+    @keyframes fxSunDrift {
+      from { transform: translate(0,0); }
+      to   { transform: translate(-36px, 28px); }
+    }
+
+    .results-header {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      margin-bottom: 44px;
+    }
+
+    .results-eyebrow {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray-4);
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .results-h {
+      font-family: 'Crimson Text', serif;
+      font-size: clamp(32px, 4.2vw, 52px);
+      font-weight: 600;
+      letter-spacing: -0.8px;
+      color: var(--black);
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+
+    .results-sub {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 16px;
+      color: var(--gray-5);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .start-over-btn {
+      position: relative;
+      z-index: 2;
+      display: block;
+      margin: 56px auto 0;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-4);
+      background: none;
+      border: 1px solid var(--gray-3);
+      padding: 14px 30px;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .start-over-btn:hover {
+      color: var(--black);
+      border-color: var(--black);
+    }
+
+    /* ========== MOVIE GRID ========== */
+    .movie-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 28px;
+    }
+
+    .movie-card {
+      display: flex;
+      flex-direction: column;
+      animation: cardRise 0.6s cubic-bezier(0.2,0.8,0.2,1) backwards;
+    }
+
+    @keyframes cardRise {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .movie-poster-wrap {
+      position: relative;
+      aspect-ratio: 2 / 3;
+      border-radius: 5px;
+      overflow: hidden;
+      background: var(--gray-2);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      transition: transform 0.45s cubic-bezier(.2,.8,.2,1), box-shadow 0.45s ease;
+    }
+
+    .movie-card:hover .movie-poster-wrap {
+      transform: translateY(-6px);
+      box-shadow: 0 22px 40px rgba(0,0,0,0.24);
+    }
+
+    .movie-poster-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .poster-skeleton {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, var(--gray-2) 8%, var(--gray-3) 22%, var(--gray-2) 36%);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s linear infinite;
+    }
+
+    @keyframes shimmer {
+      to { background-position-x: -200%; }
+    }
+
+    .poster-fallback {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 16px;
+      background: linear-gradient(160deg, var(--dark-bg), var(--ink));
+      color: var(--white);
+    }
+
+    .poster-fallback span {
+      font-family: 'Crimson Text', serif;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .movie-card-overlay {
+      position: absolute;
+      inset: auto 0 0 0;
+      padding: 16px 14px 14px;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 8%, rgba(0,0,0,0) 100%);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .movie-poster-wrap:hover .movie-card-overlay {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .movie-card-note {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 12px;
+      color: #ffffff;
+      line-height: 1.55;
+    }
+
+    .movie-card-static-meta {
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .movie-card-static-meta .mctitle {
+      font-family: 'Crimson Text', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--black);
+      display: block;
+      line-height: 1.25;
+    }
+
+    .movie-card-static-meta .mcyear {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 10px;
+      color: var(--gray-4);
+      letter-spacing: 0.04em;
+    }
+
+    /* ========== SEASONAL WEATHER FX ========== */
+    .fx-particle {
+      position: absolute;
+      top: -6%;
+      border-radius: 50%;
+    }
+
+    .fx-snow {
+      background: radial-gradient(circle, #ffffff 0%, rgba(255,255,255,0.75) 70%, transparent 100%);
+      box-shadow: 0 0 6px 1.5px rgba(110,150,185,0.55), 0 1px 3px rgba(40,70,100,0.35);
+      animation-name: fxSnowFall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+    @keyframes fxSnowFall {
+      0%   { transform: translateY(-10%) translateX(0); opacity: 0; }
+      8%   { opacity: 1; }
+      30%  { transform: translateY(30vh) translateX(22px); }
+      55%  { transform: translateY(55vh) translateX(-20px); }
+      80%  { transform: translateY(80vh) translateX(18px); opacity: 1; }
+      92%  { opacity: 0.7; }
+      100% { transform: translateY(114vh) translateX(0); opacity: 0; }
+    }
+
+    .fx-leaf {
+      border-radius: 0% 65% 0% 65%;
+      box-shadow: 0 3px 7px rgba(60,30,8,0.35), inset 0 0 0 1px rgba(255,255,255,0.12);
+      animation-name: fxLeafFall;
+      animation-timing-function: ease-in;
+      animation-iteration-count: infinite;
+    }
+    @keyframes fxLeafFall {
+      0%   { transform: translateY(-10%) translateX(0) rotate(0deg); opacity: 0; }
+      8%   { opacity: 1; }
+      34%  { transform: translateY(34vh) translateX(52px) rotate(140deg); }
+      64%  { transform: translateY(64vh) translateX(-40px) rotate(250deg); opacity: 1; }
+      92%  { opacity: 0.7; }
+      100% { transform: translateY(114vh) translateX(28px) rotate(380deg); opacity: 0; }
+    }
+
+    .fx-petal {
+      border-radius: 50% 0 50% 50%;
+      box-shadow: 0 2px 6px rgba(190,80,115,0.35), inset 0 0 0 1px rgba(255,255,255,0.25);
+      top: auto;
+      animation-name: fxPetalDrift;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+    }
+    @keyframes fxPetalDrift {
+      0%   { transform: translate(-10vw, 0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      50%  { transform: translate(54vw, -30px) rotate(170deg); opacity: 1; }
+      88%  { opacity: 0.75; }
+      100% { transform: translate(120vw, 18px) rotate(340deg); opacity: 0; }
+    }
+
+    .fx-breeze {
+      position: absolute;
+      height: 2px;
+      left: -20%;
+      top: auto;
+      border-radius: 2px;
+      background: linear-gradient(90deg, transparent, rgba(124,179,66,0.7), rgba(255,255,255,0.6), transparent);
+      filter: blur(0.4px);
+      animation-name: fxBreezeSweep;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+    }
+    @keyframes fxBreezeSweep {
+      0%   { transform: translateX(0) scaleX(0.6); opacity: 0; }
+      15%  { opacity: 0.9; }
+      50%  { transform: translateX(60vw) scaleX(1.3); opacity: 0.9; }
+      100% { transform: translateX(130vw) scaleX(0.6); opacity: 0; }
+    }
+
+    .fx-mote {
+      top: auto;
+      background: radial-gradient(circle, #fff9de 0%, #eeb02e 55%, transparent 100%);
+      box-shadow: 0 0 18px 5px rgba(225,165,40,0.75);
+      animation-name: fxMoteFloat;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+    }
+    @keyframes fxMoteFloat {
+      0%   { transform: translate(0,0) scale(0.7); opacity: 0; }
+      12%  { opacity: 1; }
+      50%  { transform: translate(20px,-48vh) scale(1.1); opacity: 1; }
+      85%  { opacity: 0.85; }
+      100% { transform: translate(-16px,-100vh) scale(0.85); opacity: 0; }
+    }
+
+    /* ========== FOOTER ========== */
+    footer {
+      background: var(--black);
+      color: var(--white);
+      padding: 80px 56px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-wrapper {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+    }
+
+    .footer-section h4 {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 16px;
+    }
+
+    .footer-content {
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.8;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-link {
+      font-family: 'Lora', serif;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer-link:hover {
+      color: var(--white);
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 1024px) {
+      .seasons-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .season-card {
+        min-height: 240px;
+      }
+
+      .movie-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 20px 28px;
+      }
+
+      nav {
+        gap: 24px;
+      }
+
+      main {
+        margin-top: 80px;
+      }
+
+      .page-hero {
+        padding: 44px 24px 48px;
+      }
+
+      .hero-byline {
+        margin-top: 22px;
+        padding: 5px 16px 5px 5px;
+      }
+
+      .hero-byline-avatar {
+        width: 28px;
+        height: 28px;
+      }
+
+      .hero-byline-text {
+        font-size: 11px;
+      }
+
+      .watch-categories-section {
+        padding: 48px 24px 56px;
+      }
+
+      .watch-intro {
+        margin-bottom: 36px;
+      }
+
+      .watch-card {
+        padding: 18px 16px;
+      }
+
+      .seasonal-section {
+        padding: 56px 24px 64px;
+      }
+
+      .seasonal-intro {
+        margin-bottom: 40px;
+      }
+
+      .season-card {
+        padding: 48px 32px;
+        min-height: 220px;
+      }
+
+      .with-step.is-active {
+        margin-top: 64px;
+      }
+
+      .with-pill {
+        padding: 13px 22px;
+        font-size: 12px;
+      }
+
+      .results-step.is-active {
+        margin-top: 64px;
+      }
+
+      .results-panel {
+        padding: 48px 24px;
+      }
+
+      .results-header {
+        margin-bottom: 40px;
+      }
+
+      .movie-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+
+      .footer-wrapper {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header {
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      nav {
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .page-hero-h {
+        font-size: clamp(36px, 8vw, 56px);
+      }
+
+      .seasonal-intro-h {
+        font-size: clamp(32px, 6vw, 48px);
+      }
+
+      .season-card {
+        padding: 32px 20px;
+        min-height: 200px;
+      }
+
+      .season-icon {
+        width: 32px;
+        height: 32px;
+      }
+
+      .with-pills {
+        gap: 10px;
+      }
+
+      .with-pill {
+        padding: 12px 18px;
+        font-size: 11.5px;
+      }
+
+      .results-panel {
+        padding: 36px 18px;
+      }
+
+      .movie-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+
+      .watch-card {
+        padding: 18px;
+      }
+
+      .search-overlay-input {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER: EXACT MATCH FROM HOMEPAGE WITH SEARCH -->
+<header>
+  <div class="brand">
+    <span class="what2">What2</span><span class="watch-number">Watch</span>
+  </div>
+  <nav>
+    <a class="nav-a" href="#">Home</a>
+    <a class="nav-a" href="#">Kids</a>
+    <a class="nav-a" href="#">Seasons</a>
+    <a class="nav-a" href="#">About</a>
+    <a class="nav-a" href="#">Contact</a>
+    <a class="nav-a" href="#">Guillaume</a>
+  </nav>
+  <div class="search-container">
+    <button class="search-icon" id="searchTriggerBtn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="m21 21-4.35-4.35"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- SEARCH OVERLAY -->
+<div class="search-overlay" id="searchOverlay">
+  <button class="search-close-overlay" id="searchCloseBtn">✕</button>
+  <div class="search-overlay-inner">
+    <div class="search-input-wrapper">
+      <input type="text" class="search-overlay-input" id="expandedSearchInput" placeholder="" autocomplete="off">
+      <button class="search-submit-btn" id="searchSubmitBtn">→</button>
+    </div>
+    <div class="search-results-overlay" id="searchResultsArea"></div>
+  </div>
+</div>
+
+<main>
+
+<!-- HERO SECTION -->
+<section class="page-hero">
+  <div class="page-hero-content">
+    <span class="page-hero-label">Curated Cinema</span>
+    <h1 class="page-hero-h">Watch with Someone</h1>
+    <p class="page-hero-sub">Films that matter most are the ones we watch together. They become part of our shared memory.</p>
+    <div class="hero-byline">
+      <img class="hero-byline-avatar" src="https://i.pinimg.com/1200x/99/42/d9/9942d948a2d1e25152dd7a132760e2ac.jpg" alt="Greta Gerwig">
+      <span class="hero-byline-text">Curated by <strong>Greta Gerwig</strong> — Director &amp; Screenwriter</span>
+    </div>
+  </div>
+</section>
+
+<!-- WATCH CATEGORIES SECTION -->
+<section class="watch-categories-section" id="watch">
+  <div class="watch-categories-container">
+    <div class="watch-intro">
+      <span class="watch-intro-label">Five Ways to Connect</span>
+      <h2 class="watch-intro-h">Viewing Experiences</h2>
+      <p class="watch-intro-sub">Every film, every moment with someone else becomes part of your shared story.</p>
+    </div>
+
+    <div class="watch-categories">
+      <div class="watch-card">
+        <h3 class="watch-card-title">Date Night</h3>
+        <p class="watch-card-desc">Romantic but not saccharine — equal focus, real conversation.</p>
+        <div class="watch-examples">Before Sunrise · In the Mood for Love · Phantom Thread</div>
+      </div>
+
+      <div class="watch-card">
+        <h3 class="watch-card-title">Family Movie Night</h3>
+        <p class="watch-card-desc">Nothing explicit, nothing dumbed down — works for every age in the room.</p>
+        <div class="watch-examples">Spirited Away · Paddington 2 · The Incredibles</div>
+      </div>
+
+      <div class="watch-card">
+        <h3 class="watch-card-title">Friends Gathering</h3>
+        <p class="watch-card-desc">Endlessly rewatchable, quote-worthy, built for a crowd.</p>
+        <div class="watch-examples">Ocean's Eleven · Knives Out · Tarantino Films</div>
+      </div>
+
+      <div class="watch-card">
+        <h3 class="watch-card-title">Solo Viewing</h3>
+        <p class="watch-card-desc">Demands your full attention — introspective, one POV.</p>
+        <div class="watch-examples">Moonlight · Manchester by the Sea · Her</div>
+      </div>
+
+      <div class="watch-card">
+        <h3 class="watch-card-title">Parallel Viewing</h3>
+        <p class="watch-card-desc">Minimal dialogue, internal worlds — shared silence as intimacy.</p>
+        <div class="watch-examples">Lost in Translation · The Lighthouse · There Will Be Blood</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEASONAL SECTION - PICK A SEASON, PICK YOUR COMPANY -->
+<section class="seasonal-section" id="seasonal">
+  <div class="seasonal-container">
+    <div class="seasonal-intro">
+      <span class="seasonal-intro-label">Seasonal Cinema</span>
+      <h2 class="seasonal-intro-h">Watch by the Season</h2>
+      <p class="seasonal-intro-sub">Pick a season, then who you're watching with — we'll set the mood and bring ten films to match.</p>
+    </div>
+
+    <!-- STEP 1: SEASON -->
+    <div class="seasons-grid" id="seasonGrid">
+      <div class="season-card" data-season="summer" onclick="selectSeason('summer')">
+        <div>
+          <div class="season-card-top">
+            <h3 class="season-title">Summer</h3>
+            <svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+          </div>
+          <p class="season-tagline">Sun-warmed nights, open windows, and films that taste like the last day of school.</p>
+        </div>
+        <div class="season-pick-hint">Choose Summer <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      </div>
+
+      <div class="season-card" data-season="fall" onclick="selectSeason('fall')">
+        <div>
+          <div class="season-card-top">
+            <h3 class="season-title">Fall</h3>
+            <svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 2c4 2 6 6 5 10-1 4-5 6-9 5C5 16 3 11 6 7c1.5-2 3.5-3.5 6-5z"/><path d="M12 8v13"/></svg>
+          </div>
+          <p class="season-tagline">Sweaters, candlelight, and stories that ask you to slow down and pay attention.</p>
+        </div>
+        <div class="season-pick-hint">Choose Fall <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      </div>
+
+      <div class="season-card" data-season="winter" onclick="selectSeason('winter')">
+        <div>
+          <div class="season-card-top">
+            <h3 class="season-title">Winter</h3>
+            <svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 2v20M4 7l16 10M20 7L4 17M3 12h18M6 4.5l2 2M16 17.5l2 2M18 4.5l-2 2M8 17.5l-2 2"/></svg>
+          </div>
+          <p class="season-tagline">Fogged-up windows, low light, and the kind of stillness that asks for company.</p>
+        </div>
+        <div class="season-pick-hint">Choose Winter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      </div>
+
+      <div class="season-card" data-season="spring" onclick="selectSeason('spring')">
+        <div>
+          <div class="season-card-top">
+            <h3 class="season-title">Spring</h3>
+            <svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 12c0-3 -2-5-5-5 0 3 2 5 5 5z"/><path d="M12 12c0-3 2-5 5-5 0 3-2 5-5 5z"/><path d="M12 12c-3 0-5 2-5 5 3 0 5-2 5-5z"/><path d="M12 12c3 0 5 2 5 5 -3 0-5-2-5-5z"/><circle cx="12" cy="12" r="1.6"/></svg>
+          </div>
+          <p class="season-tagline">New light, open air, and films that feel like exhaling for the first time.</p>
+        </div>
+        <div class="season-pick-hint">Choose Spring <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      </div>
+    </div>
+
+    <!-- STEP 2: WATCHING WITH -->
+    <div class="with-step" id="withStep">
+      <span class="with-step-eyebrow" id="withStepSeason">For Your Season</span>
+      <h3 class="with-step-h">Who Are You Watching With?</h3>
+      <div class="with-pills">
+        <button class="with-pill" data-with="date-night" onclick="selectWith('date-night')">Date Night</button>
+        <button class="with-pill" data-with="family-movie" onclick="selectWith('family-movie')">Family Movie Night</button>
+        <button class="with-pill" data-with="friends-gathering" onclick="selectWith('friends-gathering')">Friends Gathering</button>
+        <button class="with-pill" data-with="solo-viewing" onclick="selectWith('solo-viewing')">Solo Viewing</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-step" id="resultsStep">
+      <div class="results-panel" id="resultsPanel" data-season="summer">
+        <div class="results-fx" id="resultsFx"></div>
+        <div class="results-header">
+          <span class="results-eyebrow" id="resultsEyebrow">Summer · Date Night</span>
+          <h3 class="results-h">Ten Films for the Occasion</h3>
+          <p class="results-sub" id="resultsSub">Summer romance, tension under stars.</p>
+        </div>
+        <div class="movie-grid" id="movieGrid"></div>
+      </div>
+      <button class="start-over-btn" onclick="resetPicker()">Start Over</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-wrapper">
+    <div class="footer-section">
+      <h4>What2Watch</h4>
+      <p class="footer-content">A curated collection of films for watching together. Because the movies that matter most are shared experiences.</p>
+    </div>
+    <div class="footer-section">
+      <h4>Connect</h4>
+      <div class="footer-links">
+        <a class="footer-link" href="#">About</a>
+        <a class="footer-link" href="#">Contact</a>
+        <a class="footer-link" href="#">Privacy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SEASON + WATCHING-WITH PICKER
+// ============================================================
+
+const MOVIES = {
+  summer: [
+    { t: "Call Me by Your Name", y: 2017, tags: ["date-night","solo-viewing"], note: "A slow-burn Italian summer that lingers in the chest." },
+    { t: "La La Land", y: 2016, tags: ["date-night","friends-gathering"], note: "Golden-hour romance built for porch dancing afterward." },
+    { t: "Mamma Mia!", y: 2008, tags: ["friends-gathering","family-movie"], note: "ABBA, an island, and absolutely no chill." },
+    { t: "Jaws", y: 1975, tags: ["family-movie","friends-gathering"], note: "The reason nobody trusts the ocean anymore." },
+    { t: "The Sandlot", y: 1993, tags: ["family-movie"], note: "Endless summer, in the best possible way." },
+    { t: "Stand By Me", y: 1986, tags: ["friends-gathering","solo-viewing"], note: "Walking the tracks with the people who knew you first." },
+    { t: "Dirty Dancing", y: 1987, tags: ["date-night","friends-gathering"], note: "Nobody puts this one in the corner." },
+    { t: "Moonrise Kingdom", y: 2012, tags: ["family-movie","solo-viewing"], note: "Runaway love, told like a storybook." },
+    { t: "Almost Famous", y: 2000, tags: ["friends-gathering","solo-viewing"], note: "A tour bus, a band, and the feeling of being almost there." },
+    { t: "Palm Springs", y: 2020, tags: ["date-night","friends-gathering"], note: "A wedding day stuck on repeat, in the funniest way." }
+  ],
+  fall: [
+    { t: "Dead Poets Society", y: 1989, tags: ["solo-viewing","family-movie"], note: "Carpe diem, with tissues nearby." },
+    { t: "When Harry Met Sally...", y: 1989, tags: ["date-night","friends-gathering"], note: "The deli scene alone is worth the rewatch." },
+    { t: "Knives Out", y: 2019, tags: ["friends-gathering","family-movie"], note: "A whodunit built for shouting theories at the screen." },
+    { t: "Hocus Pocus", y: 1993, tags: ["family-movie","friends-gathering"], note: "Three witches, one candle, infinite rewatches." },
+    { t: "Good Will Hunting", y: 1997, tags: ["solo-viewing","date-night"], note: "Equations on a chalkboard, feelings underneath." },
+    { t: "You've Got Mail", y: 1998, tags: ["date-night"], note: "Email flirting before email flirting was a thing." },
+    { t: "Coraline", y: 2009, tags: ["family-movie","solo-viewing"], note: "A button-eyed nightmare wrapped in stop-motion beauty." },
+    { t: "Fantastic Mr. Fox", y: 2009, tags: ["family-movie","friends-gathering"], note: "Corduroy, autumn light, and a very good heist." },
+    { t: "Practical Magic", y: 1998, tags: ["friends-gathering","date-night"], note: "Sisters, spells, and a midnight margarita ritual." },
+    { t: "The Social Network", y: 2010, tags: ["solo-viewing","friends-gathering"], note: "Ambition with a soundtrack that hums under your skin." }
+  ],
+  winter: [
+    { t: "Little Women", y: 2019, tags: ["family-movie","date-night"], note: "A fire crackling, four sisters, one impossible choice." },
+    { t: "Carol", y: 2015, tags: ["date-night","solo-viewing"], note: "Longing, shot in the hush of a department-store winter." },
+    { t: "The Holiday", y: 2006, tags: ["date-night","friends-gathering"], note: "Two women, two countries, one very good house swap." },
+    { t: "Love Actually", y: 2003, tags: ["friends-gathering","family-movie"], note: "Eight stories, one airport, all the feelings." },
+    { t: "Klaus", y: 2019, tags: ["family-movie"], note: "An origin story that earns every bit of its warmth." },
+    { t: "Home Alone", y: 1990, tags: ["family-movie","friends-gathering"], note: "Booby traps as a love language." },
+    { t: "A Christmas Story", y: 1983, tags: ["family-movie","friends-gathering"], note: "You'll shoot your eye out, kid." },
+    { t: "In Bruges", y: 2008, tags: ["friends-gathering","solo-viewing"], note: "Hitmen, guilt, and a very scenic Belgian city." },
+    { t: "Phantom Thread", y: 2017, tags: ["date-night","solo-viewing"], note: "Obsession, tailored within an inch of its life." },
+    { t: "The Muppet Christmas Carol", y: 1992, tags: ["family-movie","friends-gathering"], note: "Dickens, but with felt and better singing." }
+  ],
+  spring: [
+    { t: "The Secret Life of Walter Mitty", y: 2013, tags: ["solo-viewing","date-night"], note: "Daydreams that finally pack a bag." },
+    { t: "Spirited Away", y: 2001, tags: ["family-movie","solo-viewing"], note: "A bathhouse full of spirits and one brave kid." },
+    { t: "Paddington 2", y: 2017, tags: ["family-movie","friends-gathering"], note: "Kindness as a genuine plot device. Still flawless." },
+    { t: "Pride & Prejudice", y: 2005, tags: ["date-night","family-movie"], note: "A hand-flex across a field that ruined other romances." },
+    { t: "Crazy Rich Asians", y: 2018, tags: ["date-night","friends-gathering"], note: "A wedding, a fortune, and one unforgettable mahjong scene." },
+    { t: "Booksmart", y: 2019, tags: ["friends-gathering","solo-viewing"], note: "One wild night before everything changes." },
+    { t: "The Grand Budapest Hotel", y: 2014, tags: ["friends-gathering","family-movie"], note: "Pastry boxes, prison breaks, and Wes Anderson's pinkest film." },
+    { t: "My Neighbor Totoro", y: 1988, tags: ["family-movie","solo-viewing"], note: "Soft, slow, and gently magical." },
+    { t: "About Time", y: 2013, tags: ["date-night","family-movie"], note: "A love story that's secretly about fathers and time." },
+    { t: "Sing Street", y: 2016, tags: ["friends-gathering","date-night"], note: "Falling in love by starting a band for the wrong reasons." }
+  ]
+};
+
+const SEASON_LABEL = { summer: "Summer", fall: "Fall", winter: "Winter", spring: "Spring" };
+const WITH_LABEL = {
+  "date-night": "Date Night",
+  "family-movie": "Family Movie Night",
+  "friends-gathering": "Friends Gathering",
+  "solo-viewing": "Solo Viewing"
+};
+const CONTEXT_DESC = {
+  summer: {
+    "date-night": "Summer romance, tension under stars.",
+    "family-movie": "Outdoor cinema vibes, adventure.",
+    "friends-gathering": "Blockbuster energy, fun rewatches.",
+    "solo-viewing": "Escapism, road-trip energy."
+  },
+  fall: {
+    "date-night": "Cozy, intimate, crisp-weather romance.",
+    "family-movie": "Gratitude-focused, warmth.",
+    "friends-gathering": "Spooky, fun, ensemble.",
+    "solo-viewing": "Introspection as leaves fall."
+  },
+  winter: {
+    "date-night": "Snowed-in intimacy, New Year reflection.",
+    "family-movie": "Traditions, multigenerational appeal.",
+    "friends-gathering": "Holiday chaos, comedies, ensemble fun.",
+    "solo-viewing": "Fireplace cinema, meditation."
+  },
+  spring: {
+    "date-night": "Renewal, fresh starts, hope.",
+    "family-movie": "Rebirth, adventure, growth.",
+    "friends-gathering": "Outdoor hangouts, lighter tone.",
+    "solo-viewing": "Personal transformation films."
+  }
+};
+
+const pickerState = { season: null, withKey: null };
+const posterCache = {};
+
+function selectSeason(season) {
+  pickerState.season = season;
+  document.querySelectorAll('.season-card').forEach(c => {
+    c.classList.toggle('is-selected', c.dataset.season === season);
+  });
+  document.getElementById('withStepSeason').textContent = 'For Your ' + SEASON_LABEL[season];
+  document.getElementById('withStep').classList.add('is-active');
+
+  if (pickerState.withKey) {
+    renderResults();
+  } else {
+    setTimeout(() => {
+      document.getElementById('withStep').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
+  }
+}
+
+function selectWith(withKey) {
+  pickerState.withKey = withKey;
+  document.querySelectorAll('.with-pill').forEach(p => {
+    p.classList.toggle('is-active', p.dataset.with === withKey);
+  });
+  if (pickerState.season) {
+    renderResults();
+  }
+}
+
+function resetPicker() {
+  pickerState.season = null;
+  pickerState.withKey = null;
+  document.querySelectorAll('.season-card').forEach(c => c.classList.remove('is-selected'));
+  document.querySelectorAll('.with-pill').forEach(p => p.classList.remove('is-active'));
+  document.getElementById('withStep').classList.remove('is-active');
+  document.getElementById('resultsStep').classList.remove('is-active');
+  document.getElementById('seasonGrid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function renderResults() {
+  const { season, withKey } = pickerState;
+
+  const pool = MOVIES[season].slice();
+  pool.sort((a, b) => {
+    const aMatch = a.tags.includes(withKey) ? 0 : 1;
+    const bMatch = b.tags.includes(withKey) ? 0 : 1;
+    return aMatch - bMatch;
+  });
+  const picks = pool.slice(0, 10);
+
+  const panel = document.getElementById('resultsPanel');
+  panel.dataset.season = season;
+  document.getElementById('resultsEyebrow').textContent = SEASON_LABEL[season] + ' · ' + WITH_LABEL[withKey];
+  document.getElementById('resultsSub').textContent = CONTEXT_DESC[season][withKey];
+
+  const grid = document.getElementById('movieGrid');
+  grid.innerHTML = '';
+  picks.forEach((movie, i) => {
+    const card = document.createElement('div');
+    card.className = 'movie-card';
+    card.style.animationDelay = (i * 55) + 'ms';
+    card.innerHTML =
+      '<div class="movie-poster-wrap">' +
+        '<div class="poster-skeleton"></div>' +
+        '<img class="movie-poster-img" alt="' + movie.t.replace(/"/g, '&quot;') + ' poster">' +
+        '<div class="poster-fallback"><span>' + movie.t + '</span></div>' +
+        '<div class="movie-card-overlay"><p class="movie-card-note">' + movie.note + '</p></div>' +
+      '</div>' +
+      '<div class="movie-card-static-meta">' +
+        '<span class="mctitle">' + movie.t + '</span>' +
+        '<span class="mcyear">' + movie.y + '</span>' +
+      '</div>';
+    grid.appendChild(card);
+    loadPoster(movie, card);
+  });
+
+  spawnFx(season);
+  document.getElementById('resultsStep').classList.add('is-active');
+  setTimeout(() => {
+    document.getElementById('resultsStep').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 200);
+}
+
+// ============================================================
+// LIVE POSTER ART — fetched at runtime from Wikipedia's public,
+// key-free image API (no scraping, no hardcoded links that can rot)
+// ============================================================
+async function loadPoster(movie, card) {
+  const key = movie.t + '|' + movie.y;
+  const imgEl = card.querySelector('.movie-poster-img');
+  const skeletonEl = card.querySelector('.poster-skeleton');
+  const fallbackEl = card.querySelector('.poster-fallback');
+
+  function showImage(src) {
+    imgEl.onload = () => {
+      skeletonEl.style.display = 'none';
+      imgEl.style.display = 'block';
+    };
+    imgEl.onerror = showFallback;
+    imgEl.src = src;
+  }
+  function showFallback() {
+    skeletonEl.style.display = 'none';
+    fallbackEl.style.display = 'flex';
+  }
+
+  if (posterCache[key]) {
+    if (posterCache[key] === 'NONE') showFallback();
+    else showImage(posterCache[key]);
+    return;
+  }
+
+  try {
+    const q = encodeURIComponent(movie.t + ' ' + movie.y + ' film');
+    const url = 'https://en.wikipedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=' + q + '&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=600&origin=*';
+    const res = await fetch(url);
+    const data = await res.json();
+    const pages = data && data.query && data.query.pages;
+    const page = pages ? Object.values(pages)[0] : null;
+    const src = page && page.thumbnail && page.thumbnail.source;
+    if (!src) throw new Error('no poster found');
+    posterCache[key] = src;
+    showImage(src);
+  } catch (e) {
+    posterCache[key] = 'NONE';
+    showFallback();
+  }
+}
+
+// ============================================================
+// SEASONAL WEATHER — snow, leaves, breeze, summer glow
+// ============================================================
+const FX_CONFIG = {
+  winter: { cls: 'fx-snow', count: 64, size: [6, 15], dur: [8, 15] },
+  fall:   { cls: 'fx-leaf', count: 40, size: [16, 28], dur: [9, 16] },
+  spring: { cls: 'fx-petal', count: 34, size: [13, 22], dur: [10, 17] },
+  summer: { cls: 'fx-mote', count: 44, size: [5, 11], dur: [6, 11] }
+};
+const LEAF_COLORS = ['#a0714f', '#c9622e', '#d4a537', '#8b4a2b', '#b5651d'];
+const PETAL_COLORS = ['#f0a8c0', '#f6c9d8', '#ffffff', '#eb95b3'];
+
+function rand(min, max) { return Math.random() * (max - min) + min; }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function spawnFx(season) {
+  const layer = document.getElementById('resultsFx');
+  layer.innerHTML = '';
+  const cfg = FX_CONFIG[season];
+
+  for (let i = 0; i < cfg.count; i++) {
+    const el = document.createElement('span');
+    el.className = 'fx-particle ' + cfg.cls;
+    const size = rand(cfg.size[0], cfg.size[1]);
+    const dur = rand(cfg.dur[0], cfg.dur[1]);
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.left = rand(0, 100) + '%';
+    el.style.animationDuration = dur + 's';
+    el.style.animationDelay = (-rand(0, dur)) + 's';
+    if (season === 'fall') el.style.background = pick(LEAF_COLORS);
+    if (season === 'spring') el.style.background = pick(PETAL_COLORS);
+    if (season === 'summer') {
+      el.style.bottom = rand(-10, 100) + '%';
+      el.style.top = 'auto';
+    }
+    layer.appendChild(el);
+  }
+
+  if (season === 'spring') {
+    for (let i = 0; i < 5; i++) {
+      const breeze = document.createElement('span');
+      breeze.className = 'fx-particle fx-breeze';
+      breeze.style.width = rand(120, 260) + 'px';
+      breeze.style.top = rand(8, 92) + '%';
+      breeze.style.animationDuration = rand(7, 12) + 's';
+      breeze.style.animationDelay = (-rand(0, 10)) + 's';
+      layer.appendChild(breeze);
+    }
+  }
+}
+</script>
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+// SEARCH FUNCTIONALITY (exact match from homepage)
+const searchTriggerBtn = document.getElementById('searchTriggerBtn');
+const searchOverlayDiv = document.getElementById('searchOverlay');
+const searchCloseBtn = document.getElementById('searchCloseBtn');
+const searchInputField = document.getElementById('expandedSearchInput');
+const searchSubmit = document.getElementById('searchSubmitBtn');
+const resultsContainer = document.getElementById('searchResultsArea');
+
+function openSearch() { 
+  searchOverlayDiv.classList.add('active'); 
+  searchInputField.focus(); 
+}
+function closeSearch() { 
+  searchOverlayDiv.classList.remove('active'); 
+  searchInputField.value = ''; 
+  resultsContainer.innerHTML = ''; 
+}
+searchTriggerBtn.addEventListener('click', openSearch); 
+searchCloseBtn.addEventListener('click', closeSearch);
+document.addEventListener('keydown', (e) => { 
+  if (e.key === 'Escape' && searchOverlayDiv.classList.contains('active')) closeSearch(); 
+});
+
+function executeSearch() { 
+  const query = searchInputField.value.trim(); 
+  if (!query) { 
+    resultsContainer.innerHTML = ''; 
+    return; 
+  } 
+  const mockLibrary = [
+    { title: "Oppenheimer", year: "2023", director: "Christopher Nolan" },
+    { title: "Blade Runner 2049", year: "2017", director: "Denis Villeneuve" },
+    { title: "Parasite", year: "2019", director: "Bong Joon-ho" },
+    { title: "The Batman", year: "2022", director: "Matt Reeves" },
+    { title: "Dune: Part Two", year: "2024", director: "Denis Villeneuve" },
+    { title: "Past Lives", year: "2023", director: "Celine Song" },
+    { title: "Before Sunrise", year: "1995", director: "Richard Linklater" },
+    { title: "Moonlight", year: "2016", director: "Barry Jenkins" }
+  ]; 
+  const results = mockLibrary.filter(f => f.title.toLowerCase().includes(query.toLowerCase()) || f.director.toLowerCase().includes(query.toLowerCase())); 
+  if (results.length === 0) { 
+    resultsContainer.innerHTML = '<div class="no-results">No matching films found.</div>'; 
+    return; 
+  } 
+  resultsContainer.innerHTML = results.map(r => `<div class="search-result-item"><span class="search-result-title">${r.title}</span><span class="search-result-year">${r.year} · ${r.director}</span></div>`).join(''); 
+}
+searchInputField.addEventListener('input', executeSearch); 
+searchSubmit.addEventListener('click', executeSearch); 
+searchInputField.addEventListener('keypress', (e) => { 
+  if (e.key === 'Enter') executeSearch(); 
+});
+</script>
+
+</body>
+</html>

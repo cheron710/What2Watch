@@ -1,0 +1,140 @@
+/* ============================================================
+   Movie detail — editorial cinema layout.
+   ============================================================ */
+.mv-page { background: var(--color-paper, #f2ede3); color: var(--color-ink, #0f0e0b); }
+
+/* ── Backdrop hero ── */
+.mv-hero { position: relative; width: 100%; min-height: 62vh; display: flex; align-items: flex-end; overflow: hidden; }
+.mv-hero-bg { position: absolute; inset: 0; object-fit: cover; }
+.mv-hero-scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to top, var(--color-paper, #f2ede3) 2%, rgba(242,237,227,0.55) 34%, rgba(242,237,227,0.15) 70%),
+    linear-gradient(to right, rgba(15,14,11,0.5), rgba(15,14,11,0.05));
+}
+.mv-hero-inner {
+  position: relative; z-index: 2;
+  max-width: 1400px; margin: 0 auto; width: 100%;
+  padding: 0 52px 56px;
+  display: grid; grid-template-columns: 260px 1fr; gap: 44px; align-items: end;
+}
+.mv-poster {
+  border-radius: 4px; overflow: hidden;
+  box-shadow: 0 24px 60px -18px rgba(15,14,11,0.7);
+  aspect-ratio: 2/3; position: relative; background: var(--color-paper-2, #e9e3d7);
+}
+.mv-poster img { object-fit: cover; }
+.mv-head-eyebrow {
+  font-family: var(--font-ibm-plex), sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent, #b84200);
+  margin-bottom: 14px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+}
+.mv-title {
+  font-family: var(--font-playfair), serif; font-size: clamp(38px, 5.5vw, 76px);
+  font-weight: 600; letter-spacing: -0.03em; line-height: 0.98; margin-bottom: 14px;
+}
+.mv-tagline {
+  font-family: var(--font-lora), Georgia, serif; font-size: clamp(16px, 1.8vw, 20px);
+  font-style: italic; color: var(--color-ink-2, #3a3830); margin-bottom: 22px; max-width: 60ch;
+}
+.mv-meta-row { display: flex; gap: 10px 18px; flex-wrap: wrap; align-items: center; margin-bottom: 26px; }
+.mv-meta-item { font-family: var(--font-ibm-plex), sans-serif; font-size: 13px; color: var(--color-ink-2, #3a3830); }
+.mv-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--color-ink-3, #8a8780); }
+.mv-star { color: var(--color-accent, #b84200); font-weight: 600; }
+
+/* actions + trailer */
+.mv-cta-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+.mv-trailer-btn, .mv-action-btn {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--font-ibm-plex), sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+  border-radius: 3px; padding: 14px 22px; border: 1px solid var(--color-ink, #0f0e0b);
+  transition: opacity 0.2s, transform 0.15s, background 0.2s, color 0.2s;
+}
+.mv-trailer-btn { background: var(--color-ink, #0f0e0b); color: #fff; border-color: var(--color-ink, #0f0e0b); }
+.mv-trailer-btn:hover { opacity: 0.88; transform: translateX(2px); }
+.mv-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.mv-action-btn { background: transparent; color: var(--color-ink, #0f0e0b); }
+.mv-action-btn:hover { background: var(--color-ink, #0f0e0b); color: #fff; }
+.mv-action-btn.is-active { background: var(--color-ink, #0f0e0b); color: #fff; }
+.mv-action-secondary { border-color: rgba(15,14,11,0.3); }
+.mv-action-msg { font-family: var(--font-lora), Georgia, serif; font-size: 13px; font-style: italic; color: var(--color-ink-3, #8a8780); }
+.mv-action-btn:disabled { opacity: 0.5; cursor: default; }
+
+/* ── Body layout ── */
+.mv-body { max-width: 1400px; margin: 0 auto; padding: 60px 52px 40px; display: grid; grid-template-columns: 1fr 320px; gap: 64px; }
+.mv-section { margin-bottom: 52px; }
+.mv-section:last-child { margin-bottom: 0; }
+.mv-section-label {
+  font-family: var(--font-ibm-plex), sans-serif; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-ink-3, #8a8780);
+  margin-bottom: 16px; display: block;
+}
+.mv-overview { font-family: var(--font-lora), Georgia, serif; font-size: 18px; line-height: 1.75; color: var(--color-ink-2, #3a3830); max-width: 68ch; }
+.mv-editorial {
+  font-family: var(--font-crimson), serif; font-size: 21px; line-height: 1.7;
+  color: var(--color-ink, #0f0e0b); border-left: 2px solid var(--color-accent, #b84200);
+  padding-left: 24px; max-width: 64ch; font-style: italic;
+}
+
+/* genres / keywords chips */
+.mv-chips { display: flex; gap: 9px; flex-wrap: wrap; }
+.mv-chip {
+  font-family: var(--font-ibm-plex), sans-serif; font-size: 11px; font-weight: 500;
+  letter-spacing: 0.04em; color: var(--color-ink-2, #3a3830);
+  border: 1px solid rgba(15,14,11,0.16); border-radius: 100px; padding: 7px 15px;
+  text-decoration: none; transition: border-color 0.2s, color 0.2s;
+}
+a.mv-chip:hover { border-color: var(--color-ink, #0f0e0b); color: var(--color-ink, #0f0e0b); }
+
+/* cast grid */
+.mv-cast-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px 20px; }
+.mv-cast-card { text-align: left; }
+.mv-cast-photo { position: relative; width: 100%; aspect-ratio: 1/1; border-radius: 50%; overflow: hidden; background: var(--color-paper-2, #e9e3d7); margin-bottom: 12px; }
+.mv-cast-photo img { object-fit: cover; }
+.mv-cast-name { font-family: var(--font-crimson), serif; font-size: 16px; font-weight: 600; color: var(--color-ink, #0f0e0b); line-height: 1.2; }
+.mv-cast-role { font-family: var(--font-ibm-plex), sans-serif; font-size: 12px; color: var(--color-ink-3, #8a8780); margin-top: 3px; }
+
+/* recommendations */
+.mv-rec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+
+/* ── Sidebar (facts + providers) ── */
+.mv-aside { }
+.mv-fact-block { background: #fff; border: 1px solid rgba(15,14,11,0.08); border-radius: 3px; padding: 26px 26px 8px; margin-bottom: 24px; }
+.mv-fact { margin-bottom: 18px; }
+.mv-fact-label { font-family: var(--font-ibm-plex), sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-ink-3, #8a8780); margin-bottom: 5px; }
+.mv-fact-value { font-family: var(--font-lora), Georgia, serif; font-size: 15px; color: var(--color-ink, #0f0e0b); line-height: 1.5; }
+.mv-fact-value a { color: var(--color-accent, #b84200); text-decoration: none; }
+.mv-fact-value a:hover { text-decoration: underline; }
+
+.mv-providers { display: flex; gap: 12px; flex-wrap: wrap; }
+.mv-provider-logo { width: 44px; height: 44px; border-radius: 9px; overflow: hidden; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.12); background: #fff; }
+.mv-provider-logo img { object-fit: cover; }
+.mv-provider-none { font-family: var(--font-lora), Georgia, serif; font-size: 14px; font-style: italic; color: var(--color-ink-3, #8a8780); }
+
+/* trailer modal */
+.mv-modal { position: fixed; inset: 0; z-index: 2000; background: rgba(10,10,10,0.92); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.mv-modal-frame { width: min(1000px, 100%); aspect-ratio: 16/9; border-radius: 6px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+.mv-modal-frame iframe { width: 100%; height: 100%; border: 0; }
+.mv-modal-close { position: absolute; top: 24px; right: 28px; background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; transition: color 0.2s; }
+.mv-modal-close:hover { color: #fff; }
+
+/* focus */
+.mv-trailer-btn:focus-visible, .mv-action-btn:focus-visible, .mv-chip:focus-visible { outline: 2px solid var(--color-accent, #b84200); outline-offset: 3px; }
+
+/* responsive */
+@media (max-width: 1040px) {
+  .mv-body { grid-template-columns: 1fr; gap: 40px; }
+  .mv-cast-grid { grid-template-columns: repeat(3, 1fr); }
+  .mv-rec-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .mv-hero-inner { grid-template-columns: 1fr; padding: 0 24px 40px; gap: 24px; }
+  .mv-poster { width: 180px; }
+  .mv-body { padding: 44px 24px 32px; }
+  .mv-cast-grid { grid-template-columns: repeat(3, 1fr); }
+  .mv-rec-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .mv-cast-grid { grid-template-columns: repeat(2, 1fr); }
+}

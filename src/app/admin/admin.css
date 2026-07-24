@@ -1,0 +1,248 @@
+/* src/app/admin/admin.css */
+
+.admin-container {
+  /* Light Theme Variables */
+  --admin-bg: #f6f3eb;
+  --admin-card-bg: #ffffff;
+  --admin-card-hover-border: rgba(184, 66, 0, 0.25);
+  --admin-border: rgba(15, 14, 11, 0.08);
+  --admin-border-strong: rgba(15, 14, 11, 0.15);
+  --admin-text: #0f0e0b;
+  --admin-text-muted: #6b6b6b;
+  --admin-sidebar-bg: #ece6da;
+  --admin-sidebar-border: rgba(15, 14, 11, 0.06);
+  --admin-accent: #b84200;
+  --admin-accent-text: #ffffff;
+  --admin-accent-hover: #9c3600;
+  --admin-orange: #FF4D2D;
+  --admin-success: #2e7d32;
+  --admin-success-bg: rgba(46, 125, 50, 0.08);
+  --admin-error: #c62828;
+  --admin-error-bg: rgba(198, 40, 40, 0.08);
+  --admin-warning: #ef6c00;
+  --admin-warning-bg: rgba(239, 108, 0, 0.08);
+  --admin-input-bg: #FAF9F6;
+
+  background-color: var(--admin-bg);
+  color: var(--admin-text);
+  min-height: 100vh;
+  font-family: var(--font-inter), sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.admin-container.dark {
+  /* Dark Theme Variables */
+  --admin-bg: #0d0d0c;
+  --admin-card-bg: #141413;
+  --admin-card-hover-border: rgba(255, 77, 45, 0.25);
+  --admin-border: rgba(255, 255, 255, 0.06);
+  --admin-border-strong: rgba(255, 255, 255, 0.12);
+  --admin-text: #ece6da;
+  --admin-text-muted: #8c8980;
+  --admin-sidebar-bg: #111110;
+  --admin-sidebar-border: rgba(255, 255, 255, 0.04);
+  --admin-accent: #FF4D2D;
+  --admin-accent-text: #000000;
+  --admin-accent-hover: #e0391b;
+  --admin-success: #4caf50;
+  --admin-success-bg: rgba(76, 175, 80, 0.1);
+  --admin-error: #ef5350;
+  --admin-error-bg: rgba(239, 83, 80, 0.1);
+  --admin-warning: #ff9800;
+  --admin-warning-bg: rgba(255, 152, 0, 0.1);
+  --admin-input-bg: #1a1a19;
+}
+
+/* Typography resets inside Admin Panel */
+.admin-container h1, 
+.admin-container h2, 
+.admin-container h3, 
+.admin-container h4 {
+  font-family: var(--font-playfair), serif;
+  font-weight: 700;
+  color: var(--admin-text);
+}
+
+.admin-container p,
+.admin-container span,
+.admin-container div,
+.admin-container td,
+.admin-container th,
+.admin-container label,
+.admin-container input,
+.admin-container button,
+.admin-container select,
+.admin-container textarea {
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* Sidebar Styling */
+.admin-sidebar {
+  background-color: var(--admin-sidebar-bg);
+  border-right: 1px solid var(--admin-sidebar-border);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+}
+
+.admin-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  color: var(--admin-text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.admin-sidebar-link:hover {
+  background-color: rgba(15, 14, 11, 0.04);
+  color: var(--admin-text);
+}
+
+.admin-container.dark .admin-sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.admin-sidebar-link.active {
+  background-color: var(--admin-accent);
+  color: #ffffff;
+}
+
+.admin-container.dark .admin-sidebar-link.active {
+  color: #000000;
+  background-color: var(--admin-accent);
+}
+
+/* Common Card Layouts */
+.admin-card {
+  background-color: var(--admin-card-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  padding: 24px;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-card:hover {
+  border-color: var(--admin-card-hover-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+/* Forms & Inputs */
+.admin-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--admin-text-muted);
+  margin-bottom: 6px;
+}
+
+.admin-input {
+  width: 100%;
+  padding: 10px 14px;
+  background-color: var(--admin-input-bg);
+  border: 1px solid var(--admin-border-strong);
+  border-radius: 6px;
+  color: var(--admin-text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-input:focus {
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 2px rgba(184, 66, 0, 0.15);
+}
+
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-btn-primary {
+  background-color: var(--admin-accent);
+  color: var(--admin-accent-text);
+  border: none;
+}
+
+.admin-btn-primary:hover {
+  background-color: var(--admin-accent-hover);
+}
+
+.admin-btn-secondary {
+  background-color: transparent;
+  color: var(--admin-text);
+  border: 1px solid var(--admin-border-strong);
+}
+
+.admin-btn-secondary:hover {
+  background-color: rgba(15, 14, 11, 0.04);
+}
+
+.admin-container.dark .admin-btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Toast System styling */
+.admin-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 360px;
+  width: 100%;
+}
+
+.admin-toast {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 8px;
+  background-color: var(--admin-card-bg);
+  border-left: 4px solid var(--admin-accent);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  font-size: 13px;
+  line-height: 1.4;
+  animation: slideIn 0.2s ease-out;
+}
+
+.admin-toast.success { border-left-color: var(--admin-success); }
+.admin-toast.error { border-left-color: var(--admin-error); }
+.admin-toast.warning { border-left-color: var(--admin-warning); }
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Custom Scrollbars */
+.admin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--admin-border-strong);
+  border-radius: 10px;
+}

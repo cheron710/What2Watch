@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Lora:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<title>Kids · What2Watch</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0e0b;--ink-2:#3a3830;--ink-3:#8a8780;
+  --k-sky:#5BB8F5;--k-sun:#FFD54F;--k-grass:#69D97D;--k-coral:#FF7E5F;
+  --k-purple:#B57BF7;--k-pink:#FF8FAB;--k-bg:#FDF8EF;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Lora','Georgia',serif;background:var(--k-bg);color:var(--ink);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;font-size:16px;line-height:1.7;letter-spacing:-0.01em}
+
+/* NAV */
+header{position:fixed;top:0;left:0;width:100%;z-index:100;display:flex;
+  justify-content:space-between;align-items:center;padding:22px 52px;
+  background:#F0EBE0;border-bottom:0.5px solid rgba(15,14,11,.1)}
+.brand{font-family:'Inter',sans-serif;font-size:17px;font-weight:800;letter-spacing:-0.02em;
+  text-transform:uppercase;display:inline-flex;align-items:baseline;
+  cursor:pointer;text-decoration:none;color:var(--ink)}
+nav{display:flex;gap:40px;align-items:center}
+.nav-a{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.02em;
+  text-transform:uppercase;color:var(--ink-3);text-decoration:none;transition:color .2s;position:relative}
+.nav-a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1.5px;background:var(--ink);transition:width .25s}
+.nav-a:hover{color:var(--ink)}.nav-a:hover::after,.nav-a.on::after{width:100%}
+.nav-a.on{color:var(--ink)}
+.search-icon{background:none;border:none;cursor:pointer;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;padding:8px}
+
+/* SEARCH OVERLAY */
+.search-overlay{position:fixed;top:0;left:0;width:100%;height:45vh;background:#0A0A0A;
+  z-index:1000;transform:translateY(-100%);transition:transform .4s cubic-bezier(.2,.9,.4,1.1);
+  box-shadow:0 20px 40px rgba(0,0,0,.3);display:flex;flex-direction:column;
+  justify-content:center;padding:0 10vw}
+.search-overlay.active{transform:translateY(0)}
+.search-overlay-inner{width:100%;max-width:1200px;margin:0 auto;position:relative}
+.search-input-wrapper{display:flex;align-items:baseline;gap:16px;width:100%}
+.search-overlay-input{flex:1;background:transparent;border:none;border-bottom:2px solid #fff;
+  font-family:'Inter',sans-serif;font-size:56px;font-weight:600;color:#ededed;
+  padding:.2em 0 .3em;outline:none;letter-spacing:-0.02em}
+.search-overlay-input::placeholder{color:transparent}
+.search-submit-btn{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.7);
+  font-size:28px;display:flex;align-items:center;justify-content:center;
+  padding:0 0 6px;transition:color .2s,transform .2s;line-height:1;font-family:'Inter',sans-serif}
+.search-submit-btn:hover{color:#fff;transform:translateX(4px)}
+.search-close-overlay{position:absolute;top:-20px;right:0;background:none;border:none;
+  font-size:28px;cursor:pointer;color:rgba(237,237,237,.6);transition:color .2s;font-family:'Inter',sans-serif}
+.search-close-overlay:hover{color:#fff}
+.search-results-overlay{margin-top:32px;max-height:160px;overflow-y:auto;padding-right:12px}
+.search-result-item{padding:12px 0;border-bottom:.5px solid rgba(255,255,255,.08);
+  font-family:'Inter',sans-serif;font-size:18px;font-weight:500;display:flex;
+  justify-content:space-between;align-items:baseline;cursor:pointer;transition:all .2s;color:#ededed}
+.search-result-item:hover{padding-left:12px;color:var(--ink-3)}
+.search-result-title{font-weight:600}
+.search-result-year{font-size:13px;font-weight:400;color:rgba(237,237,237,.5)}
+.no-results{padding:20px 0;color:rgba(237,237,237,.5);font-family:'Inter',sans-serif;font-size:15px}
+
+/* ANIMATIONS */
+@keyframes floatA{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-18px) rotate(5deg)}}
+@keyframes floatB{0%,100%{transform:translateY(0) rotate(8deg)}50%{transform:translateY(-14px) rotate(-6deg)}}
+@keyframes floatC{0%,100%{transform:translateY(-6px)}50%{transform:translateY(10px)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-10px)}70%{transform:translateY(-4px)}}
+@keyframes wibble{0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.07)}}
+@keyframes twinkle{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+@keyframes rainbow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes cardPop{0%{transform:scale(.9) translateY(20px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+@keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(12px)}}
+@keyframes shimmer{0%{left:-100%}100%{left:200%}}
+
+/* HERO */
+#kids-hero{min-height:100vh;padding-top:80px;
+  background:linear-gradient(160deg,#E8F6FF 0%,#FFF8E1 40%,#FCE4EC 80%,#EDE7F6 100%);
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;text-align:center}
+.sky-deco{position:absolute;pointer-events:none;z-index:0}
+.star-1{top:12%;left:8%;font-size:32px;animation:twinkle 2.1s ease-in-out infinite}
+.star-2{top:18%;right:11%;font-size:22px;animation:twinkle 1.7s .4s ease-in-out infinite}
+.star-3{top:8%;left:50%;font-size:18px;animation:twinkle 2.5s .8s ease-in-out infinite}
+.star-4{bottom:28%;left:5%;font-size:26px;animation:twinkle 1.9s .2s ease-in-out infinite}
+.star-5{bottom:20%;right:7%;font-size:20px;animation:twinkle 2.3s .6s ease-in-out infinite}
+.float-rocket{top:15%;left:14%;font-size:48px;animation:floatA 4.5s ease-in-out infinite}
+.float-rainbow{top:20%;right:18%;font-size:56px;animation:floatB 5.2s ease-in-out infinite}
+.float-dino{bottom:22%;left:9%;font-size:52px;animation:floatC 3.9s ease-in-out infinite}
+.float-planet{bottom:30%;right:12%;font-size:44px;animation:floatA 4.1s 1s ease-in-out infinite}
+.float-cloud1{top:35%;left:3%;font-size:40px;animation:wibble 6s ease-in-out infinite}
+.float-cloud2{top:48%;right:5%;font-size:36px;animation:wibble 7s 1s ease-in-out infinite}
+.float-popcorn{top:55%;right:19%;font-size:46px;animation:bounce 2.4s ease-in-out infinite}
+.float-heart{bottom:12%;left:38%;font-size:36px;animation:wiggle 2.8s ease-in-out infinite}
+.float-butterfly{top:28%;left:42%;font-size:30px;animation:floatA 3.6s .3s ease-in-out infinite}
+.hero-content{position:relative;z-index:10;max-width:700px;padding:0 32px;animation:slideUp .9s ease both}
+.kids-eyebrow{font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--k-coral);display:block;margin-bottom:16px}
+.kids-hero-title{font-family:'Nunito',sans-serif;font-size:clamp(52px,9vw,96px);font-weight:900;
+  letter-spacing:-2px;line-height:.95;
+  background:linear-gradient(90deg,#FF7E5F,#FFD54F,#69D97D,#5BB8F5,#B57BF7,#FF8FAB,#FF7E5F);
+  background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;animation:rainbow 5s linear infinite;margin-bottom:12px}
+.kids-hero-sub{font-family:'Nunito',sans-serif;font-size:20px;font-weight:700;
+  color:var(--ink-2);margin-bottom:36px;line-height:1.4}
+.kids-hero-pill{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:#fff;
+  font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;letter-spacing:.04em;
+  padding:14px 32px;border-radius:40px;text-transform:uppercase;cursor:pointer;
+  transition:transform .2s,background .2s;border:none;animation:bounce 3s 1.5s ease-in-out infinite}
+.kids-hero-pill:hover{transform:scale(1.06);background:var(--k-coral)}
+
+/* SECTION */
+.kids-section{padding:100px 52px;position:relative;overflow:hidden}
+.kids-sec-header{text-align:center;margin-bottom:72px}
+.kids-sec-eyebrow{font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;
+  letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:12px}
+.kids-sec-title{font-family:'Nunito',sans-serif;font-size:clamp(34px,5vw,58px);font-weight:900;
+  letter-spacing:-1.5px;line-height:1;color:var(--ink);margin-bottom:14px}
+.kids-sec-sub{font-family:'Lora',serif;font-size:16px;font-style:italic;
+  color:var(--ink-3);max-width:560px;margin:0 auto}
+
+/* ILLUSTRATED MOVIE CARDS */
+#little-ones{background:var(--k-bg)}
+.movies-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:28px}
+.movie-card{border-radius:20px;overflow:hidden;background:#fff;
+  box-shadow:0 4px 20px rgba(0,0,0,.07);
+  transition:transform .3s cubic-bezier(.2,.9,.4,1.1),box-shadow .3s;
+  cursor:pointer;animation:cardPop .5s ease both;position:relative}
+.movie-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 40px rgba(0,0,0,.14)}
+.movie-card:nth-child(1){animation-delay:.05s}.movie-card:nth-child(2){animation-delay:.10s}
+.movie-card:nth-child(3){animation-delay:.15s}.movie-card:nth-child(4){animation-delay:.20s}
+.movie-card:nth-child(5){animation-delay:.25s}.movie-card:nth-child(6){animation-delay:.30s}
+.movie-card:nth-child(7){animation-delay:.35s}.movie-card:nth-child(8){animation-delay:.40s}
+.movie-card:nth-child(9){animation-delay:.45s}.movie-card:nth-child(10){animation-delay:.50s}
+.movie-scene{width:100%;aspect-ratio:2/3;position:relative;overflow:hidden;flex-shrink:0}
+.movie-age-badge{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.92);
+  color:var(--ink);font-family:'Nunito',sans-serif;font-size:10px;font-weight:900;
+  padding:3px 9px;border-radius:20px;letter-spacing:.02em;z-index:10;
+  box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.movie-info{padding:14px 16px 18px}
+.movie-title{font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;
+  letter-spacing:-0.3px;color:var(--ink);line-height:1.2;margin-bottom:3px}
+.movie-year-dir{font-family:'Inter',sans-serif;font-size:9px;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px}
+.movie-tagline{font-family:'Lora',serif;font-size:11px;font-style:italic;color:var(--ink-2);line-height:1.45}
+.movie-tag{display:inline-block;margin-top:9px;font-family:'Nunito',sans-serif;
+  font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:20px}
+
+/* CSS SCENE: Lion King */
+.scene-lionking{background:linear-gradient(180deg,#FF9D00 0%,#FFD166 35%,#E07B2A 65%,#8B4513 100%)}
+.scene-lionking .sun{position:absolute;top:18%;left:50%;transform:translateX(-50%);
+  width:60px;height:60px;border-radius:50%;background:#FFE566;
+  box-shadow:0 0 0 10px rgba(255,220,80,.3),0 0 0 20px rgba(255,200,60,.12)}
+.scene-lionking .rock{position:absolute;bottom:22%;left:50%;transform:translateX(-50%);
+  width:44px;height:28px;background:#C0541A;border-radius:8px 8px 0 0}
+.scene-lionking .rock::before{content:'';position:absolute;bottom:0;left:-12px;
+  width:18px;height:20px;background:#A0420D;border-radius:4px 4px 0 0}
+.scene-lionking .lion{position:absolute;bottom:34%;left:50%;transform:translateX(-50%);
+  font-size:30px;animation:bounce 3s ease-in-out infinite}
+.scene-lionking .tree{position:absolute;bottom:15%;font-size:28px}
+.scene-lionking .tl{left:8%}.scene-lionking .tr{right:8%}
+.scene-lionking .glow{position:absolute;top:10%;left:50%;transform:translateX(-50%);
+  width:90px;height:90px;border-radius:50%;background:rgba(255,229,102,.18)}
+
+/* CSS SCENE: Spirited Away */
+.scene-spirited{background:linear-gradient(180deg,#2D1B5E 0%,#6B3F9E 40%,#C4689B 70%,#F4A0B5 100%)}
+.scene-spirited .moon{position:absolute;top:10%;right:18%;width:38px;height:38px;
+  border-radius:50%;background:#FFF9C4;box-shadow:0 0 18px rgba(255,249,196,.5)}
+.scene-spirited .bh{position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:110px;height:80px;background:#E8B86D}
+.scene-spirited .bh::before{content:'';position:absolute;top:-20px;left:-10px;right:-10px;
+  height:28px;background:#C0392B;clip-path:polygon(0 100%,50% 0,100% 100%)}
+.scene-spirited .bh::after{content:'';position:absolute;top:-36px;left:12px;right:12px;
+  height:24px;background:#922B21;clip-path:polygon(0 100%,50% 0,100% 100%)}
+.scene-spirited .bw{position:absolute;width:16px;height:20px;background:#FFD95A;border-radius:2px;bottom:16px}
+.scene-spirited .bw1{left:14px}.scene-spirited .bw2{left:44px}.scene-spirited .bw3{right:14px}
+.scene-spirited .chihiro{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);
+  font-size:26px;animation:bounce 3.5s ease-in-out infinite}
+.scene-spirited .lantern{position:absolute;font-size:18px;animation:floatB 4s ease-in-out infinite}
+.scene-spirited .ln1{top:32%;left:12%}.scene-spirited .ln2{top:42%;right:16%}
+
+/* CSS SCENE: Finding Nemo */
+.scene-nemo{background:linear-gradient(180deg,#0077BE 0%,#00A8CC 50%,#00C9A7 100%)}
+.scene-nemo .seafloor{position:absolute;bottom:0;left:0;right:0;height:28%;
+  background:rgba(0,40,60,.4);border-radius:60% 60% 0 0}
+.scene-nemo .bub{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.1)}
+.scene-nemo .b1{width:12px;height:12px;top:18%;left:14%;animation:floatC 3s ease-in-out infinite}
+.scene-nemo .b2{width:8px;height:8px;top:32%;right:18%;animation:floatC 4s .5s ease-in-out infinite}
+.scene-nemo .b3{width:18px;height:18px;top:52%;left:32%;animation:floatC 5s 1s ease-in-out infinite}
+.scene-nemo .coral{position:absolute;bottom:0;font-size:24px}
+.scene-nemo .nc1{left:4%}.scene-nemo .nc2{left:22%}.scene-nemo .nc3{right:18%}.scene-nemo .nc4{right:4%}
+.scene-nemo .nemo{position:absolute;font-size:32px;bottom:36%;left:50%;
+  transform:translateX(-50%);animation:drift 3s ease-in-out infinite}
+.scene-nemo .dory{position:absolute;font-size:22px;bottom:38%;right:20%;
+  animation:drift 4s .8s ease-in-out infinite}
+
+/* CSS SCENE: Coco */
+.scene-coco{background:linear-gradient(180deg,#0D0221 0%,#1A0A3D 30%,#6B2D8B 60%,#F7A800 100%)}
+.scene-coco .cmoon{position:absolute;top:10%;left:14%;width:32px;height:32px;
+  border-radius:50%;background:#FFF9C4}
+.scene-coco .cstar{position:absolute;font-size:10px;color:#FFD700}
+.scene-coco .cs1{top:7%;left:38%}.scene-coco .cs2{top:14%;right:22%}
+.scene-coco .cs3{top:22%;right:8%}.scene-coco .cs4{top:4%;right:48%}
+.scene-coco .city{position:absolute;bottom:0;left:0;right:0;height:25%;background:#1A0A3D}
+.scene-coco .bridge{position:absolute;bottom:24%;left:0;right:0;height:10px;background:#F7A800}
+.scene-coco .marig{position:absolute;bottom:26%;font-size:18px}
+.scene-coco .mg1{left:4%}.scene-coco .mg2{left:20%}.scene-coco .mg3{right:20%}.scene-coco .mg4{right:4%}
+.scene-coco .miguel{position:absolute;bottom:30%;left:50%;transform:translateX(-50%);
+  font-size:28px;animation:bounce 3s ease-in-out infinite}
+
+/* CSS SCENE: Moana */
+.scene-moana{background:linear-gradient(180deg,#FF7043 0%,#FF9800 25%,#0288D1 52%,#005B8E 100%)}
+.scene-moana .msun{position:absolute;top:10%;left:50%;transform:translateX(-50%);
+  width:52px;height:52px;border-radius:50%;background:#FFE082;
+  box-shadow:0 0 0 8px rgba(255,220,100,.25)}
+.scene-moana .wave{position:absolute;left:0;right:0;height:16px;border-radius:50%;
+  background:rgba(255,255,255,.2)}
+.scene-moana .wv1{bottom:36%}.scene-moana .wv2{bottom:42%;opacity:.5}.scene-moana .wv3{bottom:30%;opacity:.7}
+.scene-moana .boat{position:absolute;bottom:30%;left:50%;transform:translateX(-50%);
+  width:64px;height:24px;background:#8D4E10;border-radius:0 0 40% 40%}
+.scene-moana .sail{position:absolute;bottom:42%;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;
+  border-bottom:44px solid #F9E4B7}
+.scene-moana .mchar{position:absolute;bottom:48%;left:50%;transform:translateX(-50%);font-size:20px}
+.scene-moana .ocean{position:absolute;bottom:0;left:0;right:0;height:32%;background:#005B8E}
+.scene-moana .island{position:absolute;bottom:32%;right:6%;width:44px;height:26px;
+  background:#2E7D32;border-radius:50% 50% 0 0}
+
+/* CSS SCENE: Up */
+.scene-up{background:linear-gradient(180deg,#87CEEB 0%,#B0E0FF 60%,#E8F5FF 100%)}
+.scene-up .cloud{position:absolute;background:#fff;border-radius:50px}
+.scene-up .cl1{width:70px;height:26px;top:18%;left:4%;animation:drift 8s ease-in-out infinite}
+.scene-up .cl2{width:54px;height:22px;top:32%;right:6%;animation:drift 6s 1s ease-in-out infinite}
+.scene-up .cl3{width:88px;height:24px;top:58%;left:18%;animation:drift 10s 2s ease-in-out infinite}
+.scene-up .house{position:absolute;bottom:18%;left:50%;transform:translateX(-50%);
+  width:46px;height:40px;background:#E8851A}
+.scene-up .house::before{content:'';position:absolute;top:-18px;left:-5px;right:-5px;
+  height:24px;background:#C0392B;clip-path:polygon(0 100%,50% 0,100% 100%)}
+.scene-up .bln{position:absolute;font-size:13px;animation:floatA 3s ease-in-out infinite}
+.scene-up .bl1{bottom:66%;left:26%;animation-delay:.0s}
+.scene-up .bl2{bottom:71%;left:37%;animation-delay:.3s}
+.scene-up .bl3{bottom:74%;left:48%;animation-delay:.6s}
+.scene-up .bl4{bottom:71%;left:58%;animation-delay:.9s}
+.scene-up .bl5{bottom:66%;left:67%;animation-delay:.4s}
+.scene-up .bl6{bottom:78%;left:43%;animation-delay:.15s}
+
+/* CSS SCENE: Encanto */
+.scene-encanto{background:linear-gradient(180deg,#1565C0 0%,#42A5F5 28%,#81C784 58%,#4CAF50 100%)}
+.scene-encanto .casita{position:absolute;bottom:18%;left:50%;transform:translateX(-50%);
+  width:80px;height:64px;background:#FFEB3B}
+.scene-encanto .casita::before{content:'';position:absolute;top:-22px;left:-8px;right:-8px;
+  height:28px;background:#F57F17;clip-path:polygon(0 100%,50% 0,100% 100%)}
+.scene-encanto .casita::after{content:'';position:absolute;bottom:0;left:30px;
+  width:18px;height:26px;background:#8D6E63;border-radius:3px 3px 0 0}
+.scene-encanto .eflower{position:absolute;font-size:18px}
+.scene-encanto .ef1{bottom:20%;left:8%;animation:bounce 2.5s ease-in-out infinite}
+.scene-encanto .ef2{bottom:22%;left:24%;animation:bounce 3s .3s ease-in-out infinite}
+.scene-encanto .ef3{bottom:20%;right:16%;animation:bounce 2.8s .6s ease-in-out infinite}
+.scene-encanto .ef4{bottom:22%;right:6%;animation:bounce 3.2s .1s ease-in-out infinite}
+.scene-encanto .ebfly{position:absolute;font-size:16px;animation:floatB 3s ease-in-out infinite}
+.scene-encanto .eb1{top:22%;left:18%}.scene-encanto .eb2{top:16%;right:20%}
+.scene-encanto .mirabel{position:absolute;bottom:40%;left:50%;transform:translateX(-50%);
+  font-size:26px;animation:wiggle 4s ease-in-out infinite}
+.scene-encanto .mtn{position:absolute;bottom:0;left:0;right:0;height:20%;background:#2E7D32}
+.scene-encanto .mtn::before{content:'';position:absolute;top:-18px;left:14%;
+  width:0;height:0;border-left:36px solid transparent;border-right:36px solid transparent;border-bottom:22px solid #2E7D32}
+.scene-encanto .mtn::after{content:'';position:absolute;top:-26px;right:16%;
+  width:0;height:0;border-left:44px solid transparent;border-right:44px solid transparent;border-bottom:30px solid #388E3C}
+
+/* CSS SCENE: Paddington 2 */
+.scene-paddington{background:linear-gradient(180deg,#B0BEC5 0%,#90A4AE 30%,#607D8B 60%,#455A64 100%)}
+.scene-paddington .bigben{position:absolute;bottom:13%;right:10%;width:24px;height:72px;background:#8D6E63}
+.scene-paddington .bigben::before{content:'';position:absolute;top:-16px;left:-5px;right:-5px;
+  height:20px;background:#795548;border-radius:50% 50% 0 0}
+.scene-paddington .bigben::after{content:'';position:absolute;top:-6px;left:5px;right:5px;
+  height:8px;background:#FFD600;border-radius:50%}
+.scene-paddington .bus{position:absolute;bottom:13%;left:6%;width:64px;height:38px;
+  background:#C62828;border-radius:5px}
+.scene-paddington .bus::before{content:'';position:absolute;bottom:-11px;left:7px;
+  width:14px;height:14px;border-radius:50%;background:#37474F}
+.scene-paddington .bus::after{content:'';position:absolute;bottom:-11px;right:7px;
+  width:14px;height:14px;border-radius:50%;background:#37474F}
+.scene-paddington .buw{position:absolute;top:6px;width:13px;height:11px;background:#BBDEFB;border-radius:2px}
+.scene-paddington .bw1{left:5px}.scene-paddington .bw2{left:22px}.scene-paddington .bw3{left:39px}
+.scene-paddington .rain{position:absolute;width:2px;background:rgba(150,200,255,.45);border-radius:2px;animation:floatC 1s ease-in-out infinite}
+.scene-paddington .rn1{height:14px;top:4%;left:14%;animation-delay:0s}
+.scene-paddington .rn2{height:11px;top:9%;left:29%;animation-delay:.2s}
+.scene-paddington .rn3{height:16px;top:2%;left:54%;animation-delay:.4s}
+.scene-paddington .rn4{height:10px;top:7%;right:14%;animation-delay:.1s}
+.scene-paddington .rn5{height:13px;top:14%;right:28%;animation-delay:.3s}
+.scene-paddington .pbear{position:absolute;bottom:28%;left:40%;font-size:32px;animation:bounce 3s ease-in-out infinite}
+.scene-paddington .street{position:absolute;bottom:0;left:0;right:0;height:14%;background:#37474F}
+
+/* CSS SCENE: Inside Out 2 */
+.scene-insideout{background:linear-gradient(180deg,#1A237E 0%,#283593 30%,#512DA8 60%,#7B1FA2 100%)}
+.scene-insideout .hq{position:absolute;bottom:18%;left:50%;transform:translateX(-50%);
+  width:72px;height:56px;background:#1565C0;border-radius:5px}
+.scene-insideout .hq::before{content:'';position:absolute;top:-12px;left:-4px;right:-4px;
+  height:16px;background:#0D47A1;border-radius:3px 3px 0 0}
+.scene-insideout .emo{position:absolute;font-size:22px;animation:bounce 2.5s ease-in-out infinite}
+.scene-insideout .em1{bottom:46%;left:6%;animation-delay:0s}
+.scene-insideout .em2{bottom:50%;left:24%;animation-delay:.3s}
+.scene-insideout .em3{bottom:46%;left:42%;animation-delay:.6s}
+.scene-insideout .em4{bottom:50%;right:18%;animation-delay:.9s}
+.scene-insideout .em5{bottom:46%;right:4%;animation-delay:1.2s}
+.scene-insideout .mem{position:absolute;border-radius:50%;width:14px;height:14px}
+.scene-insideout .mm1{background:#FFD700;top:14%;left:18%;animation:floatA 4s ease-in-out infinite}
+.scene-insideout .mm2{background:#4FC3F7;top:24%;right:20%;animation:floatB 5s ease-in-out infinite}
+.scene-insideout .mm3{background:#EF9A9A;top:9%;right:36%;animation:floatA 6s 1s ease-in-out infinite}
+.scene-insideout .mm4{background:#A5D6A7;top:36%;left:10%;animation:floatC 4s .5s ease-in-out infinite}
+.scene-insideout .ground{position:absolute;bottom:0;left:0;right:0;height:18%;background:#0D47A1;border-radius:80% 80% 0 0}
+
+/* CSS SCENE: Jungle Book */
+.scene-junglebook{background:linear-gradient(180deg,#1B5E20 0%,#2E7D32 30%,#388E3C 60%,#43A047 100%)}
+.scene-junglebook .jleaf{position:absolute;font-size:24px;animation:wibble 4s ease-in-out infinite}
+.scene-junglebook .jl1{top:4%;left:2%}.scene-junglebook .jl2{top:7%;right:3%}
+.scene-junglebook .jl3{top:16%;left:10%;animation-delay:.5s}.scene-junglebook .jl4{top:14%;right:13%;animation-delay:1s}
+.scene-junglebook .vine{position:absolute;width:3px;background:#1B5E20;border-radius:2px;top:0}
+.scene-junglebook .vn1{height:48%;left:17%;animation:drift 5s ease-in-out infinite}
+.scene-junglebook .vn2{height:56%;right:19%;animation:drift 6s 1s ease-in-out infinite}
+.scene-junglebook .mowgli{position:absolute;bottom:24%;left:50%;transform:translateX(-50%);
+  font-size:28px;animation:bounce 2.8s ease-in-out infinite}
+.scene-junglebook .baloo{position:absolute;bottom:20%;right:10%;font-size:32px;animation:wiggle 4s ease-in-out infinite}
+.scene-junglebook .snake{position:absolute;bottom:34%;left:9%;font-size:24px;animation:drift 4s ease-in-out infinite}
+.scene-junglebook .jflower{position:absolute;bottom:14%;font-size:18px}
+.scene-junglebook .jf1{left:4%}.scene-junglebook .jf2{left:28%}.scene-junglebook .jf3{right:14%}
+.scene-junglebook .gndj{position:absolute;bottom:0;left:0;right:0;height:17%;background:#1B5E20}
+
+/* SPOTLIGHT SECTION */
+#spotlight{
+  background:linear-gradient(135deg,#0D0D1A 0%,#1A0A3D 50%,#2D1B5E 100%);
+  padding:120px 52px;position:relative;overflow:hidden;
+}
+#spotlight::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 15%, rgba(255,255,255,.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 8%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(2px 2px at 40% 22%, rgba(255,255,255,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 5%, rgba(255,255,255,.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 75% 18%, rgba(255,255,255,.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88% 10%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 15% 45%, rgba(255,255,255,.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 40%, rgba(255,255,255,.6) 0%, transparent 100%),
+    radial-gradient(2px 2px at 90% 38%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 30% 70%, rgba(255,255,255,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 75%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5% 80%, rgba(255,255,255,.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 50% 85%, rgba(255,255,255,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 95% 90%, rgba(255,255,255,.5) 0%, transparent 100%);
+  pointer-events:none;z-index:0;
+}
+.spotlight-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.spotlight-label{font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--k-sun);
+  display:block;margin-bottom:16px;text-align:center}
+.spotlight-title{font-family:'Nunito',sans-serif;font-size:clamp(32px,4.5vw,54px);
+  font-weight:900;letter-spacing:-1.5px;color:#fff;text-align:center;margin-bottom:72px;line-height:1.15}
+.spotlight-title span{color:var(--k-sun)}
+.spotlight-card{display:grid;grid-template-columns:1fr 1fr;gap:0;
+  background:rgba(255,255,255,.05);border-radius:28px;border:1px solid rgba(255,255,255,.1);
+  overflow:hidden;backdrop-filter:blur(2px)}
+.spotlight-scene{position:relative;min-height:460px;overflow:hidden}
+.sp-shimmer{position:absolute;top:0;bottom:0;width:40%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
+  animation:shimmer 5s ease-in-out infinite;z-index:2}
+.spotlight-info{padding:52px 48px;display:flex;flex-direction:column;justify-content:center}
+.sp-pick-tag{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,213,79,.15);border:1px solid rgba(255,213,79,.3);
+  color:var(--k-sun);font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;
+  letter-spacing:.16em;text-transform:uppercase;padding:6px 14px;border-radius:20px;
+  margin-bottom:24px;width:fit-content}
+.sp-film-title{font-family:'Nunito',sans-serif;font-size:clamp(36px,4vw,52px);font-weight:900;
+  letter-spacing:-1.5px;color:#fff;line-height:1.05;margin-bottom:8px}
+.sp-film-year{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:28px}
+.sp-pull-quote{font-family:'Lora',serif;font-size:clamp(17px,2vw,22px);font-style:italic;
+  font-weight:400;color:rgba(255,255,255,.9);line-height:1.55;
+  border-left:3px solid var(--k-sun);padding-left:20px;margin-bottom:32px}
+.sp-why-title{font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;
+  letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px}
+.sp-reasons{display:flex;flex-direction:column;gap:10px;margin-bottom:36px}
+.sp-reason{display:flex;align-items:flex-start;gap:10px}
+.sp-reason-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px}
+.sp-reason-text{font-family:'Lora',serif;font-size:14px;color:rgba(255,255,255,.7);line-height:1.5}
+.sp-age-row{display:flex;gap:12px;flex-wrap:wrap}
+.sp-badge{font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;
+  letter-spacing:.06em;padding:5px 14px;border-radius:20px;text-transform:uppercase}
+.spotlight-nav{display:flex;justify-content:center;align-items:center;gap:20px;margin-top:40px}
+.sp-nav-btn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);color:#fff;font-size:18px;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif}
+.sp-nav-btn:hover{background:var(--k-sun);color:var(--ink);border-color:var(--k-sun)}
+.sp-dots{display:flex;gap:8px}
+.sp-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .2s}
+.sp-dot.on{background:var(--k-sun);width:24px;border-radius:4px}
+
+/* GUILLAUME KIDS */
+#kids-guillaume{background:linear-gradient(135deg,#EDE7F6 0%,#E8F6FF 100%)}
+.guillaume-kids-inner{max-width:760px;margin:0 auto;text-align:center}
+.g-kids-dot{width:8px;height:8px;border-radius:50%;background:var(--k-coral);
+  margin:0 auto 20px;animation:pulse 2s ease-in-out infinite}
+.g-kids-title{font-family:'Nunito',sans-serif;font-size:clamp(32px,5vw,48px);font-weight:900;
+  letter-spacing:-1.5px;color:var(--ink);margin-bottom:10px}
+.g-kids-sub{font-family:'Lora',serif;font-size:17px;font-style:italic;color:var(--ink-2);margin-bottom:32px}
+.g-kids-input{width:100%;background:#fff;border:2px solid rgba(0,0,0,.1);
+  border-radius:16px;padding:20px 24px;font-family:'Nunito',sans-serif;
+  font-size:18px;font-weight:600;color:var(--ink);outline:none;transition:border .2s}
+.g-kids-input:focus{border-color:var(--k-purple)}
+.g-kids-input::placeholder{color:rgba(0,0,0,.3)}
+.g-kids-hints{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:20px}
+.g-kids-hint{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;
+  background:rgba(0,0,0,.05);border:none;border-radius:20px;padding:8px 16px;
+  cursor:pointer;color:var(--ink-2);transition:background .2s,color .2s;letter-spacing:.02em}
+.g-kids-hint:hover{background:var(--k-purple);color:#fff}
+.g-kids-btn{margin-top:24px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;
+  letter-spacing:.06em;text-transform:uppercase;background:var(--k-coral);color:#fff;
+  border:none;padding:16px 36px;border-radius:40px;cursor:pointer;transition:transform .2s,background .2s}
+.g-kids-btn:hover{transform:scale(1.05);background:var(--k-purple)}
+
+/* FOOTER */
+.footer-new{background:#000;border-top:.5px solid rgba(15,14,11,.12);padding:64px 52px 0}
+.footer-grid{max-width:1400px;margin:0 auto;display:grid;
+  grid-template-columns:1fr 1fr 1.2fr;gap:48px;margin-bottom:56px}
+.brand-col .brand-logo{font-family:'Inter',sans-serif;font-size:22px;font-weight:800;
+  letter-spacing:-0.02em;text-transform:uppercase;color:#fff;margin-bottom:16px;display:inline-block}
+.brand-desc{font-family:'Inter',sans-serif;font-size:13px;line-height:1.5;
+  color:rgba(255,255,255,.6);max-width:240px;margin:16px 0 24px;font-weight:400}
+.simple-links{display:flex;flex-direction:column;gap:12px}
+.footer-link{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;
+  color:rgba(255,255,255,.6);text-decoration:none;transition:color .2s}
+.footer-link:hover{color:#fff}
+.middle-col .footer-col-title,.right-col .footer-col-title{font-family:'Inter',sans-serif;
+  font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff;margin-bottom:20px}
+.right-col .footer-col-title{margin-bottom:12px}
+.social-links{display:flex;gap:28px;margin-bottom:28px}
+.social-link{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,.6);text-decoration:none;transition:color .2s}
+.social-link:hover{color:#fff}
+.secondary-row{display:flex;gap:24px;flex-wrap:wrap}
+.newsletter-copy{font-family:'Inter',sans-serif;font-size:13px;color:rgba(255,255,255,.6);
+  margin-bottom:20px;line-height:1.4;font-weight:400}
+.newsletter-form{display:flex;gap:12px;flex-wrap:wrap}
+.newsletter-input{flex:1;background:transparent;border:.5px solid rgba(255,255,255,.25);
+  padding:12px 16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:400;
+  color:#fff;outline:none;border-radius:40px;transition:border .2s}
+.newsletter-input:focus{border-color:#fff}
+.newsletter-input::placeholder{color:rgba(255,255,255,.4)}
+.newsletter-btn{background:#fff;border:none;padding:0 20px;border-radius:40px;
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:#000;cursor:pointer;transition:background .2s}
+.newsletter-btn:hover{background:rgba(255,255,255,.9)}
+.footer-legal-strip{border-top:.5px solid rgba(255,255,255,.1);
+  padding:20px 52px 24px;background:#000;text-align:center}
+.footer-legal{font-family:'Inter',sans-serif;font-size:10px;font-weight:400;
+  color:rgba(255,255,255,.6);letter-spacing:.02em;max-width:1400px;margin:0 auto}
+
+/* CONFETTI */
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;display:none}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.movies-grid{grid-template-columns:repeat(4,1fr)}header{padding:22px 28px}}
+@media(max-width:960px){
+  .spotlight-card{grid-template-columns:1fr}
+  .spotlight-scene{min-height:300px}
+  .spotlight-info{padding:36px 32px}
+}
+@media(max-width:860px){
+  .movies-grid{grid-template-columns:repeat(3,1fr)}
+  .kids-section{padding:72px 28px}
+  .footer-grid{grid-template-columns:1fr}
+  nav{gap:20px}
+  #spotlight{padding:80px 28px}
+}
+@media(max-width:600px){
+  .movies-grid{grid-template-columns:repeat(2,1fr);gap:16px}
+  header{padding:18px 20px}
+  nav{gap:14px}.nav-a{font-size:10px}
+  .kids-section{padding:56px 20px}
+  .footer-new{padding:48px 20px 0}
+  .footer-legal-strip{padding:16px 20px 20px}
+  #spotlight{padding:60px 20px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html"><span>What2</span><span>Watch</span></a>
+  <nav>
+    <a class="nav-a" href="index.html">Home</a>
+    <a class="nav-a on" href="kids.html">Kids</a>
+    <a class="nav-a" href="#">Seasons</a>
+    <a class="nav-a" href="#">About</a>
+    <a class="nav-a" href="#">Contact</a>
+    <a class="nav-a" href="#">Guillaume</a>
+  </nav>
+  <div class="search-container">
+    <button class="search-icon" id="searchTriggerBtn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div class="search-overlay" id="searchOverlay">
+  <button class="search-close-overlay" id="searchCloseBtn">✕</button>
+  <div class="search-overlay-inner">
+    <div class="search-input-wrapper">
+      <input type="text" class="search-overlay-input" id="expandedSearchInput" autocomplete="off">
+      <button class="search-submit-btn" id="searchSubmitBtn">→</button>
+    </div>
+    <div class="search-results-overlay" id="searchResultsArea"></div>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<section id="kids-hero">
+  <span class="sky-deco star-1">⭐</span><span class="sky-deco star-2">✨</span>
+  <span class="sky-deco star-3">⭐</span><span class="sky-deco star-4">✨</span><span class="sky-deco star-5">⭐</span>
+  <span class="sky-deco float-rocket">🚀</span><span class="sky-deco float-rainbow">🌈</span>
+  <span class="sky-deco float-dino">🦕</span><span class="sky-deco float-planet">🪐</span>
+  <span class="sky-deco float-cloud1">☁️</span><span class="sky-deco float-cloud2">⛅</span>
+  <span class="sky-deco float-popcorn">🍿</span><span class="sky-deco float-heart">💛</span>
+  <span class="sky-deco float-butterfly">🦋</span>
+  <div class="hero-content">
+    <span class="kids-eyebrow">🎬 Movies for Young Explorers</span>
+    <h1 class="kids-hero-title">Kids Corner</h1>
+    <p class="kids-hero-sub">Magical adventures, funny friends, and stories that stay with you forever 🌟</p>
+    <button class="kids-hero-pill" onclick="document.getElementById('little-ones').scrollIntoView({behavior:'smooth'})">
+      🍿 See What's Playing
+    </button>
+  </div>
+</section>
+
+<section id="little-ones" class="kids-section">
+  <div class="kids-sec-header">
+    <span class="kids-sec-eyebrow" style="color:var(--k-coral)">🎠 Handpicked Magic</span>
+    <h2 class="kids-sec-title">For Your Little Ones</h2>
+    <p class="kids-sec-sub">Ten films that spark imagination, teach big lessons, and make the whole family laugh.</p>
+  </div>
+  <div class="movies-grid" id="moviesGrid"></div>
+</section>
+
+<section id="spotlight">
+  <div class="spotlight-inner">
+    <span class="spotlight-label">✦ This Week's Featured Pick</span>
+    <h2 class="spotlight-title">Our editors recommend<br><span id="spotlightFilmName">Finding Nemo</span></h2>
+
+    <div class="spotlight-card">
+      <div class="spotlight-scene" id="spotlightScene"></div>
+      <div class="spotlight-info">
+        <div class="sp-pick-tag">⭐ Editor's Pick</div>
+        <div class="sp-film-title" id="sp-title">Finding Nemo</div>
+        <div class="sp-film-year" id="sp-meta">2003 · Andrew Stanton · Pixar</div>
+        <blockquote class="sp-pull-quote" id="sp-quote"></blockquote>
+        <div class="sp-why-title">Why your little ones will love it</div>
+        <div class="sp-reasons" id="sp-reasons"></div>
+        <div class="sp-age-row" id="sp-badges"></div>
+      </div>
+    </div>
+
+    <div class="spotlight-nav">
+      <button class="sp-nav-btn" id="spPrev">←</button>
+      <div class="sp-dots" id="spDots"></div>
+      <button class="sp-nav-btn" id="spNext">→</button>
+    </div>
+  </div>
+</section>
+
+<section id="kids-guillaume" class="kids-section">
+  <div class="guillaume-kids-inner">
+    <div class="g-kids-dot"></div>
+    <h2 class="g-kids-title">Not sure what to watch? 🤔</h2>
+    <p class="g-kids-sub">Just tell Guillaume what the little ones are in the mood for, and let the magic happen.</p>
+    <input class="g-kids-input" type="text" id="kidsGuillaumeInput"
+      placeholder="e.g. a movie about a lost puppy who finds a family 🐶">
+    <div class="g-kids-hints">
+      <button class="g-kids-hint" onclick="fillHint(this)">'Fun animal friends'</button>
+      <button class="g-kids-hint" onclick="fillHint(this)">'Magic and dragons'</button>
+      <button class="g-kids-hint" onclick="fillHint(this)">'Robot buddies'</button>
+      <button class="g-kids-hint" onclick="fillHint(this)">'Brave girl heroes'</button>
+      <button class="g-kids-hint" onclick="fillHint(this)">'Something funny'</button>
+    </div>
+    <button class="g-kids-btn" onclick="askGuillaume()">Ask Guillaume ✨</button>
+  </div>
+</section>
+
+<div class="footer-new">
+  <div class="footer-grid">
+    <div class="brand-col">
+      <div class="brand-logo">What2Watch</div>
+      <div class="brand-desc">Discovering films through mood, emotion, and experience. Your cinematic compass.</div>
+      <div class="simple-links">
+        <a href="#" class="footer-link">About</a><a href="#" class="footer-link">Contact</a>
+        <a href="#" class="footer-link">Privacy</a><a href="#" class="footer-link">Terms</a>
+      </div>
+    </div>
+    <div class="middle-col">
+      <div class="footer-col-title">Connect</div>
+      <div class="social-links">
+        <a href="#" class="social-link">Instagram</a><a href="#" class="social-link">Twitter</a>
+      </div>
+      <div class="secondary-row">
+        <a href="#" class="footer-link">Jobs</a><a href="#" class="footer-link">Merch</a>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="footer-col-title">Newsletter</div>
+      <div class="newsletter-copy">Get our updates. New films, festival picks, staff recommendations.</div>
+      <div class="newsletter-form">
+        <input type="email" class="newsletter-input" placeholder="your@email.com">
+        <button class="newsletter-btn" id="newsletterSignupBtn">Sign Up →</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-legal-strip">
+    <div class="footer-legal">© 2026 What2Watch. Curated Cinema. All rights reserved. Discover the art of film.</div>
+  </div>
+</div>
+
+<script>
+/* ── MOVIE CARDS DATA ── */
+const kidsMovies = [
+  {
+    title:"The Lion King", year:"1994", director:"Roger Allers",
+    tagline:"Remember who you are.", tag:"Epic", tagColor:"#FF7E5F", age:"All Ages",
+    sceneClass:"scene-lionking",
+    sceneHTML:`<div class="glow"></div><div class="sun"></div>
+      <span class="tree tl">🌴</span><span class="tree tr">🌴</span>
+      <div class="rock"></div><span class="lion">🦁</span>`
+  },
+  {
+    title:"Spirited Away", year:"2001", director:"Hayao Miyazaki",
+    tagline:"A world beyond imagination.", tag:"Magical", tagColor:"#B57BF7", age:"6+",
+    sceneClass:"scene-spirited",
+    sceneHTML:`<div class="moon"></div>
+      <span class="lantern ln1">🏮</span><span class="lantern ln2">🏮</span>
+      <div class="bh"><div class="bw bw1"></div><div class="bw bw2"></div><div class="bw bw3"></div></div>
+      <span class="chihiro">🧒</span>`
+  },
+  {
+    title:"Finding Nemo", year:"2003", director:"Andrew Stanton",
+    tagline:"Just keep swimming!", tag:"Adventure", tagColor:"#5BB8F5", age:"All Ages",
+    sceneClass:"scene-nemo",
+    sceneHTML:`<div class="seafloor"></div>
+      <div class="bub b1"></div><div class="bub b2"></div><div class="bub b3"></div>
+      <span class="coral nc1">🪸</span><span class="coral nc2">🌿</span>
+      <span class="coral nc3">🪸</span><span class="coral nc4">🌿</span>
+      <span class="nemo">🐠</span><span class="dory">🐟</span>`
+  },
+  {
+    title:"Coco", year:"2017", director:"Lee Unkrich",
+    tagline:"The greatest gift is family.", tag:"Heartfelt", tagColor:"#FF8FAB", age:"5+",
+    sceneClass:"scene-coco",
+    sceneHTML:`<div class="cmoon"></div>
+      <span class="cstar cs1">★</span><span class="cstar cs2">★</span>
+      <span class="cstar cs3">★</span><span class="cstar cs4">★</span>
+      <div class="city"></div><div class="bridge"></div>
+      <span class="marig mg1">🌸</span><span class="marig mg2">🌸</span>
+      <span class="marig mg3">🌸</span><span class="marig mg4">🌸</span>
+      <span class="miguel">🎸</span>`
+  },
+  {
+    title:"Moana", year:"2016", director:"Ron Clements",
+    tagline:"The ocean chose her.", tag:"Brave", tagColor:"#69D97D", age:"All Ages",
+    sceneClass:"scene-moana",
+    sceneHTML:`<div class="msun"></div><div class="island"></div><div class="ocean"></div>
+      <div class="wave wv1"></div><div class="wave wv2"></div><div class="wave wv3"></div>
+      <div class="sail"></div><div class="boat"></div><span class="mchar">🏄</span>`
+  },
+  {
+    title:"Up", year:"2009", director:"Pete Docter",
+    tagline:"Adventure is out there!", tag:"Classic", tagColor:"#FFD54F", age:"All Ages",
+    sceneClass:"scene-up",
+    sceneHTML:`<div class="cloud cl1"></div><div class="cloud cl2"></div><div class="cloud cl3"></div>
+      <span class="bln bl1">🔴</span><span class="bln bl2">🔵</span><span class="bln bl3">🟡</span>
+      <span class="bln bl4">🟢</span><span class="bln bl5">🟠</span><span class="bln bl6">🟣</span>
+      <div class="house"></div>`
+  },
+  {
+    title:"Encanto", year:"2021", director:"Byron Howard",
+    tagline:"You are the gift.", tag:"Musical", tagColor:"#FF8FAB", age:"All Ages",
+    sceneClass:"scene-encanto",
+    sceneHTML:`<div class="mtn"></div><div class="casita"></div>
+      <span class="eflower ef1">🌺</span><span class="eflower ef2">🌼</span>
+      <span class="eflower ef3">🌺</span><span class="eflower ef4">🌸</span>
+      <span class="ebfly eb1">🦋</span><span class="ebfly eb2">🦋</span>
+      <span class="mirabel">💛</span>`
+  },
+  {
+    title:"Paddington 2", year:"2017", director:"Paul King",
+    tagline:"Kindness always wins.", tag:"Cosy", tagColor:"#9A7A5A", age:"All Ages",
+    sceneClass:"scene-paddington",
+    sceneHTML:`<div class="street"></div>
+      <div class="bus"><div class="buw bw1"></div><div class="buw bw2"></div><div class="buw bw3"></div></div>
+      <div class="bigben"></div>
+      <div class="rain rn1"></div><div class="rain rn2"></div><div class="rain rn3"></div>
+      <div class="rain rn4"></div><div class="rain rn5"></div>
+      <span class="pbear">🐻</span>`
+  },
+  {
+    title:"Inside Out 2", year:"2024", director:"Kelsey Mann",
+    tagline:"Growing up is complicated.", tag:"Relatable", tagColor:"#5BB8F5", age:"6+",
+    sceneClass:"scene-insideout",
+    sceneHTML:`<div class="ground"></div><div class="hq"></div>
+      <div class="mem mm1"></div><div class="mem mm2"></div><div class="mem mm3"></div><div class="mem mm4"></div>
+      <span class="emo em1">😂</span><span class="emo em2">😢</span>
+      <span class="emo em3">😡</span><span class="emo em4">😨</span><span class="emo em5">🤢</span>`
+  },
+  {
+    title:"The Jungle Book", year:"2016", director:"Jon Favreau",
+    tagline:"The wildest adventure comes home.", tag:"Wild", tagColor:"#69D97D", age:"All Ages",
+    sceneClass:"scene-junglebook",
+    sceneHTML:`<div class="gndj"></div><div class="vine vn1"></div><div class="vine vn2"></div>
+      <span class="jleaf jl1">🍃</span><span class="jleaf jl2">🍃</span>
+      <span class="jleaf jl3">🌿</span><span class="jleaf jl4">🌿</span>
+      <span class="snake">🐍</span><span class="baloo">🐻</span>
+      <span class="jflower jf1">🌸</span><span class="jflower jf2">🌺</span><span class="jflower jf3">🌼</span>
+      <span class="mowgli">🧒</span>`
+  }
+];
+
+const grid = document.getElementById('moviesGrid');
+grid.innerHTML = kidsMovies.map(m => `
+  <div class="movie-card" onclick="movieClick('${m.title}')">
+    <div class="movie-scene ${m.sceneClass}">
+      ${m.sceneHTML}
+      <span class="movie-age-badge">${m.age}</span>
+    </div>
+    <div class="movie-info">
+      <div class="movie-title">${m.title}</div>
+      <div class="movie-year-dir">${m.year} · ${m.director}</div>
+      <div class="movie-tagline">${m.tagline}</div>
+      <span class="movie-tag" style="background:${m.tagColor}18;color:${m.tagColor}">${m.tag}</span>
+    </div>
+  </div>
+`).join('');
+</script>
+
+<script>
+/* ── SPOTLIGHT CAROUSEL DATA ── */
+const spotlightData = [
+  {
+    name:"Finding Nemo",
+    meta:"2003 · Andrew Stanton · Pixar",
+    quote:"A father's love takes him to the bottom of the ocean and back — and teaches him to let go.",
+    reasons:[
+      {color:"#5BB8F5", text:"Dory teaches that it's okay to ask for help — and to laugh while doing it"},
+      {color:"#69D97D", text:"Stunning underwater world that makes the ocean feel like a magical place"},
+      {color:"#FFD54F", text:"A simple message about bravery that kids carry long after the credits roll"}
+    ],
+    badges:[
+      {bg:"rgba(91,184,245,.18)",color:"#5BB8F5",label:"All Ages"},
+      {bg:"rgba(105,217,125,.18)",color:"#69D97D",label:"Family Friendly"},
+      {bg:"rgba(255,213,79,.18)",color:"#FFD54F",label:"Adventure"}
+    ],
+    bg:"linear-gradient(160deg,#0077BE 0%,#00A8CC 40%,#00C9A7 100%)",
+    inner:`
+      <div style="position:absolute;bottom:0;left:0;right:0;height:30%;background:rgba(0,40,60,.5);border-radius:60% 60% 0 0"></div>
+      <div style="position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.1);width:22px;height:22px;top:14%;left:10%;animation:floatC 4s ease-in-out infinite"></div>
+      <div style="position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.1);width:12px;height:12px;top:30%;right:16%;animation:floatC 5s .6s ease-in-out infinite"></div>
+      <div style="position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.1);width:30px;height:30px;top:50%;left:55%;animation:floatC 6s 1.2s ease-in-out infinite"></div>
+      <span style="position:absolute;bottom:0;left:2%;font-size:48px">🪸</span>
+      <span style="position:absolute;bottom:0;left:18%;font-size:42px">🌿</span>
+      <span style="position:absolute;bottom:0;right:14%;font-size:46px">🪸</span>
+      <span style="position:absolute;bottom:0;right:2%;font-size:40px">🌿</span>
+      <span style="position:absolute;bottom:26%;left:6%;font-size:34px;animation:wibble 5s ease-in-out infinite">🌱</span>
+      <span style="position:absolute;bottom:50%;left:8%;font-size:36px;animation:drift 6s 1.5s ease-in-out infinite">🐢</span>
+      <span style="position:absolute;bottom:40%;right:8%;font-size:48px;animation:drift 5s .8s ease-in-out infinite">🐟</span>
+      <span style="position:absolute;bottom:34%;left:50%;transform:translateX(-50%);font-size:74px;animation:drift 4s ease-in-out infinite">🐠</span>
+      <div class="sp-shimmer"></div>`
+  },
+  {
+    name:"Spirited Away",
+    meta:"2001 · Hayao Miyazaki · Studio Ghibli",
+    quote:"A girl walks into another world and discovers she's braver than she ever knew.",
+    reasons:[
+      {color:"#B57BF7", text:"A rare animated film that respects children's intelligence and imagination"},
+      {color:"#FF8FAB", text:"Breathtaking hand-drawn animation — every frame is a painting"},
+      {color:"#5BB8F5", text:"Chihiro's courage grows quietly, showing kids that bravery isn't loud"}
+    ],
+    badges:[
+      {bg:"rgba(181,123,247,.18)",color:"#B57BF7",label:"6+"},
+      {bg:"rgba(255,143,171,.18)",color:"#FF8FAB",label:"Magical"},
+      {bg:"rgba(91,184,245,.18)",color:"#5BB8F5",label:"Masterpiece"}
+    ],
+    bg:"linear-gradient(180deg,#2D1B5E 0%,#6B3F9E 40%,#C4689B 70%,#F4A0B5 100%)",
+    inner:`
+      <div style="position:absolute;top:12%;right:20%;width:56px;height:56px;border-radius:50%;background:#FFF9C4;box-shadow:0 0 28px rgba(255,249,196,.5)"></div>
+      <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:150px;height:110px;background:#E8B86D">
+        <div style="position:absolute;top:-28px;left:-13px;right:-13px;height:38px;background:#C0392B;clip-path:polygon(0 100%,50% 0,100% 100%)"></div>
+        <div style="position:absolute;top:-52px;left:15px;right:15px;height:34px;background:#922B21;clip-path:polygon(0 100%,50% 0,100% 100%)"></div>
+        <div style="position:absolute;bottom:18px;left:15px;width:20px;height:26px;background:#FFD95A;border-radius:2px"></div>
+        <div style="position:absolute;bottom:18px;left:64px;width:20px;height:26px;background:#FFD95A;border-radius:2px"></div>
+        <div style="position:absolute;bottom:18px;right:15px;width:20px;height:26px;background:#FFD95A;border-radius:2px"></div>
+      </div>
+      <span style="position:absolute;top:38%;left:14%;font-size:26px;animation:floatB 4s ease-in-out infinite">🏮</span>
+      <span style="position:absolute;top:28%;right:16%;font-size:26px;animation:floatB 5s 1s ease-in-out infinite">🏮</span>
+      <span style="position:absolute;bottom:44%;left:48%;transform:translateX(-50%);font-size:38px;animation:bounce 3.5s ease-in-out infinite">🧒</span>
+      <div class="sp-shimmer"></div>`
+  },
+  {
+    name:"Coco",
+    meta:"2017 · Lee Unkrich · Pixar",
+    quote:"The dead are only truly gone when the living stop remembering them.",
+    reasons:[
+      {color:"#FF8FAB", text:"Celebrates family and culture with a warmth that makes every heart full"},
+      {color:"#FFD54F", text:"One of the most visually dazzling animated films ever made"},
+      {color:"#FF7E5F", text:"Teaches children about love, memory, and what it means to follow your dream"}
+    ],
+    badges:[
+      {bg:"rgba(255,143,171,.18)",color:"#FF8FAB",label:"5+"},
+      {bg:"rgba(255,126,95,.18)",color:"#FF7E5F",label:"Emotional"},
+      {bg:"rgba(255,213,79,.18)",color:"#FFD54F",label:"Musical"}
+    ],
+    bg:"linear-gradient(180deg,#0D0221 0%,#1A0A3D 30%,#6B2D8B 60%,#F7A800 100%)",
+    inner:`
+      <div style="position:absolute;top:10%;left:15%;width:42px;height:42px;border-radius:50%;background:#FFF9C4;box-shadow:0 0 16px rgba(255,249,196,.5)"></div>
+      <span style="position:absolute;top:8%;left:40%;font-size:14px;color:#FFD700">★</span>
+      <span style="position:absolute;top:15%;right:25%;font-size:14px;color:#FFD700">★</span>
+      <span style="position:absolute;top:5%;right:50%;font-size:14px;color:#FFD700">★</span>
+      <div style="position:absolute;bottom:0;left:0;right:0;height:28%;background:#1A0A3D"></div>
+      <div style="position:absolute;bottom:28%;left:0;right:0;height:14px;background:#F7A800"></div>
+      <span style="position:absolute;bottom:26%;left:5%;font-size:26px">🌸</span>
+      <span style="position:absolute;bottom:28%;left:22%;font-size:22px">🌸</span>
+      <span style="position:absolute;bottom:26%;right:22%;font-size:24px">🌸</span>
+      <span style="position:absolute;bottom:26%;right:6%;font-size:22px">🌸</span>
+      <span style="position:absolute;bottom:38%;left:48%;transform:translateX(-50%);font-size:52px;animation:bounce 3s ease-in-out infinite">🎸</span>
+      <div class="sp-shimmer"></div>`
+  }
+];
+
+let spIdx = 0;
+
+function renderSpotlight(idx){
+  const d = spotlightData[idx];
+  document.getElementById('spotlightFilmName').textContent = d.name;
+  document.getElementById('sp-title').textContent = d.name;
+  document.getElementById('sp-meta').textContent = d.meta;
+  document.getElementById('sp-quote').textContent = '"' + d.quote + '"';
+  document.getElementById('sp-reasons').innerHTML = d.reasons.map(r =>
+    `<div class="sp-reason"><div class="sp-reason-dot" style="background:${r.color}"></div><span class="sp-reason-text">${r.text}</span></div>`
+  ).join('');
+  document.getElementById('sp-badges').innerHTML = d.badges.map(b =>
+    `<span class="sp-badge" style="background:${b.bg};color:${b.color}">${b.label}</span>`
+  ).join('');
+  const scene = document.getElementById('spotlightScene');
+  scene.style.background = d.bg;
+  scene.innerHTML = d.inner;
+  document.querySelectorAll('.sp-dot').forEach((dot,i)=>dot.classList.toggle('on', i===idx));
+}
+
+const dotsEl = document.getElementById('spDots');
+dotsEl.innerHTML = spotlightData.map((_,i)=>`<div class="sp-dot${i===0?' on':''}" onclick="goSpotlight(${i})"></div>`).join('');
+
+document.getElementById('spPrev').addEventListener('click',()=>{
+  spIdx = (spIdx - 1 + spotlightData.length) % spotlightData.length;
+  renderSpotlight(spIdx);
+});
+document.getElementById('spNext').addEventListener('click',()=>{
+  spIdx = (spIdx + 1) % spotlightData.length;
+  renderSpotlight(spIdx);
+});
+function goSpotlight(i){ spIdx=i; renderSpotlight(i); }
+renderSpotlight(0);
+
+/* ── CONFETTI ── */
+const canvas = document.getElementById('confetti-canvas');
+const ctx = canvas.getContext('2d');
+const COLORS=['#FF7E5F','#FFD54F','#69D97D','#5BB8F5','#B57BF7','#FF8FAB'];
+function launchConfetti(){
+  canvas.style.display='block';
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  const pieces=Array.from({length:90},()=>({
+    x:Math.random()*canvas.width, y:Math.random()*-canvas.height,
+    size:6+Math.random()*9, color:COLORS[Math.floor(Math.random()*COLORS.length)],
+    speed:2+Math.random()*4, spin:(Math.random()-.5)*.18, angle:0, drift:(Math.random()-.5)*1.5
+  }));
+  let frame=0;
+  (function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      p.y+=p.speed; p.x+=p.drift; p.angle+=p.spin;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle);
+      ctx.fillStyle=p.color; ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+      ctx.restore();
+    });
+    if(++frame<160) requestAnimationFrame(draw);
+    else{ctx.clearRect(0,0,canvas.width,canvas.height);canvas.style.display='none';}
+  })();
+}
+function movieClick(t){ launchConfetti(); setTimeout(()=>alert(`🎬 "${t}" — full details coming soon!`),300); }
+
+/* ── GUILLAUME ── */
+function fillHint(btn){ document.getElementById('kidsGuillaumeInput').value=btn.textContent.replace(/[''']/g,''); }
+function askGuillaume(){
+  const v=document.getElementById('kidsGuillaumeInput').value.trim();
+  if(!v){alert("😊 Tell Guillaume what you're looking for first!");return;}
+  launchConfetti();
+  setTimeout(()=>alert(`🎉 Guillaume is searching for: "${v}"\n\nRecommendations coming soon! 🍿`),300);
+}
+
+/* ── SEARCH ── */
+const so=document.getElementById('searchOverlay'),
+      sib=document.getElementById('searchTriggerBtn'),
+      scb=document.getElementById('searchCloseBtn'),
+      si=document.getElementById('expandedSearchInput'),
+      ss=document.getElementById('searchSubmitBtn'),
+      sr=document.getElementById('searchResultsArea');
+function openS(){so.classList.add('active');si.focus();}
+function closeS(){so.classList.remove('active');si.value='';sr.innerHTML='';}
+sib.addEventListener('click',openS); scb.addEventListener('click',closeS);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&so.classList.contains('active'))closeS();});
+const allMovies=[
+  ...kidsMovies.map(m=>({title:m.title,year:m.year,director:m.director})),
+  {title:"Oppenheimer",year:"2023",director:"Christopher Nolan"},
+  {title:"Blade Runner 2049",year:"2017",director:"Denis Villeneuve"},
+  {title:"Parasite",year:"2019",director:"Bong Joon-ho"}
+];
+function execSearch(){
+  const q=si.value.trim();
+  if(!q){sr.innerHTML='';return;}
+  const res=allMovies.filter(f=>f.title.toLowerCase().includes(q.toLowerCase())||f.director.toLowerCase().includes(q.toLowerCase()));
+  sr.innerHTML=res.length?res.map(r=>`<div class="search-result-item"><span class="search-result-title">${r.title}</span><span class="search-result-year">${r.year} · ${r.director}</span></div>`).join('')
+    :'<div class="no-results">No matching films found.</div>';
+}
+si.addEventListener('input',execSearch);
+ss.addEventListener('click',execSearch);
+si.addEventListener('keypress',e=>{if(e.key==='Enter')execSearch();});
+
+document.getElementById('newsletterSignupBtn').addEventListener('click',()=>alert('📬 Thanks for signing up! (demo)'));
+</script>
+</body>
+</html>

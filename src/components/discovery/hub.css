@@ -1,0 +1,76 @@
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+@media (max-width: 900px) { .hub-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .hub-grid { grid-template-columns: 1fr; } }
+
+.hub-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid rgba(15, 14, 11, 0.08);
+  border-radius: 3px;
+  padding: 30px 30px 26px;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;
+}
+.hub-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--accent, #b84200);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hub-card:hover { transform: translateY(-5px); box-shadow: 0 22px 46px -22px rgba(15, 14, 11, 0.4); }
+.hub-card:hover::before { transform: scaleX(1); }
+.hub-card-num {
+  font-family: var(--font-ibm-plex), sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--accent, #b84200);
+}
+.hub-card-bar { display: none; }
+.hub-card-title {
+  font-family: var(--font-crimson), serif;
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink, #0f0e0b);
+  margin: 14px 0 6px;
+}
+.hub-card-teaser {
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--accent, #b84200);
+  margin-bottom: 14px;
+}
+.hub-card-lede {
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-ink-2, #3a3830);
+  flex: 1;
+  margin-bottom: 22px;
+}
+.hub-card-cta {
+  font-family: var(--font-ibm-plex), sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink, #0f0e0b);
+  transition: letter-spacing 0.25s;
+}
+.hub-card:hover .hub-card-cta { letter-spacing: 0.18em; }

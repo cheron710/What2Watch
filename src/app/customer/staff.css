@@ -1,0 +1,68 @@
+.staff-card {
+  background: #fff;
+  border: 1px solid rgba(15, 14, 11, 0.08);
+  border-radius: 3px;
+  padding: 34px 30px;
+  display: flex;
+  flex-direction: column;
+}
+.staff-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-ink, #0f0e0b);
+  color: var(--color-paper, #f2ede3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-crimson), serif;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.staff-name {
+  font-family: var(--font-crimson), serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-ink, #0f0e0b);
+}
+.staff-role {
+  font-family: var(--font-ibm-plex), sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent, #b84200);
+  margin-bottom: 16px;
+  display: block;
+}
+.staff-note {
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: 15px;
+  font-style: italic;
+  line-height: 1.7;
+  color: var(--color-ink-2, #3a3830);
+  flex: 1;
+  margin-bottom: 22px;
+}
+.staff-pick {
+  border-top: 1px solid rgba(15, 14, 11, 0.1);
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.staff-pick-label {
+  font-family: var(--font-ibm-plex), sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-3, #8a8780);
+}
+.staff-pick-title {
+  font-family: var(--font-crimson), serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-ink, #0f0e0b);
+}

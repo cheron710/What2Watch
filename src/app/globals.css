@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f2ede3;
+  --color-paper-2: #e9e3d7;
+  --color-ink: #0f0e0b;
+  --color-ink-2: #3a3830;
+  --color-ink-3: #8a8780;
+  --color-accent: #b84200;
+  --color-what2watch-orange: #FF4D2D;
+  --color-muted-label: #6B6B6B;
+  
+  --color-k-sky: #5BB8F5;
+  --color-k-sun: #FFD54F;
+  --color-k-grass: #69D97D;
+  --color-k-coral: #FF7E5F;
+  --color-k-purple: #B57BF7;
+  --color-k-pink: #FF8FAB;
+  --color-k-bg: #FDF8EF;
+
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-gray-1: #f8f8f8;
+  --color-gray-2: #e8e8e8;
+  --color-gray-3: #d0d0d0;
+  --color-gray-4: #808080;
+  --color-gray-5: #404040;
+  --color-dark-bg: #3a3a3a;
+  --color-summer: #d4a537;
+  --color-fall: #a0714f;
+  --color-winter: #6ba3c8;
+  --color-spring: #7cb342;
+
+  --font-inter: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-playfair: var(--font-playfair), serif;
+  --font-crimson: var(--font-crimson), serif;
+  --font-ibm-plex: var(--font-ibm-plex), sans-serif;
+  --font-lora: var(--font-lora), 'Georgia', serif;
+  --font-nunito: var(--font-nunito), sans-serif;
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@layer utilities {
+  .grain-bg {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+  }
+}
+
