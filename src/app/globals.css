@@ -1,57 +1,408 @@
 @import "tailwindcss";
 
+/* ============================================================================
+   WHAT2WATCH — DESIGN SYSTEM
+   A cinematic, editorial system inspired by Apple TV's immersion and A24's
+   restraint. Two typefaces only: Fraunces (display serif) + Geist (grotesque).
+   Adaptive light/dark via semantic tokens. This product never uses italics.
+   ============================================================================ */
+
 @theme {
-  --color-paper: #f2ede3;
-  --color-paper-2: #e9e3d7;
-  --color-ink: #0f0e0b;
-  --color-ink-2: #3a3830;
-  --color-ink-3: #8a8780;
-  --color-accent: #b84200;
-  --color-what2watch-orange: #FF4D2D;
-  --color-muted-label: #6B6B6B;
-  
-  --color-k-sky: #5BB8F5;
-  --color-k-sun: #FFD54F;
-  --color-k-grass: #69D97D;
-  --color-k-coral: #FF7E5F;
-  --color-k-purple: #B57BF7;
-  --color-k-pink: #FF8FAB;
-  --color-k-bg: #FDF8EF;
+  /* ---- Type ---- */
+  --font-sans: var(--font-geist), ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-fraunces), "Iowan Old Style", Georgia, "Times New Roman", serif;
 
-  --color-black: #000000;
-  --color-white: #ffffff;
-  --color-gray-1: #f8f8f8;
-  --color-gray-2: #e8e8e8;
-  --color-gray-3: #d0d0d0;
-  --color-gray-4: #808080;
-  --color-gray-5: #404040;
-  --color-dark-bg: #3a3a3a;
-  --color-summer: #d4a537;
-  --color-fall: #a0714f;
-  --color-winter: #6ba3c8;
-  --color-spring: #7cb342;
+  /* ---- Semantic color (LIGHT is the default; dark overrides below) ---- */
+  --color-bg: #F4F0E7;          /* page canvas — warm bone paper           */
+  --color-bg-2: #ECE6DA;        /* recessed bands                          */
+  --color-surface: #FBF8F2;     /* raised cards / panels                   */
+  --color-surface-2: #FFFFFF;   /* highest elevation                       */
+  --color-text: #17130C;        /* primary ink — warm near-black           */
+  --color-text-2: #4C463B;      /* secondary                               */
+  --color-text-3: #8C8578;      /* muted labels / meta                     */
+  --color-on-accent: #FCF7F1;   /* text on accent                          */
+  --color-border: rgba(23, 19, 12, 0.14);
+  --color-hairline: rgba(23, 19, 12, 0.08);
+  --color-accent: #2B251C;      /* warm ink — emphasis by tone, not by hue  */
+  --color-accent-hover: #15120B;
+  --color-accent-soft: rgba(43, 37, 28, 0.07);
 
-  --font-inter: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-playfair: var(--font-playfair), serif;
-  --font-crimson: var(--font-crimson), serif;
-  --font-ibm-plex: var(--font-ibm-plex), sans-serif;
-  --font-lora: var(--font-lora), 'Georgia', serif;
-  --font-nunito: var(--font-nunito), sans-serif;
+  /* Cinematic surfaces stay dark in BOTH themes (they sit over imagery) */
+  --color-cine: #0B0A08;
+  --color-cine-2: #131109;
+  --color-on-cine: #EFE9DC;
+  --color-on-cine-dim: rgba(239, 233, 220, 0.56);
+  --color-on-cine-faint: rgba(239, 233, 220, 0.32);
+
+  /* ---- Radii ---- */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* ---- Easing ---- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout: cubic-bezier(0.66, 0, 0.34, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
 }
 
+/* Non-Tailwind tokens + compatibility aliases + light-theme shadows */
+:root {
+  color-scheme: light;
+
+  /* Motion durations */
+  --d-1: 0.22s;
+  --d-2: 0.42s;
+  --d-3: 0.7s;
+  --d-4: 1.1s;
+
+  /* Shadows (light) */
+  --shadow-sm: 0 1px 2px rgba(28, 22, 12, 0.05), 0 3px 10px rgba(28, 22, 12, 0.05);
+  --shadow: 0 10px 34px rgba(28, 22, 12, 0.10), 0 3px 10px rgba(28, 22, 12, 0.06);
+  --shadow-lg: 0 34px 80px rgba(28, 22, 12, 0.16), 0 12px 28px rgba(28, 22, 12, 0.08);
+  --ring: 0 0 0 1px var(--color-border);
+
+  --grain-opacity: 0.035;
+
+  /* Legacy font-var aliases so any not-yet-migrated CSS still uses the two
+     new families (display serif / grotesque) instead of the old six. */
+  --font-inter: var(--font-sans);
+  --font-ibm-plex: var(--font-sans);
+  --font-nunito: var(--font-sans);
+  --font-lora: var(--font-sans);
+  --font-playfair: var(--font-display);
+  --font-crimson: var(--font-display);
+
+  /* Legacy palette aliases → new tokens (keeps older components on-brand) */
+  --color-paper: var(--color-bg);
+  --color-paper-2: var(--color-bg-2);
+  --color-ink: var(--color-text);
+  --color-ink-2: var(--color-text-2);
+  --color-ink-3: var(--color-text-3);
+  --color-muted-label: var(--color-text-3);
+  --color-what2watch-orange: var(--color-accent);
+}
+
+/* ---- DARK THEME ---- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #0C0B08;
+  --color-bg-2: #100E0A;
+  --color-surface: #16130D;
+  --color-surface-2: #1D190F;
+  --color-text: #EFE9DC;
+  --color-text-2: #B4AD9F;
+  --color-text-3: #7E776A;
+  --color-on-accent: #14110B;
+  --color-border: rgba(239, 233, 220, 0.15);
+  --color-hairline: rgba(239, 233, 220, 0.08);
+  --color-accent: #E2DBCC;
+  --color-accent-hover: #FFFFFF;
+  --color-accent-soft: rgba(226, 219, 204, 0.14);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow: 0 14px 44px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 40px 90px rgba(0, 0, 0, 0.7), 0 12px 30px rgba(0, 0, 0, 0.5);
+
+  --grain-opacity: 0.05;
+}
+
+/* Cinematic, always-dark surfaces (hero, footer, AI band, overlays, poster
+   cards) carry a light "accent" so eyebrows, marks and rules stay legible on
+   the dark ground in both themes — the monochrome system flips per surface. */
+#hero,
+#guillaume,
+.footer-new,
+.search-overlay,
+.mobile-menu-overlay,
+.pick-inner,
+.mv-modal {
+  --color-accent: var(--color-on-cine);
+  --color-accent-hover: #ffffff;
+  --color-on-accent: var(--color-cine);
+}
+
+/* ============================================================================
+   BASE
+   ============================================================================ */
 @layer base {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
   }
+
+  /* Brand rule: this product never renders italics, anywhere. */
+  * {
+    font-style: normal !important;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: -0.006em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background var(--d-2) var(--ease-out), color var(--d-2) var(--ease-out);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-optical-sizing: auto;
+    letter-spacing: -0.02em;
+    line-height: 1.04;
+    color: var(--color-text);
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+  img, svg, video { display: block; max-width: 100%; }
+  input, textarea, select, button { font-family: inherit; font-size: inherit; }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Refined scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-text-3) transparent;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-text-3) 60%, transparent);
+    border-radius: 999px;
+    border: 3px solid var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-text-3); }
 }
 
+/* ============================================================================
+   TYPE HELPERS
+   ============================================================================ */
+@layer components {
+  .display-1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+  }
+  .display-2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.25rem, 5.2vw, 4.25rem);
+    line-height: 1;
+    letter-spacing: -0.028em;
+  }
+  .display-3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.65rem, 3.2vw, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.022em;
+  }
+
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-block;
+  }
+  .eyebrow-accent { color: var(--color-accent); }
+
+  .lede {
+    font-family: var(--font-sans);
+    font-size: clamp(1.02rem, 1.4vw, 1.22rem);
+    line-height: 1.62;
+    font-weight: 400;
+    color: var(--color-text-2);
+  }
+
+  .meta {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+  }
+
+  /* ---- Section header ---- */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1.75rem;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+    flex-wrap: wrap;
+  }
+  .section-head .rule {
+    flex: 1;
+    height: 1px;
+    min-width: 48px;
+    background: var(--color-hairline);
+    align-self: center;
+  }
+
+  /* ---- Buttons ---- */
+  .btn {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55em;
+    padding: 0.95em 1.6em;
+    border-radius: var(--radius-pill);
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform var(--d-1) var(--ease-out), background var(--d-1) var(--ease-out),
+      color var(--d-1) var(--ease-out), border-color var(--d-1) var(--ease-out),
+      box-shadow var(--d-2) var(--ease-out);
+  }
+  .btn:active { transform: scale(0.965); }
+  .btn-primary { background: var(--color-text); color: var(--color-bg); }
+  .btn-primary:hover { background: var(--color-accent); color: var(--color-on-accent); box-shadow: var(--shadow); }
+  .btn-accent { background: var(--color-accent); color: var(--color-on-accent); }
+  .btn-accent:hover { background: var(--color-accent-hover); box-shadow: var(--shadow); }
+  .btn-ghost { background: transparent; color: var(--color-text); border-color: var(--color-border); }
+  .btn-ghost:hover { border-color: var(--color-text); background: color-mix(in srgb, var(--color-text) 6%, transparent); }
+  .btn-lg { padding: 1.15em 2em; font-size: 0.82rem; }
+
+  /* ---- Link with arrow ---- */
+  .link-arrow {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-border);
+    transition: color var(--d-1), border-color var(--d-1);
+    cursor: pointer;
+  }
+  .link-arrow .arw { transition: transform var(--d-2) var(--ease-out); display: inline-block; }
+  .link-arrow:hover { border-bottom-color: var(--color-text); }
+  .link-arrow:hover .arw { transform: translateX(7px); }
+
+  /* ---- Chips / tags ---- */
+  .chip {
+    font-family: var(--font-sans);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.5em 0.95em;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-2);
+    white-space: nowrap;
+    transition: color var(--d-1), border-color var(--d-1), background var(--d-1);
+  }
+  a.chip:hover { border-color: var(--color-text); color: var(--color-text); }
+  .chip-accent { border-color: var(--color-accent); color: var(--color-accent); }
+
+  /* ---- Cards ---- */
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--d-2) var(--ease-out), box-shadow var(--d-2) var(--ease-out),
+      border-color var(--d-2) var(--ease-out);
+  }
+
+  /* ---- Shell / container ---- */
+  .shell { width: 100%; max-width: 1440px; margin-inline: auto; padding-inline: clamp(1.5rem, 5vw, 5rem); }
+  .shell-narrow { width: 100%; max-width: 920px; margin-inline: auto; padding-inline: clamp(1.5rem, 5vw, 2.5rem); }
+  .hairline { height: 1px; background: var(--color-hairline); border: 0; }
+}
+
+/* ============================================================================
+   SCROLL REVEAL (driven by <ScrollReveal/>)
+   ============================================================================ */
 @layer utilities {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity var(--d-4) var(--ease-out), transform var(--d-4) var(--ease-out);
+    transition-delay: var(--reveal-delay, 0s);
+    will-change: opacity, transform;
+  }
+  [data-reveal="fade"] { transform: none; }
+  [data-reveal="scale"] { transform: scale(0.94); }
+  [data-reveal="left"] { transform: translateX(-36px); }
+  [data-reveal="right"] { transform: translateX(36px); }
+  [data-reveal].reveal-in { opacity: 1; transform: none; }
+
+  /* Film grain overlay */
   .grain-bg {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.03;
+    opacity: var(--grain-opacity);
     pointer-events: none;
   }
+  .app-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend, multiply);
+  }
+  :root[data-theme="dark"] .app-grain { --grain-blend: screen; }
+
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+
+  @keyframes w2w-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+  @keyframes w2w-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes w2w-fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes w2w-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 }
 
+/* ============================================================================
+   REDUCED MOTION
+   ============================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
+}

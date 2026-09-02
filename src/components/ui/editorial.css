@@ -1,179 +1,179 @@
-/* ============================================================
-   Editorial design system — shared across discovery & detail pages.
-   Mirrors the HTML prototype's cream / warm-ink / burnt-orange palette
-   and its Playfair / Crimson / IBM Plex / Lora typographic voice.
-   ============================================================ */
+/* ============================================================================
+   EDITORIAL SYSTEM — shared across discovery, detail & long-form pages.
+   Fraunces (display) + Geist (grotesque), adaptive tokens, zero italics.
+   ============================================================================ */
 
 .ed-page {
-  background: var(--color-paper, #f2ede3);
-  color: var(--color-ink, #0f0e0b);
+  background: var(--color-bg);
+  color: var(--color-text);
   min-height: 100vh;
 }
 
 .ed-container {
-  max-width: 1400px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 0 52px;
-}
-@media (max-width: 768px) {
-  .ed-container { padding: 0 24px; }
+  padding: 0 clamp(1.5rem, 5vw, 5rem);
 }
 
 /* ── Page header (editorial hero) ── */
 .ed-header {
-  padding: 96px 0 56px;
-  border-bottom: 1px solid rgba(15, 14, 11, 0.1);
+  padding: clamp(7rem, 13vh, 9.5rem) 0 clamp(2.5rem, 5vw, 3.5rem);
+  border-bottom: 1px solid var(--color-hairline);
 }
 .ed-eyebrow {
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--color-accent, #b84200);
+  color: var(--color-accent);
   display: block;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
+  animation: w2w-fade-up 0.7s var(--ease-out) both;
 }
 .ed-title {
-  font-family: var(--font-playfair), serif;
-  font-size: clamp(40px, 6vw, 82px);
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 6vw, 5.25rem);
   font-weight: 600;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.032em;
   line-height: 0.98;
-  color: var(--color-ink, #0f0e0b);
-  margin-bottom: 24px;
-  max-width: 14ch;
+  color: var(--color-text);
+  margin-bottom: 1.5rem;
+  max-width: 16ch;
+  animation: w2w-fade-up 0.8s var(--ease-out) 0.06s both;
 }
 .ed-lede {
-  font-family: var(--font-lora), Georgia, serif;
-  font-size: clamp(17px, 1.6vw, 21px);
-  line-height: 1.6;
-  color: var(--color-ink-2, #3a3830);
+  font-family: var(--font-sans);
+  font-size: clamp(1.02rem, 1.5vw, 1.25rem);
+  line-height: 1.62;
+  color: var(--color-text-2);
   max-width: 58ch;
+  animation: w2w-fade-up 0.8s var(--ease-out) 0.12s both;
 }
-.ed-lede em { font-style: italic; color: var(--color-ink, #0f0e0b); }
+.ed-lede em { color: var(--color-text); }
 
 /* ── Section rhythm ── */
-.ed-section { padding: 72px 0; }
+.ed-section { padding: clamp(3.5rem, 7vw, 5.5rem) 0; }
 .ed-section-label {
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 10px;
-  font-weight: 600;
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--color-ink-3, #8a8780);
+  color: var(--color-text-3);
   display: block;
-  margin-bottom: 14px;
+  margin-bottom: 0.9rem;
 }
 .ed-section-title {
-  font-family: var(--font-crimson), serif;
-  font-size: clamp(28px, 3.4vw, 44px);
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.4vw, 2.85rem);
   font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
-  color: var(--color-ink, #0f0e0b);
-  margin-bottom: 12px;
+  letter-spacing: -0.024em;
+  line-height: 1.04;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
 }
 .ed-section-sub {
-  font-family: var(--font-lora), Georgia, serif;
-  font-size: 16px;
-  font-style: italic;
-  color: var(--color-ink-3, #8a8780);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--color-text-2);
   max-width: 60ch;
+  line-height: 1.55;
 }
 
-/* ── Editorial cards / tiles ── */
-.ed-grid {
-  display: grid;
-  gap: 28px;
-}
+/* ── Cards / tiles ── */
+.ed-grid { display: grid; gap: clamp(1.25rem, 2.5vw, 1.75rem); }
 .ed-grid-3 { grid-template-columns: repeat(3, 1fr); }
 .ed-grid-2 { grid-template-columns: repeat(2, 1fr); }
 @media (max-width: 900px) { .ed-grid-3 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 620px) { .ed-grid-3, .ed-grid-2 { grid-template-columns: 1fr; } }
 
 .ed-card {
-  background: #fff;
-  border: 1px solid rgba(15, 14, 11, 0.08);
-  border-radius: 3px;
-  padding: 34px 32px;
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
+  background: var(--color-surface);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.75rem, 3vw, 2.25rem);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--d-2) var(--ease-out), box-shadow var(--d-2) var(--ease-out), border-color var(--d-2);
 }
 .ed-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 40px -20px rgba(15, 14, 11, 0.35);
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-border);
 }
 .ed-card-num {
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 12px;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
-  color: var(--color-accent, #b84200);
-  margin-bottom: 18px;
+  letter-spacing: 0.14em;
+  color: var(--color-accent);
+  margin-bottom: 1.1rem;
 }
 .ed-card-title {
-  font-family: var(--font-crimson), serif;
-  font-size: 24px;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
   font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--color-ink, #0f0e0b);
-  margin-bottom: 10px;
+  letter-spacing: -0.015em;
+  color: var(--color-text);
+  margin-bottom: 0.6rem;
+  line-height: 1.1;
 }
 .ed-card-body {
-  font-family: var(--font-lora), Georgia, serif;
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--color-ink-2, #3a3830);
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--color-text-2);
 }
 
 /* ── Buttons / links ── */
 .ed-btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #fff;
-  background: var(--color-ink, #0f0e0b);
-  border: none;
-  border-radius: 3px;
-  padding: 15px 26px;
+  gap: 0.6em;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-bg);
+  background: var(--color-text);
+  border: 1px solid var(--color-text);
+  border-radius: var(--radius-pill);
+  padding: 0.9em 1.6em;
   cursor: pointer;
   text-decoration: none;
-  transition: opacity 0.2s, transform 0.15s;
+  transition: background var(--d-1) var(--ease-out), color var(--d-1), border-color var(--d-1), transform var(--d-1) var(--ease-out), box-shadow var(--d-2);
 }
-.ed-btn:hover { opacity: 0.88; transform: translateX(2px); }
+.ed-btn:hover { background: var(--color-accent); color: var(--color-on-accent); border-color: var(--color-accent); box-shadow: var(--shadow); }
+.ed-btn:active { transform: scale(0.97); }
 .ed-link {
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 12px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--color-accent, #b84200);
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
+  transition: border-color var(--d-1);
 }
-.ed-link:hover { border-color: var(--color-accent, #b84200); }
+.ed-link:hover { border-color: var(--color-accent); }
 
-/* ── Prose (legal / long-form pages) ── */
+/* ── Prose (legal / long-form) ── */
 .ed-prose {
-  font-family: var(--font-lora), Georgia, serif;
-  font-size: 17px;
+  font-family: var(--font-sans);
+  font-size: 1.02rem;
   line-height: 1.75;
-  color: var(--color-ink-2, #3a3830);
+  color: var(--color-text-2);
   max-width: 68ch;
 }
 .ed-prose h2 {
-  font-family: var(--font-crimson), serif;
-  font-size: 28px;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
   font-weight: 600;
-  color: var(--color-ink, #0f0e0b);
-  margin: 48px 0 16px;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  margin: 2.75rem 0 1rem;
 }
-.ed-prose p { margin-bottom: 20px; }
-.ed-prose a { color: var(--color-accent, #b84200); }
-.ed-prose ul { margin: 0 0 20px 22px; }
-.ed-prose li { margin-bottom: 8px; }
+.ed-prose p { margin-bottom: 1.25rem; }
+.ed-prose a { color: var(--color-accent); text-decoration: underline; text-underline-offset: 2px; }
+.ed-prose ul { margin: 0 0 1.25rem 1.4rem; }
+.ed-prose li { margin-bottom: 0.5rem; }

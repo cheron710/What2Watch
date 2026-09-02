@@ -3,14 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 
-const categories = [ 
-  { id: "joy", label: "Pure Joy", color: "#DFA15A", leftDir: "JOYFUL · WARM · LIGHT →", rightDir: "HEAVY · COLD · GRIEF →" }, 
-  { id: "hopeful", label: "Hopeful", color: "#8FAF6B", leftDir: "BRIGHT · OPEN · WARM →", rightDir: "DARK · CLOSED · COLD →" }, 
-  { id: "easygoing", label: "Easygoing", color: "#D6C3A3", leftDir: "CALM · GENTLE · LIGHT →", rightDir: "INTENSE · SHARP · HEAVY →" }, 
-  { id: "intriguing", label: "Intriguing", color: "#5C6E91", leftDir: "CURIOUS · MYSTERIOUS · COOL →", rightDir: "FAMILIAR · WARM · SIMPLE →" }, 
-  { id: "tense", label: "Tense", color: "#A23B2A", leftDir: "SHARP · UNCOMFORTABLE · HEAVY →", rightDir: "SOFT · CALM · LIGHT →" }, 
-  { id: "bittersweet", label: "Bittersweet", color: "#9A7A5A", leftDir: "JOYFUL · WARM · LIGHT →", rightDir: "HEAVY · COLD · GRIEF →" }, 
-  { id: "melancholy", label: "Melancholy", color: "#6F8FA8", leftDir: "HEAVY · COLD · GRIEF →", rightDir: "LIGHT · WARM · JOY →" } 
+const categories = [
+  { id: "joy", label: "Pure Joy", color: "#C3BAA7", leftDir: "JOYFUL · WARM · LIGHT →", rightDir: "HEAVY · COLD · GRIEF →" },
+  { id: "hopeful", label: "Hopeful", color: "#B4AB98", leftDir: "BRIGHT · OPEN · WARM →", rightDir: "DARK · CLOSED · COLD →" },
+  { id: "easygoing", label: "Easygoing", color: "#A69C88", leftDir: "CALM · GENTLE · LIGHT →", rightDir: "INTENSE · SHARP · HEAVY →" },
+  { id: "intriguing", label: "Intriguing", color: "#978D78", leftDir: "CURIOUS · MYSTERIOUS · COOL →", rightDir: "FAMILIAR · WARM · SIMPLE →" },
+  { id: "tense", label: "Tense", color: "#877E69", leftDir: "SHARP · UNCOMFORTABLE · HEAVY →", rightDir: "SOFT · CALM · LIGHT →" },
+  { id: "bittersweet", label: "Bittersweet", color: "#786F5B", leftDir: "JOYFUL · WARM · LIGHT →", rightDir: "HEAVY · COLD · GRIEF →" },
+  { id: "melancholy", label: "Melancholy", color: "#6A614F", leftDir: "HEAVY · COLD · GRIEF →", rightDir: "LIGHT · WARM · JOY →" }
 ];
 
 const filmsDataSpectrum: Record<string, { n: string; t: string; d: string; w: string; tags: string[]; rating: string }[]> = { 
@@ -62,7 +62,7 @@ export default function SpectrumSection() {
   return (
     <section id="spectrum">
       <div className="spectrum-container">
-        <div className="spectrum-intro">
+        <div className="spectrum-intro" data-reveal="fade">
           <span className="spectrum-eyebrow">Find By Feeling</span>
           <h2 className="spectrum-h">The Mood Spectrum</h2>
           <p className="spectrum-sub">Move across the emotional spectrum. Every film finds its place.</p>
@@ -122,7 +122,7 @@ export default function SpectrumSection() {
                   <span 
                     key={idx} 
                     style={{ 
-                      border: `0.5px solid ${idx === 0 ? activeCategory.color : 'rgba(15,14,11,0.14)'}`,
+                      border: `0.5px solid ${idx === 0 ? activeCategory.color : 'var(--color-border)'}`,
                       color: idx === 0 ? activeCategory.color : 'var(--color-ink-3)'
                     }}
                   >
@@ -135,8 +135,8 @@ export default function SpectrumSection() {
         </div>
 
         <div className="expand-link">
-          <Link className="expand-btn" href="/emotional-spectrum">
-            Explore the full spectrum →
+          <Link className="link-arrow" href="/emotional-spectrum">
+            Explore the full spectrum <span className="arw">→</span>
           </Link>
         </div>
       </div>

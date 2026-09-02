@@ -1,37 +1,40 @@
 .search-page-box {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: #fff;
-  border: 1px solid rgba(15, 14, 11, 0.14);
-  border-radius: 4px;
-  padding: 6px 6px 6px 18px;
-  max-width: 560px;
+  gap: 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 6px 6px 6px 20px;
+  max-width: 580px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--d-1), box-shadow var(--d-2);
 }
-.search-page-icon { color: var(--color-ink-3, #8a8780); flex-shrink: 0; }
+.search-page-box:focus-within { border-color: var(--color-accent); box-shadow: var(--shadow); }
+.search-page-icon { color: var(--color-text-3); flex-shrink: 0; }
 .search-page-input {
   flex: 1;
   border: none;
   outline: none;
   background: none;
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 16px;
-  color: var(--color-ink, #0f0e0b);
-  padding: 12px 0;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--color-text);
+  padding: 0.75rem 0;
 }
-.search-page-input::placeholder { color: var(--color-ink-3, #8a8780); }
+.search-page-input::placeholder { color: var(--color-text-3); }
 .search-page-submit {
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #fff;
-  background: var(--color-ink, #0f0e0b);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-bg);
+  background: var(--color-text);
   border: none;
-  border-radius: 3px;
-  padding: 12px 22px;
+  border-radius: var(--radius-pill);
+  padding: 0.85rem 1.6rem;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: background var(--d-1) var(--ease-out), color var(--d-1), transform var(--d-1) var(--ease-out);
 }
-.search-page-submit:hover { opacity: 0.88; }
+.search-page-submit:hover { background: var(--color-accent); color: var(--color-on-accent); }
+.search-page-submit:active { transform: scale(0.97); }

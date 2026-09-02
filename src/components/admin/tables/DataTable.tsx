@@ -62,7 +62,7 @@ export default function DataTable<T extends { id: any }>({
   const [visibleColumns, setVisibleColumns] = useState<string[]>(columns.map((c) => c.id));
   const [showColumnToggle, setShowColumnToggle] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<any>>(new Set());
-  
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -208,8 +208,8 @@ export default function DataTable<T extends { id: any }>({
           const text = Array.isArray(val)
             ? val.join("; ")
             : typeof val === "object"
-            ? JSON.stringify(val)
-            : String(val ?? "");
+              ? JSON.stringify(val)
+              : String(val ?? "");
           return `"${text.replace(/"/g, '""')}"`;
         })
         .join(",");
@@ -392,9 +392,8 @@ export default function DataTable<T extends { id: any }>({
                   .map((col) => (
                     <th
                       key={col.id}
-                      className={`p-4 font-semibold uppercase tracking-wider text-[10px] text-[var(--admin-text-muted)] ${
-                        col.sortable ? "cursor-pointer hover:text-[var(--admin-text)] transition" : ""
-                      }`}
+                      className={`p-4 font-semibold uppercase tracking-wider text-[10px] text-[var(--admin-text-muted)] ${col.sortable ? "cursor-pointer hover:text-[var(--admin-text)] transition" : ""
+                        }`}
                       onClick={() => col.sortable && handleSort(col.id)}
                     >
                       <div className="flex items-center gap-1.5">
@@ -415,9 +414,8 @@ export default function DataTable<T extends { id: any }>({
                     <tr
                       key={row.id}
                       onClick={() => onRowClick?.(row)}
-                      className={`text-sm hover:bg-black/2 dark:hover:bg-white/2 transition duration-150 cursor-pointer ${
-                        selected ? "bg-[var(--admin-accent)]/5" : ""
-                      }`}
+                      className={`text-sm hover:bg-black/2 dark:hover:bg-white/2 transition duration-150 cursor-pointer ${selected ? "bg-[var(--admin-accent)]/5" : ""
+                        }`}
                     >
                       {/* Row selection check box */}
                       {bulkActions.length > 0 && (
@@ -450,8 +448,8 @@ export default function DataTable<T extends { id: any }>({
                                   {cellVal === null || cellVal === undefined
                                     ? "-"
                                     : Array.isArray(cellVal)
-                                    ? cellVal.join(", ")
-                                    : String(cellVal)}
+                                      ? cellVal.join(", ")
+                                      : String(cellVal)}
                                 </span>
                               )}
                             </td>

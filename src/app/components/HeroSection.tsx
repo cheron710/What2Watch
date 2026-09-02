@@ -78,27 +78,35 @@ export default function HeroSection({ initialMovies = [] }: HeroSectionProps) {
       />
       <div className="hero-vig"></div>
       <div className="hero-bot"></div>
-      <div className="grain-bg absolute inset-0 z-10 w-full h-full"></div>
-      
+      <div className="grain-bg hero-grain"></div>
+
       <div className="hero-inner">
         <p className="hero-eyebrow">Most Watched · Curated For You</p>
         <ul className="hero-list">
-          {heroFilms.map((film) => (
+          {heroFilms.map((film, i) => (
             <li
               key={film.title}
-              className={`hero-item ${activeFilm.title === film.title ? 'live' : ''}`}
+              className={`hero-item ${activeFilm.title === film.title ? "live" : ""}`}
               onMouseEnter={() => handleMouseEnter(film)}
             >
-              <h2>{film.title}</h2>
-              <div className="hero-meta">
-                <span className="hero-meta-yr">{film.year}</span>
-                <div className="hero-meta-dot"></div>
-                <span className="hero-meta-dir">{film.director}</span>
+              <span className="hero-index">{String(i + 1).padStart(2, "0")}</span>
+              <div className="hero-body">
+                <h2 className="hero-title">{film.title}</h2>
+                <div className="hero-meta">
+                  <span className="hero-meta-yr">{film.year}</span>
+                  <div className="hero-meta-dot"></div>
+                  <span className="hero-meta-dir">{film.director}</span>
+                </div>
               </div>
             </li>
           ))}
         </ul>
       </div>
+
+      <a href="#picks" className="hero-scrollcue" aria-label="Scroll to picks">
+        <span>Scroll</span>
+        <span className="cue-line" aria-hidden="true"></span>
+      </a>
     </section>
   );
 }

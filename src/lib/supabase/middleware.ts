@@ -7,20 +7,12 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY, isSupabaseConfigured } from "./env";
 export async function updateSession(request: NextRequest) {
   const supabaseResponse = NextResponse.next({ request });
 
-  // Without configured credentials there is no session to refresh.
-  // Still, protect admin routes using our local session cookie if mock mode is active.
-  if (!isSupabaseConfigured) {
+  const mockSession = request.cookies.get("w2w-session-mock");
+  if (mockSession) {
     const { pathname } = request.nextUrl;
     const isAdminRoute = (pathname === "/admin" || pathname.startsWith("/admin/")) && pathname !== "/admin/login";
     
     if (isAdminRoute) {
-      const mockSession = request.cookies.get("w2w-session-mock");
-      if (!mockSession) {
-        const url = request.nextUrl.clone();
-        url.pathname = "/admin/login";
-        url.searchParams.set("next", pathname);
-        return NextResponse.redirect(url);
-      }
       try {
         const parsed = JSON.parse(decodeURIComponent(mockSession.value));
         if (parsed.role !== "admin") {
@@ -34,6 +26,21 @@ export async function updateSession(request: NextRequest) {
         url.searchParams.set("next", pathname);
         return NextResponse.redirect(url);
       }
+    }
+    return supabaseResponse;
+  }
+
+  // Without configured credentials there is no session to refresh.
+  // Still, protect admin routes using our local session cookie if mock mode is active.
+  if (!isSupabaseConfigured) {
+    const { pathname } = request.nextUrl;
+    const isAdminRoute = (pathname === "/admin" || pathname.startsWith("/admin/")) && pathname !== "/admin/login";
+    
+    if (isAdminRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin/login";
+      url.searchParams.set("next", pathname);
+      return NextResponse.redirect(url);
     }
     return supabaseResponse;
   }

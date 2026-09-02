@@ -24,34 +24,32 @@ export default function GuillaumePage() {
   return (
     <div className="guillaume-page">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=Lora:wght@400;500&display=swap');
-
         .guillaume-page{
           min-height:100vh;
-          background:#F0EBE0;
+          background:var(--color-bg);
           display:grid;
           grid-template-rows:auto 1fr auto;
         }
 
         /* ── Page header ── */
         .g-page-header{
-          padding:96px 56px 40px;
-          border-bottom:1px solid rgba(15,14,11,.1);
-          background:#F0EBE0;
+          padding:clamp(7rem,13vh,9rem) clamp(1.5rem,5vw,5rem) 2.25rem;
+          border-bottom:1px solid var(--color-hairline);
+          background:var(--color-bg);
         }
         .g-page-eyebrow{
-          font-family:'IBM Plex Sans',sans-serif;
-          font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
-          color:#8a8780;display:block;margin-bottom:12px;
+          font-family:var(--font-sans);
+          font-size:.6875rem;font-weight:500;letter-spacing:.24em;text-transform:uppercase;
+          color:var(--color-accent);display:block;margin-bottom:.9rem;
         }
         .g-page-title{
-          font-family:'Crimson Text',serif;
-          font-size:clamp(36px,5vw,60px);font-weight:600;letter-spacing:-1.5px;
-          color:#0f0e0b;line-height:1;margin-bottom:12px;
+          font-family:var(--font-display);
+          font-size:clamp(2.4rem,5vw,3.75rem);font-weight:600;letter-spacing:-.03em;
+          color:var(--color-text);line-height:1;margin-bottom:.75rem;
         }
         .g-page-sub{
-          font-family:'Lora',serif;font-size:16px;font-style:italic;
-          color:#8a8780;max-width:560px;
+          font-family:var(--font-sans);font-size:1.02rem;line-height:1.55;
+          color:var(--color-text-2);max-width:560px;
         }
 
         /* ── Conversation area ── */
@@ -59,10 +57,10 @@ export default function GuillaumePage() {
           max-width:860px;
           margin:0 auto;
           width:100%;
-          padding:48px 32px;
+          padding:3rem 2rem;
           display:flex;
           flex-direction:column;
-          gap:32px;
+          gap:2rem;
         }
 
         /* ── Empty state ── */
@@ -71,53 +69,56 @@ export default function GuillaumePage() {
           min-height:320px;text-align:center;
         }
         .g-empty-dot{
-          width:10px;height:10px;border-radius:50%;background:#0f0e0b;
-          margin:0 auto 24px;animation:gPulse 2s ease-in-out infinite;
+          width:10px;height:10px;border-radius:50%;background:var(--color-accent);
+          margin:0 auto 1.5rem;animation:gPulse 2.2s ease-in-out infinite;
+          box-shadow:0 0 16px var(--color-accent);
         }
         @keyframes gPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
         .g-empty-title{
-          font-family:'Crimson Text',serif;font-size:28px;font-weight:600;
-          letter-spacing:-0.5px;color:#0f0e0b;margin-bottom:10px;
+          font-family:var(--font-display);font-size:1.85rem;font-weight:600;
+          letter-spacing:-.02em;color:var(--color-text);margin-bottom:.6rem;
         }
-        .g-empty-sub{font-family:'Lora',serif;font-size:15px;font-style:italic;color:#8a8780;margin-bottom:36px;}
-        .g-starter-pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+        .g-empty-sub{font-family:var(--font-sans);font-size:.95rem;color:var(--color-text-3);margin-bottom:2.25rem;}
+        .g-starter-pills{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;}
         .g-starter-pill{
-          font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:600;
-          background:#fff;border:1px solid #e8e8e8;border-radius:100px;
-          padding:10px 20px;cursor:pointer;color:#3a3830;transition:all .2s;
+          font-family:var(--font-sans);font-size:.78rem;font-weight:500;
+          background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-pill);
+          padding:.65rem 1.25rem;cursor:pointer;color:var(--color-text-2);
+          transition:border-color var(--d-1),background var(--d-1),color var(--d-1);
         }
-        .g-starter-pill:hover{border-color:#0f0e0b;background:#0f0e0b;color:#fff;}
+        .g-starter-pill:hover{border-color:var(--color-text);background:var(--color-text);color:var(--color-bg);}
 
         /* ── Messages ── */
-        .g-msg{display:flex;gap:18px;align-items:flex-start;}
+        .g-msg{display:flex;gap:1.1rem;align-items:flex-start;}
         .g-msg-user{flex-direction:row-reverse;}
 
         .g-avatar{
-          width:36px;height:36px;border-radius:50%;flex-shrink:0;
-          background:#0f0e0b;display:flex;align-items:center;justify-content:center;
-          font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:600;color:#fff;
+          width:38px;height:38px;border-radius:50%;flex-shrink:0;
+          background:var(--color-accent);display:flex;align-items:center;justify-content:center;
+          font-family:var(--font-sans);font-size:.72rem;font-weight:600;color:var(--color-on-accent);
         }
-        .g-avatar-user{background:#e8e8e8;color:#0f0e0b;}
+        .g-avatar-user{background:color-mix(in srgb,var(--color-text) 10%,var(--color-surface));color:var(--color-text);border:1px solid var(--color-border);}
 
         .g-bubble{
           max-width:78%;
-          font-family:'Lora',serif;font-size:16px;line-height:1.8;color:#0f0e0b;
-          background:#fff;border:1px solid #e8e8e8;border-radius:2px 16px 16px 16px;
-          padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,.04);
+          font-family:var(--font-sans);font-size:1rem;line-height:1.7;color:var(--color-text);
+          background:var(--color-surface);border:1px solid var(--color-hairline);border-radius:4px 18px 18px 18px;
+          padding:1.1rem 1.35rem;box-shadow:var(--shadow-sm);
         }
         .g-bubble-user{
-          background:#0f0e0b;color:#fff;border-color:#0f0e0b;
-          border-radius:16px 2px 16px 16px;
-          font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;line-height:1.6;
+          background:var(--color-text);color:var(--color-bg);border-color:var(--color-text);
+          border-radius:18px 4px 18px 18px;
+          font-weight:450;line-height:1.6;
         }
         .g-bubble strong{font-weight:700;}
-        .g-bubble p{margin-bottom:.8em;}
+        .g-bubble em{color:var(--color-accent);}
+        .g-bubble p{margin-bottom:.7em;}
         .g-bubble p:last-child{margin-bottom:0;}
 
         /* typing indicator */
-        .g-typing{display:flex;gap:6px;align-items:center;padding:14px 22px;}
+        .g-typing{display:flex;gap:6px;align-items:center;padding:.5rem .35rem;}
         .g-typing span{
-          width:7px;height:7px;border-radius:50%;background:#d0d0d0;
+          width:7px;height:7px;border-radius:50%;background:var(--color-text-3);
           animation:gTyping 1.2s ease-in-out infinite;
         }
         .g-typing span:nth-child(2){animation-delay:.2s;}
@@ -126,40 +127,41 @@ export default function GuillaumePage() {
 
         /* ── Input area ── */
         .g-input-area{
-          border-top:1px solid rgba(15,14,11,.1);
-          background:#F0EBE0;
-          padding:24px 56px 40px;
+          border-top:1px solid var(--color-hairline);
+          background:color-mix(in srgb,var(--color-bg) 88%,transparent);
+          backdrop-filter:blur(12px);
+          padding:1.5rem clamp(1.5rem,5vw,5rem) 2.5rem;
+          position:sticky;bottom:0;
         }
         .g-input-inner{
           max-width:860px;margin:0 auto;
-          display:flex;gap:16px;align-items:flex-end;
+          display:flex;gap:1rem;align-items:flex-end;
         }
         .g-input{
           flex:1;
-          background:#fff;border:1px solid #e8e8e8;border-radius:4px;
-          padding:16px 20px;resize:none;
-          font-family:'IBM Plex Sans',sans-serif;font-size:15px;color:#0f0e0b;
-          outline:none;transition:border .2s;line-height:1.5;
+          background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);
+          padding:1rem 1.25rem;resize:none;
+          font-family:var(--font-sans);font-size:.95rem;color:var(--color-text);
+          outline:none;transition:border-color var(--d-1);line-height:1.5;
           min-height:54px;max-height:160px;
         }
-        .g-input:focus{border-color:#0f0e0b;}
-        .g-input::placeholder{color:#8a8780;}
+        .g-input:focus{border-color:var(--color-accent);}
+        .g-input::placeholder{color:var(--color-text-3);}
         .g-send-btn{
-          width:52px;height:52px;border-radius:50%;background:#0f0e0b;
-          border:none;cursor:pointer;color:#fff;
+          width:52px;height:52px;border-radius:50%;background:var(--color-text);
+          border:none;cursor:pointer;color:var(--color-bg);
           display:flex;align-items:center;justify-content:center;
-          transition:opacity .2s,transform .15s;flex-shrink:0;
+          transition:background var(--d-1) var(--ease-out),color var(--d-1),transform var(--d-1) var(--ease-out);flex-shrink:0;
         }
-        .g-send-btn:hover{opacity:.85;transform:translateX(2px);}
+        .g-send-btn:hover{background:var(--color-accent);color:var(--color-on-accent);transform:translateX(2px);}
         .g-send-btn:disabled{opacity:.4;cursor:default;transform:none;}
         .g-error{
-          font-family:'IBM Plex Sans',sans-serif;font-size:12px;color:#cc0000;
-          text-align:center;margin-top:8px;
+          font-family:var(--font-sans);font-size:.8rem;color:#e5674f;
+          text-align:center;margin-top:.5rem;
         }
 
         @media(max-width:768px){
-          .g-page-header,.g-input-area{padding-left:24px;padding-right:24px;}
-          .g-chat-area{padding:32px 20px;}
+          .g-chat-area{padding:2rem 1.25rem;}
           .g-bubble{max-width:90%;}
         }
       `}</style>

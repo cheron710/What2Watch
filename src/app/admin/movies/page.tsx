@@ -28,7 +28,8 @@ import {
   CloudDownload,
   Loader2,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  AlertCircle
 } from "lucide-react";
 import { Modal } from "@/components/admin/dialogs/Dialogs";
 
@@ -66,7 +67,9 @@ export default function MoviesPage() {
     context_tags: [],
     craft_tags: [],
     festival_tags: [],
-    trailer_url: ""
+    trailer_url: "",
+    backdrop_path: "",
+    poster_path: ""
   });
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -109,6 +112,15 @@ export default function MoviesPage() {
     if (isNaN(score) || score < 1 || score > 100) {
       errs.recommendation_score = "Score must be an integer between 1 and 100.";
     }
+    if (formValues.is_homepage_hero) {
+      // Count other visible/published movies set as hero spotlight
+      const activeHeroCount = movies.filter(
+        (m) => m.is_homepage_hero && m.id !== formValues.id && m.visibility !== "hidden" && m.status !== "draft"
+      ).length;
+      if (activeHeroCount >= 4) {
+        errs.is_homepage_hero = "Maximum of 4 movies are allowed in the hero spotlight section. Please disable spotlight on another movie first.";
+      }
+    }
     setFormErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -131,7 +143,9 @@ export default function MoviesPage() {
       context_tags: movie.context_tags || [],
       craft_tags: movie.craft_tags || [],
       festival_tags: movie.festival_tags || [],
-      trailer_url: movie.trailer_url || ""
+      trailer_url: movie.trailer_url || "",
+      backdrop_path: movie.backdrop_path || "",
+      poster_path: movie.poster_path || ""
     });
     setEditOpen(true);
   };
@@ -426,27 +440,50 @@ export default function MoviesPage() {
             onChange={(e) => setFormValues({ ...formValues, trailer_url: e.target.value })}
           />
 
-          {/* Toggle highlights */}
-          <div className="flex flex-wrap gap-6 items-center select-none py-1.5 border-y border-[var(--admin-border)]">
-            <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer text-[var(--admin-text)]">
-              <input
-                type="checkbox"
-                checked={formValues.is_featured}
-                onChange={(e) => setFormValues({ ...formValues, is_featured: e.target.checked })}
-                className="rounded border-[var(--admin-border-strong)] text-[var(--admin-accent)] focus:ring-[var(--admin-accent)] cursor-pointer"
-              />
-              <span>Mark as Homepage Featured</span>
-            </label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InputField
+              label="Hero Section Image (Custom Backdrop URL)"
+              placeholder="https://example.com/backdrop.jpg"
+              value={formValues.backdrop_path}
+              onChange={(e) => setFormValues({ ...formValues, backdrop_path: e.target.value })}
+            />
+            <InputField
+              label="Custom Poster Image URL"
+              placeholder="https://example.com/poster.jpg"
+              value={formValues.poster_path}
+              onChange={(e) => setFormValues({ ...formValues, poster_path: e.target.value })}
+            />
+          </div>
 
-            <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer text-[var(--admin-text)]">
-              <input
-                type="checkbox"
-                checked={formValues.is_homepage_hero}
-                onChange={(e) => setFormValues({ ...formValues, is_homepage_hero: e.target.checked })}
-                className="rounded border-[var(--admin-border-strong)] text-[var(--admin-accent)] focus:ring-[var(--admin-accent)] cursor-pointer"
-              />
-              <span>Homepage Hero Spotlight</span>
-            </label>
+          {/* Toggle highlights */}
+          <div className="flex flex-col gap-2 py-1.5 border-y border-[var(--admin-border)]">
+            <div className="flex flex-wrap gap-6 items-center select-none">
+              <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer text-[var(--admin-text)]">
+                <input
+                  type="checkbox"
+                  checked={formValues.is_featured}
+                  onChange={(e) => setFormValues({ ...formValues, is_featured: e.target.checked })}
+                  className="rounded border-[var(--admin-border-strong)] text-[var(--admin-accent)] focus:ring-[var(--admin-accent)] cursor-pointer"
+                />
+                <span>Mark as Homepage Featured</span>
+              </label>
+
+              <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer text-[var(--admin-text)]">
+                <input
+                  type="checkbox"
+                  checked={formValues.is_homepage_hero}
+                  onChange={(e) => setFormValues({ ...formValues, is_homepage_hero: e.target.checked })}
+                  className="rounded border-[var(--admin-border-strong)] text-[var(--admin-accent)] focus:ring-[var(--admin-accent)] cursor-pointer"
+                />
+                <span>Homepage Hero Spotlight</span>
+              </label>
+            </div>
+            {formErrors.is_homepage_hero && (
+              <span className="text-xs text-[var(--admin-error)] flex items-center gap-1 animate-pulse">
+                <AlertCircle size={12} />
+                {formErrors.is_homepage_hero}
+              </span>
+            )}
           </div>
 
           {/* Tag curations */}

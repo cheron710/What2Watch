@@ -3,8 +3,6 @@ import Image from "next/image";
 import { tmdbImageUrl } from "@/lib/tmdb/client";
 import "./posterCard.css";
 
-/** Minimal, null-tolerant shape a poster needs — satisfied by both TMDb
- *  results and cached DB movie rows. */
 export interface PosterMovie {
   id: number;
   title: string;
@@ -15,15 +13,10 @@ export interface PosterMovie {
 
 interface PosterCardProps {
   movie: PosterMovie;
-  /** Optional editorial reason (e.g. recommendation explanation). */
   reason?: string;
   priority?: boolean;
 }
 
-/**
- * A single movie poster tile linking to /movie/[id]. TMDb-backed and used by
- * every grid / carousel on the platform so poster styling stays consistent.
- */
 export default function PosterCard({ movie, reason, priority = false }: PosterCardProps) {
   const year = movie.release_date ? movie.release_date.slice(0, 4) : "—";
   const rating = movie.vote_average ? movie.vote_average.toFixed(1) : null;
@@ -53,3 +46,6 @@ export default function PosterCard({ movie, reason, priority = false }: PosterCa
     </Link>
   );
 }
+
+
+

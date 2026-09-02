@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Search, User } from "lucide-react";
 import { signOutAction } from "@/app/actions/auth";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import "./header.css";
 
 export interface HeaderUser {
@@ -156,6 +157,8 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
               <Search size={20} strokeWidth={1.5} />
             </button>
           </div>
+
+          <ThemeToggle />
 
           <div className="profile-section" ref={profileRef}>
             <button

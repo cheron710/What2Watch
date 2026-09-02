@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-label="Backdrop unavailable">
+  <defs>
+    <radialGradient id="bg" cx="0.32" cy="0.4" r="1">
+      <stop offset="0" stop-color="#1A1610"/>
+      <stop offset="1" stop-color="#0A0907"/>
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <g opacity="0.85">
+    <circle cx="150" cy="574" r="30" fill="none" stroke="#E85C22" stroke-width="1.4"/>
+    <circle cx="150" cy="574" r="9" fill="none" stroke="#E85C22" stroke-width="1.4"/>
+  </g>
+  <text x="150" y="628" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" fill="#7E776A" letter-spacing="5" style="text-transform:uppercase">WHAT2WATCH</text>
+</svg>

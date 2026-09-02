@@ -4,63 +4,65 @@
   align-items: center;
   justify-content: center;
   padding: 120px 24px;
-  background: var(--color-paper, #f2ede3);
+  background: var(--color-bg);
 }
-.status-inner { max-width: 560px; text-align: center; }
+.status-inner { max-width: 580px; text-align: center; }
 .status-code {
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 13px;
-  font-weight: 700;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
   letter-spacing: 0.3em;
-  color: var(--color-accent, #b84200);
+  color: var(--color-accent);
   display: block;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 .status-title {
-  font-family: var(--font-playfair), serif;
-  font-size: clamp(38px, 6vw, 64px);
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 6vw, 4.25rem);
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1;
-  color: var(--color-ink, #0f0e0b);
-  margin-bottom: 20px;
+  color: var(--color-text);
+  margin-bottom: 1.25rem;
 }
 .status-body {
-  font-family: var(--font-lora), Georgia, serif;
-  font-size: 17px;
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
   line-height: 1.7;
-  color: var(--color-ink-2, #3a3830);
-  margin-bottom: 34px;
+  color: var(--color-text-2);
+  margin-bottom: 2rem;
 }
 .status-actions {
   display: flex;
-  gap: 22px;
+  gap: 1.25rem;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
 }
 .status-btn {
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #fff;
-  background: var(--color-ink, #0f0e0b);
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-bg);
+  background: var(--color-text);
   border: none;
-  border-radius: 3px;
-  padding: 15px 28px;
+  border-radius: var(--radius-pill);
+  padding: 0.9rem 1.7rem;
   cursor: pointer;
   text-decoration: none;
-  transition: opacity 0.2s;
+  transition: background var(--d-1) var(--ease-out), color var(--d-1), transform var(--d-1) var(--ease-out);
 }
-.status-btn:hover { opacity: 0.88; }
+.status-btn:hover { background: var(--color-accent); color: var(--color-on-accent); }
+.status-btn:active { transform: scale(0.97); }
 .status-link {
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 12px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--color-accent, #b84200);
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
   text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--d-1);
 }
-.status-link:hover { text-decoration: underline; }
+.status-link:hover { border-bottom-color: var(--color-accent); }

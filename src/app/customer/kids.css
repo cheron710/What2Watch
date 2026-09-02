@@ -1,20 +1,28 @@
-/* kids.css */
+/* kids.css — a deliberately bright, playful world. Its pastel sections keep a
+   fixed light palette in both themes so text stays legible; the type system is
+   the shared Fraunces + Geist (via the aliased font vars). No italics. */
+#kids-hero, #little-ones, #kids-guillaume {
+  --color-ink: #17130C;
+  --color-ink-2: #4C463B;
+  --color-ink-3: #8C8578;
+}
+
 .search-overlay-input::placeholder{color:transparent}
 .search-submit-btn{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.7);
   font-size:28px;display:flex;align-items:center;justify-content:center;
-  padding:0 0 6px;transition:color .2s,transform .2s;line-height:1;font-family:'Inter',sans-serif}
+  padding:0 0 6px;transition:color .2s,transform .2s;line-height:1;font-family:var(--font-sans)}
 .search-submit-btn:hover{color:#fff;transform:translateX(4px)}
 .search-close-overlay{position:absolute;top:-20px;right:0;background:none;border:none;
-  font-size:28px;cursor:pointer;color:rgba(237,237,237,.6);transition:color .2s;font-family:'Inter',sans-serif}
+  font-size:28px;cursor:pointer;color:rgba(237,237,237,.6);transition:color .2s;font-family:var(--font-sans)}
 .search-close-overlay:hover{color:#fff}
 .search-results-overlay{margin-top:32px;max-height:160px;overflow-y:auto;padding-right:12px}
 .search-result-item{padding:12px 0;border-bottom:.5px solid rgba(255,255,255,.08);
-  font-family:'Inter',sans-serif;font-size:18px;font-weight:500;display:flex;
+  font-family:var(--font-sans);font-size:18px;font-weight:500;display:flex;
   justify-content:space-between;align-items:baseline;cursor:pointer;transition:all .2s;color:#ededed}
 .search-result-item:hover{padding-left:12px;color:var(--ink-3)}
 .search-result-title{font-weight:600}
 .search-result-year{font-size:13px;font-weight:400;color:rgba(237,237,237,.5)}
-.no-results{padding:20px 0;color:rgba(237,237,237,.5);font-family:'Inter',sans-serif;font-size:15px}
+.no-results{padding:20px 0;color:rgba(237,237,237,.5);font-family:var(--font-sans);font-size:15px}
 
 /* ANIMATIONS */
 @keyframes floatA{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-18px) rotate(5deg)}}

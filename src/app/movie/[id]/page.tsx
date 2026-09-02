@@ -36,11 +36,13 @@ export async function generateMetadata({
     const movieId = Number(id);
     const allMovies = await getMovies();
     const dbMovie = allMovies.find((m) => m.id === movieId);
-    if (!dbMovie || dbMovie.visibility === "hidden" || dbMovie.status === "draft") {
-      return { title: "Film Not Found — What2Watch" };
+    if (dbMovie) {
+      if (dbMovie.visibility === "hidden" || dbMovie.status === "draft") {
+        return { title: "Film Not Found — What2Watch" };
+      }
     }
     const { movie } = await getMoviePageData(movieId);
-    const displayTitle = dbMovie.title || movie.title;
+    const displayTitle = (dbMovie && dbMovie.title) || movie.title;
     const year = movie.release_date ? ` (${movie.release_date.slice(0, 4)})` : "";
     return {
       title: `${displayTitle}${year} — What2Watch`,
@@ -60,22 +62,26 @@ export default async function MoviePage({
   const movieId = Number(id);
   if (!Number.isInteger(movieId) || movieId <= 0) notFound();
 
-  // Enforce visibility of only admin uploads
+  // Check visibility restrictions for admin overrides
   const allMovies = await getMovies();
   const dbMovie = allMovies.find((m) => m.id === movieId);
-  if (!dbMovie || dbMovie.visibility === "hidden" || dbMovie.status === "draft") {
-    notFound();
+  if (dbMovie) {
+    if (dbMovie.visibility === "hidden" || dbMovie.status === "draft") {
+      notFound();
+    }
   }
 
   const data = await getMoviePageData(movieId);
   const { movie, directors, writers, topCast, trailer, providers, recommendations, editorial } = data;
 
   // Override movie fields with database customized values
-  if (dbMovie.title) movie.title = dbMovie.title;
-  if (dbMovie.poster_path) movie.poster_path = dbMovie.poster_path;
-  if (dbMovie.backdrop_path) movie.backdrop_path = dbMovie.backdrop_path;
+  if (dbMovie) {
+    if (dbMovie.title) movie.title = dbMovie.title;
+    if (dbMovie.poster_path) movie.poster_path = dbMovie.poster_path;
+    if (dbMovie.backdrop_path) movie.backdrop_path = dbMovie.backdrop_path;
+  }
   
-  const displayEditorial = dbMovie.custom_editorial_description || editorial;
+  const displayEditorial = dbMovie ? (dbMovie.custom_editorial_description || editorial) : editorial;
 
   // Filter recommendations to show only other admin-uploaded and visible movies
   const filteredRecommendations = recommendations.filter((rec) =>

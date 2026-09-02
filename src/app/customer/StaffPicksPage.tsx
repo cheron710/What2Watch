@@ -6,22 +6,22 @@ import "./staff.css";
 
 const CURATORS = [
   {
-    initial: "S",
-    name: "Sansheron W.",
+    initial: "T",
+    name: "Tim Bradford.",
     role: "Founder & Editor",
     note: "I look for films that trust their audience — the ones that leave room for you to feel your way through.",
     pick: "Manchester by the Sea",
   },
   {
-    initial: "M",
-    name: "Marguerite L.",
+    initial: "G",
+    name: "George Cooper.",
     role: "Contributing Critic",
     note: "Give me a bold formal swing over a safe masterpiece any day. Cinema should risk something.",
     pick: "Portrait of a Lady on Fire",
   },
   {
-    initial: "T",
-    name: "Tobias R.",
+    initial: "P",
+    name: "Phill Dunphy.",
     role: "Guest Filmmaker",
     note: "The films that taught me my craft were never the loudest ones. Watch for the quiet decisions.",
     pick: "Paris, Texas",

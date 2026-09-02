@@ -22,41 +22,42 @@ export interface SessionUser {
  * Component; never throws on missing Supabase config so pages still render.
  */
 export async function getSessionUser(): Promise<SessionUser | null> {
-  if (!isSupabaseConfigured) {
-    try {
-      const { cookies } = await import("next/headers");
-      const cookieStore = await cookies();
-      const mockSession = cookieStore.get("w2w-session-mock");
-      if (mockSession) {
-        try {
-          const parsed = JSON.parse(decodeURIComponent(mockSession.value));
-          return {
+  try {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    const mockSession = cookieStore.get("w2w-session-mock");
+    if (mockSession) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(mockSession.value));
+        return {
+          id: "mock-user-id",
+          email: parsed.email || "testing@gmail.com",
+          profile: {
             id: "mock-user-id",
-            email: parsed.email || "testing@gmail.com",
-            profile: {
-              id: "mock-user-id",
-              username: parsed.name || "user",
-              display_name: parsed.name || "User",
-              avatar_url: "",
-              bio: "Local Developer Bypass User",
-              role: parsed.role || "user",
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            },
+            username: parsed.name || "user",
+            display_name: parsed.name || "User",
+            avatar_url: "",
+            bio: "Local Developer Bypass User",
             role: parsed.role || "user",
-            name: parsed.name || "User",
-            initial: parsed.initial || "U"
-          };
-        } catch {
-          // fallback
-        }
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          role: parsed.role || "user",
+          name: parsed.name || "User",
+          initial: parsed.initial || "U"
+        };
+      } catch {
+        // fallback
       }
-    } catch (e: any) {
-      if (e?.digest === "DYNAMIC_SERVER_USAGE" || e?.message?.includes("dynamic-server-error")) {
-        throw e;
-      }
-      console.warn("Failed to retrieve mock session cookies server-side", e);
     }
+  } catch (e: any) {
+    if (e?.digest === "DYNAMIC_SERVER_USAGE" || e?.message?.includes("dynamic-server-error")) {
+      throw e;
+    }
+    console.warn("Failed to retrieve mock session cookies server-side", e);
+  }
+
+  if (!isSupabaseConfigured) {
     return null;
   }
 

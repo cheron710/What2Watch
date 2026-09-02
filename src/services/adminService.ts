@@ -16,11 +16,7 @@ async function getSupabaseClient(): Promise<any> {
 const MOCK_DB_PATH = path.join(process.cwd(), "src/services/mockDb.json");
 
 // ── Seed Data ──────────────────────────────────────────────────────
-const MOCK_MOVIES = [
-  { id: 939243, title: "Nosferatu", original_title: "Nosferatu", overview: "A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her.", release_date: "2024-12-25", poster_path: "https://preview.redd.it/nosferatu-2024-textless-v0-1ow07comz23e1.jpeg?auto=webp&s=02016edee8382031a7ac0bcaf73733b25aac623e", backdrop_path: "/nosferatu_bg.jpg", vote_average: 7.9, vote_count: 512, popularity: 180.5, runtime: 132, tagline: "A gothic nightmare.", custom_editorial_description: "Robert Eggers masterfully revives the silent classic into a chilling meditation on desire and dread.", emotional_tags: ["Grief", "Fear"], context_tags: ["Midnight Movie", "Rainy Day"], craft_tags: ["Cinematography", "Sound Design"], festival_tags: ["Venice"], is_featured: true, is_homepage_hero: true, visibility: "visible", status: "published", trailer_url: "https://www.youtube.com/watch?v=uid123", streaming_providers: [{ name: "Netflix", price: "Subscription" }], recommendation_score: 94, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: 100012, title: "Michael", original_title: "Michael", overview: "The life and music of the King of Pop, Michael Jackson, as told through his career milestones and personal struggles.", release_date: "2026-04-18", poster_path: "https://preview.redd.it/michael-2026-textless-v0-33ofespqktqg1.jpeg?width=1080&crop=smart&auto=webp&s=15039297a090658da5fed00cbd32233d1523911f", backdrop_path: "/michael_bg.jpg", vote_average: 8.5, vote_count: 24, popularity: 250.0, runtime: 155, tagline: "The icon re-examined.", custom_editorial_description: "Antoine Fuqua reconstructs the complex, brilliant, and tragic journey of Michael Jackson.", emotional_tags: ["Joy", "Nostalgia"], context_tags: ["Biopic"], craft_tags: ["Performance", "Choreography"], festival_tags: [], is_featured: true, is_homepage_hero: false, visibility: "visible", status: "published", trailer_url: "", streaming_providers: [], recommendation_score: 88, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: 313369, title: "La La Land", original_title: "La La Land", overview: "Mia, an aspiring actress, and Sebastian, a dedicated jazz musician, struggle to make ends meet in a city known for crushing hopes.", release_date: "2016-12-09", poster_path: "https://wallpapercave.com/wp/wp7039123.jpg", backdrop_path: "/lalaland_bg.jpg", vote_average: 7.9, vote_count: 15800, popularity: 65.4, runtime: 128, tagline: "Here's to the fools who dream.", custom_editorial_description: "Damien Chazelle's bittersweet romance that pays homage to classic musicals while remaining raw.", emotional_tags: ["Love", "Nostalgia"], context_tags: ["Date Night"], craft_tags: ["Music", "Color Palette"], festival_tags: ["Venice", "Oscars"], is_featured: false, is_homepage_hero: false, visibility: "visible", status: "published", trailer_url: "https://www.youtube.com/watch?v=0pdqf4P9MB8", streaming_providers: [{ name: "Prime Video", price: "Rent" }], recommendation_score: 92, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
-];
+import { MOCK_MOVIES } from "@/lib/db";
 
 const MOCK_USERS = [
   { id: "usr-admin-1", display_name: "Admin User", email: "admin@what2watch.com", username: "admin", role: "admin", created_at: "2026-01-01T00:00:00Z", last_login: "2026-07-21T10:00:00Z", avatar_url: "", status: "active" },
@@ -36,7 +32,7 @@ const MOCK_SETTINGS = {
   homepage_hero_subtitle: "Discovering films through mood, emotion, and experience.",
   footer_text: "© 2026 What2Watch. Curated Cinema. All rights reserved.",
   social_links: { instagram: "https://instagram.com/what2watch", twitter: "https://twitter.com/what2watch" },
-  tmdb_key: "tmdb_mock_key_123456",
+  tmdb_key: "a57cb6fe3fcb73178efd632e0af61151",
   claude_key: "claude_mock_key_abcdef",
   openai_key: "openai_mock_key_xyz987",
   smtp_host: "smtp.mailtrap.io",
@@ -191,7 +187,13 @@ export async function getMovies(): Promise<any[]> {
     console.error("Supabase Error getting movies:", error);
     return MOCK_MOVIES;
   }
-  return data || [];
+  const merged = [...(data || [])];
+  MOCK_MOVIES.forEach((mock) => {
+    if (!merged.some((m) => m.id === mock.id)) {
+      merged.push(mock);
+    }
+  });
+  return merged;
 }
 
 export async function saveMovie(movie: any): Promise<any> {

@@ -44,13 +44,13 @@ export default function PicksSection({ initialMovies = [] }: PicksSectionProps) 
   return (
     <section id="picks">
       <div className="carousel-wrapper">
-        <div className="sec-header">
+        <div className="sec-header" data-reveal="fade">
           <div className="sec-header-left">
-            <span className="sec-label">THIS WEEK</span>
+            <span className="sec-label">This Week</span>
             <h2 className="sec-title">Picked for you</h2>
           </div>
           <div className="sec-divider"></div>
-          <span className="sec-header-right">SLIDE TO EXPLORE</span>
+          <span className="sec-header-right">Slide to explore</span>
         </div>
         
         <div className="carousel-container">

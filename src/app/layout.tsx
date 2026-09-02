@@ -1,46 +1,40 @@
-import type { Metadata } from "next";
-import { Inter, Playfair_Display, Crimson_Text, IBM_Plex_Sans, Lora, Nunito } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Fraunces, Geist } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
 
-const inter = Inter({
-  variable: "--font-inter",
+/* Editorial display serif — used only for large titles. Upright, never italic. */
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-});
-
-const crimsonText = Crimson_Text({
-  weight: ["400", "600"],
-  variable: "--font-crimson",
-  subsets: ["latin"],
-});
-
-const ibmPlexSans = IBM_Plex_Sans({
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-ibm-plex",
-  subsets: ["latin"],
+  style: "normal",
+  display: "swap",
 });
 
-const lora = Lora({
-  variable: "--font-lora",
+/* Grotesque — everything else: UI, body, labels. */
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
-});
-
-const nunito = Nunito({
-  variable: "--font-nunito",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "What2Watch",
-  description: "An intelligent cinematic discovery platform.",
+  title: "What2Watch — Cinematic Discovery",
+  description: "An intelligent, cinematic way to find your next film.",
 };
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F4F0E7" },
+    { media: "(prefers-color-scheme: dark)", color: "#0C0B08" },
+  ],
+};
+
+/* Runs before first paint to prevent a theme flash. */
+const themeInit = `(function(){try{var t=localStorage.getItem('w2w-theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='light';}})();`;
 
 export default function RootLayout({
   children,
@@ -50,10 +44,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${playfair.variable} ${crimsonText.variable} ${ibmPlexSans.variable} ${lora.variable} ${nunito.variable} scroll-smooth`}
+      className={`${fraunces.variable} ${geist.variable} scroll-smooth`}
       suppressHydrationWarning
     >
-      <body className="font-lora min-h-screen bg-paper text-ink antialiased overflow-x-hidden flex flex-col tracking-tight text-base font-normal">
+      <body className="min-h-screen flex flex-col overflow-x-hidden antialiased">
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
         <LayoutWrapper header={<Header />} footer={<Footer />}>
           {children}
         </LayoutWrapper>

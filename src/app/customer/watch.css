@@ -1,19 +1,19 @@
 /* ========== WATCH WITH SOMEONE PAGE ========== */
 :root {
-  --white: #ffffff;
-  --gray-1: #f8f8f8;
-  --gray-2: #e8e8e8;
-  --gray-3: #d0d0d0;
-  --gray-4: #808080;
-  --gray-5: #404040;
-  --dark-bg: #3a3a3a;
+  --white: var(--color-surface);
+  --gray-1: color-mix(in srgb, var(--color-text) 3%, var(--color-surface));
+  --gray-2: var(--color-border);
+  --gray-3: var(--color-text-3);
+  --gray-4: var(--color-text-3);
+  --gray-5: var(--color-text-2);
+  --dark-bg: var(--color-cine-2);
   --summer: #d4a537;
   --fall: #a0714f;
   --winter: #6ba3c8;
   --spring: #7cb342;
-  --ink: #0f0e0b;
-  --ink-2: #3a3830;
-  --ink-3: #8a8780;
+  --ink: var(--color-text);
+  --ink-2: var(--color-text-2);
+  --ink-3: var(--color-text-3);
 }
 
 /* ========== HERO SECTION ========== */
@@ -43,7 +43,7 @@
 }
 
 .page-hero-label {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -54,17 +54,17 @@
 }
 
 .page-hero-h {
-  font-family: 'Crimson Text', serif;
+  font-family: var(--font-display);
   font-size: clamp(42px, 6.5vw, 72px);
   font-weight: 600;
   letter-spacing: -1.5px;
-  color: #000;
+  color: var(--color-text);
   line-height: 1;
   margin-bottom: 18px;
 }
 
 .page-hero-sub {
-  font-family: 'Lora', serif;
+  font-family: var(--font-sans);
   font-size: clamp(15px, 1.8vw, 19px);
   font-style: italic;
   font-weight: 400;
@@ -102,14 +102,14 @@
 }
 
 .hero-byline-text {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   letter-spacing: 0.01em;
   color: var(--gray-5);
 }
 
 .hero-byline-text strong {
-  color: #000;
+  color: var(--color-text);
   font-weight: 600;
 }
 
@@ -134,7 +134,7 @@
 }
 
 .watch-intro-label {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -145,17 +145,17 @@
 }
 
 .watch-intro-h {
-  font-family: 'Crimson Text', serif;
+  font-family: var(--font-display);
   font-size: clamp(30px, 4vw, 44px);
   font-weight: 600;
   letter-spacing: -1px;
-  color: #000;
+  color: var(--color-text);
   margin-bottom: 10px;
   line-height: 1;
 }
 
 .watch-intro-sub {
-  font-family: 'Lora', serif;
+  font-family: var(--font-sans);
   font-size: 14.5px;
   font-weight: 400;
   font-style: italic;
@@ -187,17 +187,17 @@
 }
 
 .watch-card-title {
-  font-family: 'Crimson Text', serif;
+  font-family: var(--font-display);
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.3px;
-  color: #000;
+  color: var(--color-text);
   margin-bottom: 8px;
   line-height: 1.2;
 }
 
 .watch-card-desc {
-  font-family: 'Lora', serif;
+  font-family: var(--font-sans);
   font-size: 12.5px;
   font-weight: 400;
   font-style: italic;
@@ -208,7 +208,7 @@
 }
 
 .watch-examples {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10.5px;
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -239,7 +239,7 @@
 }
 
 .seasonal-intro-label {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -250,17 +250,17 @@
 }
 
 .seasonal-intro-h {
-  font-family: 'Crimson Text', serif;
+  font-family: var(--font-display);
   font-size: clamp(44px, 7vw, 76px);
   font-weight: 600;
   letter-spacing: -1px;
-  color: #000;
+  color: var(--color-text);
   margin-bottom: 28px;
   line-height: 1;
 }
 
 .seasonal-intro-sub {
-  font-family: 'Lora', serif;
+  font-family: var(--font-sans);
   font-size: 17px;
   font-weight: 400;
   color: var(--gray-5);
@@ -376,18 +376,18 @@
 }
 
 .season-title {
-  font-family: 'Crimson Text', serif;
+  font-family: var(--font-display);
   font-size: clamp(36px, 5vw, 52px);
   font-weight: 600;
   letter-spacing: -0.8px;
-  color: #000;
+  color: var(--color-text);
   margin-bottom: 32px;
   line-height: 1;
   margin-top: 0;
 }
 
 .season-tagline {
-  font-family: 'Lora', serif;
+  font-family: var(--font-sans);
   font-size: 15px;
   font-style: italic;
   font-weight: 400;
@@ -398,7 +398,7 @@
 }
 
 .season-pick-hint {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -418,7 +418,7 @@
 }
 
 .season-card:hover .season-pick-hint,
-.season-card.is-selected .season-pick-hint { color: #000; }
+.season-card.is-selected .season-pick-hint { color: var(--color-text); }
 
 .season-card:hover .season-pick-hint svg,
 .season-card.is-selected .season-pick-hint svg { transform: translateX(4px); }
@@ -442,7 +442,7 @@
 }
 
 .with-step-eyebrow {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -453,11 +453,11 @@
 }
 
 .with-step-h {
-  font-family: 'Crimson Text', serif;
+  font-family: var(--font-display);
   font-size: clamp(28px, 3.4vw, 40px);
   font-weight: 600;
   letter-spacing: -0.4px;
-  color: #000;
+  color: var(--color-text);
   margin-bottom: 36px;
 }
 
@@ -469,7 +469,7 @@
 }
 
 .with-pill {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -488,9 +488,9 @@
 }
 
 .with-pill.is-active {
-  background: #000;
-  border-color: #000;
-  color: var(--white);
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-bg);
 }
 
 /* ========== RESULTS PANEL ========== */
@@ -557,7 +557,7 @@
 }
 
 .results-eyebrow {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -568,17 +568,17 @@
 }
 
 .results-h {
-  font-family: 'Crimson Text', serif;
+  font-family: var(--font-display);
   font-size: clamp(32px, 4.2vw, 52px);
   font-weight: 600;
   letter-spacing: -0.8px;
-  color: #000;
+  color: var(--color-text);
   margin-bottom: 16px;
   line-height: 1.1;
 }
 
 .results-sub {
-  font-family: 'Lora', serif;
+  font-family: var(--font-sans);
   font-style: italic;
   font-weight: 400;
   font-size: 16px;
@@ -592,7 +592,7 @@
   z-index: 2;
   display: block;
   margin: 56px auto 0;
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -607,8 +607,8 @@
 }
 
 .start-over-btn:hover {
-  color: #000;
-  border-color: #000;
+  color: var(--color-text);
+  border-color: var(--color-text);
 }
 
 /* ========== MOVIE GRID ========== */
@@ -678,7 +678,7 @@
 }
 
 .poster-fallback span {
-  font-family: 'Crimson Text', serif;
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 600;
   line-height: 1.3;
@@ -700,7 +700,7 @@
 }
 
 .movie-card-note {
-  font-family: 'Lora', serif;
+  font-family: var(--font-sans);
   font-style: italic;
   font-weight: 400;
   font-size: 12px;
@@ -714,16 +714,16 @@
 }
 
 .movie-card-static-meta .mctitle {
-  font-family: 'Crimson Text', serif;
+  font-family: var(--font-display);
   font-size: 14px;
   font-weight: 600;
-  color: #000;
+  color: var(--color-text);
   display: block;
   line-height: 1.25;
 }
 
 .movie-card-static-meta .mcyear {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10px;
   color: var(--gray-4);
   letter-spacing: 0.04em;

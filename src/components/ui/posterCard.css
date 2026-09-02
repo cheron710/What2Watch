@@ -2,62 +2,63 @@
   display: block;
   text-decoration: none;
   color: inherit;
-  group: poster;
 }
 .poster-frame {
   position: relative;
   width: 100%;
   aspect-ratio: 2 / 3;
-  border-radius: 3px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  background: var(--color-paper-2, #e9e3d7);
-  box-shadow: 0 8px 24px -14px rgba(15, 14, 11, 0.5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-hairline);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--d-2) var(--ease-out), box-shadow var(--d-2) var(--ease-out);
 }
+.poster-card:hover .poster-frame { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
 .poster-img {
   object-fit: cover;
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform var(--d-3) var(--ease-out);
 }
-.poster-card:hover .poster-img { transform: scale(1.05); }
+.poster-card:hover .poster-img { transform: scale(1.06); }
 .poster-rating {
   position: absolute;
   top: 10px;
   left: 10px;
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 11px;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: #fff;
-  background: rgba(15, 14, 11, 0.72);
-  backdrop-filter: blur(4px);
-  padding: 4px 9px;
-  border-radius: 100px;
+  color: var(--color-on-cine);
+  background: rgba(8, 8, 6, 0.72);
+  backdrop-filter: blur(6px);
+  padding: 0.28em 0.6em;
+  border-radius: var(--radius-pill);
 }
 .poster-meta {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
 }
 .poster-title {
-  font-family: var(--font-crimson), serif;
-  font-size: 17px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
   font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--color-ink, #0f0e0b);
+  letter-spacing: -0.015em;
+  color: var(--color-text);
   line-height: 1.25;
 }
 .poster-year {
-  font-family: var(--font-ibm-plex), sans-serif;
-  font-size: 12px;
-  color: var(--color-ink-3, #8a8780);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--color-text-3);
   flex-shrink: 0;
 }
 .poster-reason {
-  font-family: var(--font-lora), Georgia, serif;
-  font-size: 13px;
-  font-style: italic;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
   line-height: 1.55;
-  color: var(--color-ink-3, #8a8780);
-  margin-top: 6px;
+  color: var(--color-text-3);
+  margin-top: 0.4rem;
 }

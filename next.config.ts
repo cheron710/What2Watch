@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+// Trigger dev server reload after env update
 const nextConfig: NextConfig = {
   images: {
     // TMDb is the only trusted remote image source. The hero/prototype pages

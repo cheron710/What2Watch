@@ -2,6 +2,7 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
+import ScrollReveal from "./ScrollReveal";
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ export default function LayoutWrapper({ children, header, footer }: LayoutWrappe
 
   return (
     <>
+      {!isAdmin && <ScrollReveal />}
       {!isAdmin && header}
       <main className={isAdmin ? "flex flex-col min-h-screen" : "flex-1"}>
         {children}

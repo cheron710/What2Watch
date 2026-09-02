@@ -19,7 +19,7 @@ export default async function Home() {
   // Filter visible hero movies
   const heroMovies = allMovies.filter(
     (m) => m.is_homepage_hero && m.visibility !== "hidden" && m.status !== "draft"
-  );
+  ).slice(0, 4);
   // Filter visible featured movies
   const featuredMovies = allMovies.filter(
     (m) => m.is_featured && m.visibility !== "hidden" && m.status !== "draft"

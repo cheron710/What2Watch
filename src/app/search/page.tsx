@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getMovies } from "@/services/adminService";
+import { searchMovies, tmdbImageUrl } from "@/lib/tmdb/client";
 import PageHeader from "@/components/ui/PageHeader";
 import MovieGrid from "@/components/ui/MovieGrid";
 import SearchBox from "./SearchBox";
@@ -23,17 +24,67 @@ export default async function SearchPage({
 
   if (query.length >= 2) {
     try {
+      let data = null;
+      let fallback = false;
+      try {
+        data = await searchMovies(query);
+      } catch (err) {
+        console.warn("TMDb search in page failed, falling back to DB:", err);
+        fallback = true;
+      }
+
       const allMovies = await getMovies();
-      // Filter movies that are visible and matching the query
-      const visibleMovies = allMovies.filter((m) => m.visibility !== "hidden");
-      results = visibleMovies.filter(
-        (m) =>
-          m.title?.toLowerCase().includes(query.toLowerCase()) ||
-          m.original_title?.toLowerCase().includes(query.toLowerCase()) ||
-          m.overview?.toLowerCase().includes(query.toLowerCase())
-      );
+      let rawResults: any[] = [];
+
+      if (!fallback && data && data.results && data.results.length > 0) {
+        rawResults = data.results;
+      } else {
+        fallback = true;
+      }
+
+      if (fallback) {
+        const queryLower = query.toLowerCase();
+        results = allMovies
+          .filter((m) => {
+            const titleMatch = m.title?.toLowerCase().includes(queryLower);
+            const originalTitleMatch = m.original_title?.toLowerCase().includes(queryLower);
+            const overviewMatch = m.overview?.toLowerCase().includes(queryLower);
+            const visible = m.visibility !== "hidden" && m.status !== "draft";
+            return (titleMatch || originalTitleMatch || overviewMatch) && visible;
+          })
+          .map((m) => ({
+            id: m.id,
+            title: m.title,
+            poster_path: m.poster_path ? (m.poster_path.startsWith("http") ? m.poster_path : tmdbImageUrl(m.poster_path)) : "/placeholder-poster.svg",
+            backdrop_path: m.backdrop_path ? (m.backdrop_path.startsWith("http") ? m.backdrop_path : tmdbImageUrl(m.backdrop_path)) : "/placeholder-backdrop.svg",
+            release_date: m.release_date,
+            vote_average: m.vote_average,
+            genre_ids: m.genre_ids || []
+          }));
+      } else {
+        results = rawResults
+          .filter((m) => m.poster_path || m.release_date)
+          .filter((m) => {
+            const dbMovie = allMovies.find((dm) => dm.id === m.id);
+            if (dbMovie) {
+              return dbMovie.visibility !== "hidden" && dbMovie.status !== "draft";
+            }
+            return true;
+          })
+          .map((m) => ({
+            id: m.id,
+            title: m.title,
+            poster_path: tmdbImageUrl(m.poster_path),
+            backdrop_path: tmdbImageUrl(m.backdrop_path),
+            release_date: m.release_date,
+            vote_average: m.vote_average,
+            genre_ids: m.genre_ids
+          }));
+      }
+      
       total = results.length;
-    } catch {
+    } catch (e) {
+      console.error("Error performing search page lookup:", e);
       errored = true;
     }
   }

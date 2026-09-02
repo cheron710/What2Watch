@@ -4,27 +4,29 @@ import Link from "next/link";
 export default function ExploreSection() {
   return (
     <section id="explore">
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 52px' }}>
-        <div style={{ marginBottom: '120px', maxWidth: '560px' }}>
+      <div className="explore-shell">
+        <div className="exp-intro" data-reveal>
           <span className="exp-intro-lbl">Curated Collections</span>
-          <h2 className="exp-intro-h">Explore Our<br />Curations</h2>
+          <h2 className="exp-intro-h">Explore our<br />curations</h2>
           <p className="exp-intro-p">
-            Five distinct ways to discover cinema. Each path offers a unique lens into storytelling, community, and the transformative power of film.
+            Distinct ways to discover cinema — each a different lens on storytelling,
+            craft, and the company you keep.
           </p>
         </div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '100px' }}>
+
+        <div className="exp-rows">
           {/* Watch With Someone */}
-          <div className="exp-row exp-fwd">
+          <div className="exp-row exp-fwd" data-reveal="left">
             <div className="exp-img">
               <div className="r">
                 <img src="https://apnmag.com/wp-content/uploads/2021/10/alin-surdu-j5gcqqm3eya-unsplash.jpg" alt="Watch together" />
               </div>
             </div>
             <div className="exp-tf">
+              <span className="exp-num">01</span>
               <h3 className="exp-h">Watch With Someone</h3>
               <div className="exp-description">
-                <p>Cinema changes when you share it. Discover films curated for every season and every kind of company.</p>
+                <p>Cinema changes when you share it. Films curated for every season and every kind of company.</p>
               </div>
               <Link href="/seasons" className="exp-explore-btn">
                 Explore seasons <span>→</span>
@@ -33,11 +35,12 @@ export default function ExploreSection() {
           </div>
 
           {/* Festival Season */}
-          <div className="exp-row exp-rev">
+          <div className="exp-row exp-rev" data-reveal="right">
             <div className="exp-tr">
+              <span className="exp-num">02</span>
               <h3 className="exp-h">Festival Season</h3>
               <div className="exp-description">
-                <p>Where cinema is being redefined. Explore winners from Cannes, Berlin, Venice.</p>
+                <p>Where cinema is being redefined. Winners and discoveries from Cannes, Berlin, and Venice.</p>
               </div>
               <Link href="/festival-season" className="exp-explore-btn exp-explore-btn-right">
                 Explore festivals <span>→</span>
@@ -51,16 +54,17 @@ export default function ExploreSection() {
           </div>
 
           {/* Cinema by Experience */}
-          <div className="exp-row exp-fwd">
+          <div className="exp-row exp-fwd" data-reveal="left">
             <div className="exp-img">
               <div className="r">
                 <img src="https://i.etsystatic.com/60619267/r/il/c0ca47/7192898378/il_1588xN.7192898378_2v9n.jpg" alt="Cinematic craft" />
               </div>
             </div>
             <div className="exp-tf">
+              <span className="exp-num">03</span>
               <h3 className="exp-h">Cinema by Experience</h3>
               <div className="exp-description">
-                <p>Move beyond emotion. Explore films by visual craft, sound, story twists.</p>
+                <p>Move beyond emotion. Explore films by visual craft, sound design, and the shape of a story.</p>
               </div>
               <Link href="/cinema-by-experience" className="exp-explore-btn">
                 Explore craft <span>→</span>
@@ -69,11 +73,12 @@ export default function ExploreSection() {
           </div>
 
           {/* Staff Picks */}
-          <div className="exp-row exp-rev">
+          <div className="exp-row exp-rev" data-reveal="right">
             <div className="exp-tr">
+              <span className="exp-num">04</span>
               <h3 className="exp-h">Staff Picks</h3>
               <div className="exp-description">
-                <p>The What2Watch team (and invited critics and filmmakers) pick their favorites</p>
+                <p>The What2Watch team — with invited critics and filmmakers — share the films they return to.</p>
               </div>
               <Link href="/staff-picks" className="exp-explore-btn exp-explore-btn-right">
                 Explore curators <span>→</span>
@@ -85,7 +90,6 @@ export default function ExploreSection() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>

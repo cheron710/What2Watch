@@ -8,11 +8,7 @@ interface PageHeaderProps {
   children?: React.ReactNode;
 }
 
-/**
- * Editorial page header — the magazine-style eyebrow + serif title + lede
- * used at the top of every discovery page. Reused everywhere to keep the
- * typographic rhythm identical across the platform.
- */
+
 export default function PageHeader({ eyebrow, title, lede, children }: PageHeaderProps) {
   return (
     <header className="ed-header">
@@ -25,3 +21,5 @@ export default function PageHeader({ eyebrow, title, lede, children }: PageHeade
     </header>
   );
 }
+
+
