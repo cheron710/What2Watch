@@ -180,20 +180,26 @@ export async function getMovies(): Promise<any[]> {
   if (!isSupabaseConfigured) {
     return getTable("movies", MOCK_MOVIES);
   }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return MOCK_MOVIES;
-  const { data, error } = await supabase.from("movies").select("*").order("popularity", { ascending: false });
-  if (error) {
-    console.error("Supabase Error getting movies:", error);
-    return MOCK_MOVIES;
-  }
-  const merged = [...(data || [])];
-  MOCK_MOVIES.forEach((mock) => {
-    if (!merged.some((m) => m.id === mock.id)) {
-      merged.push(mock);
+  try {
+    const supabase = await getSupabaseClient();
+    if (!supabase) return getTable("movies", MOCK_MOVIES);
+    const { data, error } = await supabase.from("movies").select("*").order("popularity", { ascending: false });
+    if (error) {
+      console.warn("Supabase movies query notice:", error.message || error.details || "Falling back to local database.");
+      return getTable("movies", MOCK_MOVIES);
     }
-  });
-  return merged;
+    const merged = [...(data || [])];
+    const mockList = getTable("movies", MOCK_MOVIES);
+    mockList.forEach((mock: any) => {
+      if (!merged.some((m) => m.id === mock.id)) {
+        merged.push(mock);
+      }
+    });
+    return merged;
+  } catch (e: any) {
+    console.warn("Supabase fetch exception in getMovies:", e?.message || e);
+    return getTable("movies", MOCK_MOVIES);
+  }
 }
 
 export async function saveMovie(movie: any): Promise<any> {
@@ -273,8 +279,8 @@ export async function getUsers(): Promise<any[]> {
   if (!supabase) return MOCK_USERS;
   const { data, error } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
   if (error) {
-    console.error("Supabase Error getting users:", error);
-    return MOCK_USERS;
+    console.warn("Supabase users query notice:", error.message || error.details || "Falling back to local database.");
+    return getTable("users", MOCK_USERS);
   }
   return data.map((u: any) => ({
     id: u.id,

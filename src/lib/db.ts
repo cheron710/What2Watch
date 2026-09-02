@@ -207,17 +207,23 @@ export const MOCK_MOVIES: any[] = [
 
 const MOCK_DB_PATH = path.join(process.cwd(), "src/services/mockDb.json");
 
+function getLocalMovies(): any[] {
+  try {
+    if (fs.existsSync(MOCK_DB_PATH)) {
+      const db = JSON.parse(fs.readFileSync(MOCK_DB_PATH, "utf8"));
+      if (db.movies && Array.isArray(db.movies)) {
+        return db.movies;
+      }
+    }
+  } catch (e) {
+    console.warn("Read mock database error in getMoviesDb:", e);
+  }
+  return MOCK_MOVIES;
+}
+
 export async function getMoviesDb(): Promise<any[]> {
   if (!isSupabaseConfigured) {
-    try {
-      if (fs.existsSync(MOCK_DB_PATH)) {
-        const db = JSON.parse(fs.readFileSync(MOCK_DB_PATH, "utf8"));
-        return db.movies || [];
-      }
-    } catch (e) {
-      console.error("Read mock database error in getMoviesDb:", e);
-    }
-    return MOCK_MOVIES;
+    return getLocalMovies();
   }
 
   try {
@@ -227,20 +233,21 @@ export async function getMoviesDb(): Promise<any[]> {
       .select("*")
       .order("popularity", { ascending: false });
     if (error) {
-      console.error("Supabase Error getting movies in getMoviesDb:", error);
-      return MOCK_MOVIES;
+      console.warn("Supabase query notice in getMoviesDb:", error.message || error.details || "Falling back to local database.");
+      return getLocalMovies();
     }
 
-    // Merge Supabase movies with MOCK_MOVIES to ensure seeded movies are always available
+    // Merge Supabase movies with local movies to ensure seeded movies are always available
     const merged = [...(data || [])];
-    MOCK_MOVIES.forEach((mock) => {
+    const localList = getLocalMovies();
+    localList.forEach((mock: any) => {
       if (!merged.some((m) => m.id === mock.id)) {
         merged.push(mock);
       }
     });
     return merged;
-  } catch (e) {
-    console.error("Unexpected error in getMoviesDb:", e);
-    return MOCK_MOVIES;
+  } catch (e: any) {
+    console.warn("Unexpected notice in getMoviesDb:", e?.message || e);
+    return getLocalMovies();
   }
 }
