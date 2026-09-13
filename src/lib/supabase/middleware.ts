@@ -3,6 +3,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { SUPABASE_URL, SUPABASE_ANON_KEY, isSupabaseConfigured } from "./env";
+import { withSupabaseTimeout, checkIsSupabaseReachable } from "./resilient";
 
 export async function updateSession(request: NextRequest) {
   const supabaseResponse = NextResponse.next({ request });
@@ -32,7 +33,7 @@ export async function updateSession(request: NextRequest) {
 
   // Without configured credentials there is no session to refresh.
   // Still, protect admin routes using our local session cookie if mock mode is active.
-  if (!isSupabaseConfigured) {
+  if (!isSupabaseConfigured || !checkIsSupabaseReachable()) {
     const { pathname } = request.nextUrl;
     const isAdminRoute = (pathname === "/admin" || pathname.startsWith("/admin/")) && pathname !== "/admin/login";
     
@@ -72,10 +73,15 @@ async function refreshSession(request: NextRequest, initialResponse: NextRespons
     }
   );
 
-  // Refresh session — do not remove this call.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Refresh session safely with timeout
+  const user = await withSupabaseTimeout(
+    async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    },
+    () => null,
+    1000
+  );
 
   const { pathname } = request.nextUrl;
   const isAdminRoute = (pathname === "/admin" || pathname.startsWith("/admin/")) && pathname !== "/admin/login";
@@ -91,14 +97,18 @@ async function refreshSession(request: NextRequest, initialResponse: NextRespons
 
     let role = "user";
     try {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .maybeSingle();
-      if (profile && profile.role) {
-        role = profile.role;
-      }
+      role = await withSupabaseTimeout(
+        async () => {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", user.id)
+            .maybeSingle();
+          return profile?.role || "user";
+        },
+        () => "user",
+        1000
+      );
     } catch (err) {
       console.warn("Resilient middleware profile lookup failed:", err);
     }

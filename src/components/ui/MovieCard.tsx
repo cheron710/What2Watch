@@ -1,7 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
+import Link from "next/link";
 
 export interface MovieCardProps {
+  id?: number;
   index: number;
   title: string;
   director: string;
@@ -11,9 +13,9 @@ export interface MovieCardProps {
   img: string;
 }
 
-export default function MovieCard({ index, title, director, quote, tags, rating, img }: MovieCardProps) {
-  return (
-    <div className="pick-card">
+export default function MovieCard({ id, index, title, director, quote, tags, rating, img }: MovieCardProps) {
+  const cardNode = (
+    <div className="pick-card cursor-pointer">
       <div className="pick-inner">
         <img className="pick-img" src={img} alt={title} />
         <div className="pick-grad"></div>
@@ -33,4 +35,14 @@ export default function MovieCard({ index, title, director, quote, tags, rating,
       </div>
     </div>
   );
+
+  if (id) {
+    return (
+      <Link href={`/movie/${id}`} aria-label={title}>
+        {cardNode}
+      </Link>
+    );
+  }
+
+  return cardNode;
 }

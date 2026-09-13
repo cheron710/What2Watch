@@ -76,43 +76,262 @@
   font-family: var(--font-inter), sans-serif;
 }
 
-/* Sidebar Styling */
+/* ─── Sidebar Layout ─── */
 .admin-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
   background-color: var(--admin-sidebar-bg);
   border-right: 1px solid var(--admin-sidebar-border);
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              min-width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.3s;
+  overflow: hidden;
+  z-index: 30;
+  flex-shrink: 0;
 }
 
+/* Sidebar Header */
+.admin-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--admin-sidebar-border);
+  flex-shrink: 0;
+}
+
+.admin-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.admin-sidebar-brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--admin-accent), var(--admin-accent-hover));
+  color: #fff;
+  font-family: var(--font-playfair), serif;
+  font-weight: 800;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.admin-sidebar-brand-text {
+  font-family: var(--font-playfair), serif;
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--admin-text);
+  letter-spacing: -0.01em;
+}
+
+.admin-sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.admin-sidebar-toggle:hover {
+  background: var(--admin-border);
+  color: var(--admin-text);
+}
+
+/* Sidebar Navigation */
+.admin-sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--admin-border-strong) transparent;
+}
+
+.admin-sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+.admin-sidebar-nav::-webkit-scrollbar-thumb {
+  background: var(--admin-border-strong);
+  border-radius: 4px;
+}
+.admin-sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Section styling */
+.admin-sidebar-section {
+  margin-bottom: 8px;
+}
+
+.admin-sidebar-section-label {
+  display: block;
+  padding: 8px 12px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--admin-text-muted);
+  opacity: 0.6;
+  user-select: none;
+}
+
+.admin-sidebar-section-divider {
+  height: 1px;
+  margin: 6px 12px 8px;
+  background: var(--admin-border);
+}
+
+.admin-sidebar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-sidebar-list li {
+  position: relative;
+}
+
+/* Sidebar Link */
 .admin-sidebar-link {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 16px;
-  border-radius: 6px;
+  padding: 9px 12px;
+  border-radius: 8px;
   color: var(--admin-text-muted);
   font-size: 13px;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
   text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
 }
 
 .admin-sidebar-link:hover {
-  background-color: rgba(15, 14, 11, 0.04);
+  background-color: rgba(15, 14, 11, 0.05);
   color: var(--admin-text);
 }
 
 .admin-container.dark .admin-sidebar-link:hover {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .admin-sidebar-link.active {
   background-color: var(--admin-accent);
   color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(255, 77, 45, 0.2);
 }
 
 .admin-container.dark .admin-sidebar-link.active {
-  color: #000000;
+  color: #ffffff;
   background-color: var(--admin-accent);
+}
+
+.admin-sidebar-link-icon {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.admin-sidebar-link.active .admin-sidebar-link-icon {
+  opacity: 1;
+}
+
+.admin-sidebar-link-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Active dot indicator */
+.admin-sidebar-active-dot {
+  position: absolute;
+  right: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* Tooltip for collapsed sidebar */
+.admin-sidebar-tooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 6px 12px;
+  background: var(--admin-text);
+  color: var(--admin-bg);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 100;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: tooltipFadeIn 0.15s ease;
+}
+
+.admin-sidebar-tooltip::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: var(--admin-text);
+}
+
+@keyframes tooltipFadeIn {
+  from { opacity: 0; transform: translateY(-50%) translateX(-4px); }
+  to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+/* Sidebar Footer */
+.admin-sidebar-footer {
+  padding: 12px 10px;
+  border-top: 1px solid var(--admin-sidebar-border);
+  flex-shrink: 0;
+}
+
+.admin-sidebar-logout {
+  color: var(--admin-text-muted) !important;
+}
+
+.admin-sidebar-logout:hover {
+  color: var(--admin-error) !important;
+  background-color: var(--admin-error-bg) !important;
 }
 
 /* Common Card Layouts */
@@ -150,6 +369,12 @@
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-input.pl-9,
+.admin-input.pl-10,
+.admin-input.has-icon {
+  padding-left: 40px !important;
 }
 
 .admin-input:focus {

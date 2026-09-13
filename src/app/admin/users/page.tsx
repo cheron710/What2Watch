@@ -121,6 +121,10 @@ export default function UsersPage() {
   // Suspend toggle
   const handleToggleSuspend = async (user: any) => {
     const nextStatus = user.status === "active" ? "suspended" : "active";
+    // Optimistic UI update
+    setUsers((prev) =>
+      prev.map((u) => (u.id === user.id ? { ...u, status: nextStatus } : u))
+    );
     try {
       await saveUser({ ...user, status: nextStatus });
       showToast(
@@ -130,6 +134,7 @@ export default function UsersPage() {
       loadData();
     } catch (e) {
       showToast("Operation failed.", "error");
+      loadData();
     }
   };
 
@@ -164,12 +169,16 @@ export default function UsersPage() {
 
   const handleConfirmDelete = async () => {
     if (!userToDelete) return;
+    const target = userToDelete;
+    // Optimistic UI update
+    setUsers((prev) => prev.filter((u) => u.id !== target.id && u.email !== target.email));
     try {
-      await deleteUser(userToDelete.id);
-      showToast(`Account for "${userToDelete.display_name}" has been removed.`, "success");
+      await deleteUser(target.id, target.email);
+      showToast(`Account for "${target.display_name}" has been removed.`, "success");
       loadData();
     } catch (e) {
       showToast("Deletion failed.", "error");
+      loadData();
     }
   };
 
@@ -249,20 +258,6 @@ export default function UsersPage() {
             title={row.status === "active" ? "Suspend user" : "Activate user"}
           >
             {row.status === "active" ? <UserX size={13} /> : <UserCheck size={13} />}
-          </button>
-          <button
-            onClick={() => handleOpenRole(row)}
-            className="p-1.5 rounded text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
-            title="Assign user role"
-          >
-            <ShieldCheck size={13} />
-          </button>
-          <button
-            onClick={() => handleOpenResetPassword(row)}
-            className="p-1.5 rounded text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
-            title="Reset password"
-          >
-            <Key size={13} />
           </button>
           <button
             onClick={() => handleOpenDelete(row)}

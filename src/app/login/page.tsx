@@ -42,8 +42,24 @@ export default function LoginPage() {
       router.refresh();
       return;
     }
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) { setError(error.message); setLoading(false); return; }
+
+    if (authData?.user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("status")
+        .eq("id", authData.user.id)
+        .maybeSingle();
+
+      if ((profile as any)?.status === "suspended") {
+        await supabase.auth.signOut();
+        setError("Your account has been suspended by an administrator. Please contact support.");
+        setLoading(false);
+        return;
+      }
+    }
+
     router.push(nextPath());
     router.refresh();
   };

@@ -8,22 +8,42 @@ const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p";
 export const tmdbImageUrl = (path: string | null, size = "w500"): string =>
   path ? `${TMDB_IMAGE_BASE}/${size}${path}` : "/placeholder-poster.svg";
 
+const tmdbMemoryCache = new Map<string, { data: any; timestamp: number }>();
+const TMDB_CACHE_TTL_MS = 1000 * 60 * 60 * 24; // 24 hours in-memory cache
+
 async function tmdbFetch<T>(
   endpoint: string,
   params: Record<string, string | number> = {}
 ): Promise<T> {
+  const cacheKey = `${endpoint}?${new URLSearchParams(params as any).toString()}`;
+  const now = Date.now();
+
+  const cached = tmdbMemoryCache.get(cacheKey);
+  if (cached && now - cached.timestamp < TMDB_CACHE_TTL_MS) {
+    return cached.data as T;
+  }
+
   const url = new URL(`${TMDB_BASE}${endpoint}`);
   url.searchParams.set("api_key", process.env.TMDB_API_KEY!);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, String(v)));
 
-  const res = await fetch(url.toString(), {
-    next: { revalidate: 3600 }, // cache for 1 hour
-  });
+  try {
+    const res = await fetch(url.toString(), {
+      next: { revalidate: 86400 }, // cache for 24 hours
+    });
 
-  if (!res.ok) {
-    throw new Error(`TMDb fetch failed: ${res.status} ${url.pathname}`);
+    if (!res.ok) {
+      throw new Error(`TMDb fetch failed: ${res.status} ${url.pathname}`);
+    }
+    const data = (await res.json()) as T;
+    tmdbMemoryCache.set(cacheKey, { data, timestamp: now });
+    return data;
+  } catch (err) {
+    if (cached) {
+      return cached.data as T;
+    }
+    throw err;
   }
-  return res.json() as Promise<T>;
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────

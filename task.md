@@ -1,11 +1,11 @@
-- [ ] Implement search/page.tsx database-only filter
-- [ ] Implement movie/[id]/page.tsx visibility checks, database overrides, and recommendations filtering
-- [ ] Implement customer/StaffPicksPage.tsx backend fetch
-- [ ] Implement customer/GriefHelperPage.tsx backend fetch
-- [ ] Implement components/discovery/CollectionView.tsx curation mapping and details fetching
-- [ ] Implement app/[slug]/page.tsx props loading for kids & seasons
-- [ ] Implement customer/KidsPage.tsx category selection tabs and backend integration
-- [ ] Implement customer/WatchWithSomeonePage.tsx backend season categories mapping
-- [ ] Update app/page.tsx to pass initialMovies props to HeroSection & PicksSection
-- [ ] Implement HeroSection.tsx and PicksSection.tsx props mapping
-- [ ] Verify build and TypeScript compilation
+- [x] Implement search/page.tsx database-only filter
+- [x] Implement movie/[id]/page.tsx visibility checks, database overrides, and recommendations filtering
+- [x] Implement customer/StaffPicksPage.tsx backend fetch
+- [x] Implement customer/GriefHelperPage.tsx backend fetch
+- [x] Implement components/discovery/CollectionView.tsx curation mapping and details fetching
+- [x] Implement app/[slug]/page.tsx props loading for kids & seasons
+- [x] Implement customer/KidsPage.tsx category selection tabs and backend integration
+- [x] Implement customer/WatchWithSomeonePage.tsx backend season categories mapping
+- [x] Update app/page.tsx to pass initialMovies props to HeroSection & PicksSection
+- [x] Implement HeroSection.tsx and PicksSection.tsx props mapping
+- [x] Verify build and TypeScript compilation

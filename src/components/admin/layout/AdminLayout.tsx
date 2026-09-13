@@ -33,9 +33,9 @@ export function useToast() {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true); // default to dark editorial style
+  const [darkMode, setDarkMode] = useState(true);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [siteName, setSiteName] = useState("What2Watch");
 
@@ -45,6 +45,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (savedDark !== null) {
       setDarkMode(savedDark === "true");
     }
+    const savedCollapsed = localStorage.getItem("w2w_admin_sidebar_collapsed");
+    if (savedCollapsed !== null) {
+      setSidebarCollapsed(savedCollapsed === "true");
+    }
     
     getSystemSettings().then((s) => {
       if (s?.site_name) setSiteName(s.site_name);
@@ -53,7 +57,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // Telemetry page view tracker
   useEffect(() => {
-    // Log visit in localStorage analytics telemetry
     try {
       const raw = localStorage.getItem("w2w_admin_analytics");
       if (raw) {
@@ -74,12 +77,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     localStorage.setItem("w2w_admin_dark", String(next));
   };
 
+  const toggleSidebar = () => {
+    const next = !sidebarCollapsed;
+    setSidebarCollapsed(next);
+    localStorage.setItem("w2w_admin_sidebar_collapsed", String(next));
+  };
+
   const showToast = (message: string, type: Toast["type"] = "info", undoAction?: () => void) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newToast: Toast = { id, type, message, undoAction };
     setToasts((prev) => [...prev, newToast]);
     
-    // Auto-remove toast after 4s
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 4000);
@@ -107,13 +115,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <ToastContext.Provider value={{ showToast }}>
       <div className={`admin-container ${darkMode ? "dark" : ""}`}>
-        <div className="flex flex-col min-h-screen">
-          {/* Content Area */}
+        <div className="flex min-h-screen">
+          {/* Left Sidebar */}
+          <AdminSidebar
+            collapsed={sidebarCollapsed}
+            onToggle={toggleSidebar}
+          />
+
+          {/* Mobile Overlay */}
+          {mobileDrawerOpen && (
+            <div
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+              onClick={() => setMobileDrawerOpen(false)}
+            />
+          )}
+
+          {/* Right Content Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {/* Top Navigation */}
+            {/* Top Navbar */}
             <AdminNavbar
-              sidebarOpen={sidebarOpen}
-              setSidebarOpen={setSidebarOpen}
+              sidebarOpen={!sidebarCollapsed}
+              setSidebarOpen={() => toggleSidebar()}
               mobileDrawerOpen={mobileDrawerOpen}
               setMobileDrawerOpen={setMobileDrawerOpen}
               darkMode={darkMode}
@@ -121,11 +143,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               siteName={siteName}
             />
 
-            {/* Horizontal Dashboard Navigation */}
-            <AdminSidebar />
-
             {/* Breadcrumb Navigation */}
-            <div className="px-6 py-4 flex items-center gap-2 border-b border-[var(--admin-border)] overflow-x-auto select-none bg-[var(--admin-card-bg)] text-xs text-[var(--admin-text-muted)]">
+            <div className="px-6 py-3 flex items-center gap-2 border-b border-[var(--admin-border)] overflow-x-auto select-none bg-[var(--admin-card-bg)] text-xs text-[var(--admin-text-muted)]">
               <Link href="/admin/dashboard" className="hover:text-[var(--admin-text)] flex items-center gap-1 transition">
                 <Home size={13} />
                 <span>Admin</span>

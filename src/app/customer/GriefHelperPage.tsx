@@ -41,7 +41,10 @@ export default async function GriefHelperPage() {
     const movies = await Promise.all(
       combinedIds.map(async (id) => {
         const local = allMovies.find((m) => m.id === id);
-        if (local) return local;
+        if (local) {
+          if (local.visibility === "hidden" || local.status === "draft") return null;
+          return local;
+        }
         try {
           const external = await getMovieDetail(id);
           return {
@@ -56,7 +59,7 @@ export default async function GriefHelperPage() {
         }
       })
     );
-    films = movies.filter((m) => m !== null);
+    films = movies.filter((m): m is NonNullable<typeof m> => m !== null);
   } catch (e) {
     console.error("Failed to load grief companion movies:", e);
     films = [];

@@ -2,9 +2,9 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getSessionUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
-import { signOutAction } from "@/app/actions/auth";
 import PageHeader from "@/components/ui/PageHeader";
 import SettingsForm from "./SettingsForm";
+import SignOutButton from "@/components/ui/SignOutButton";
 import "../dashboard/account.css";
 
 export const metadata: Metadata = { title: "Settings — What2Watch" };
@@ -40,11 +40,7 @@ export default async function SettingsPage() {
           <div className="acct-danger">
             <h3>Sign out</h3>
             <p>Signed in as {user.email}. You can sign back in any time.</p>
-            <form action={signOutAction}>
-              <button type="submit" className="acct-signout-btn">
-                Sign out
-              </button>
-            </form>
+            <SignOutButton className="acct-signout-btn cursor-pointer" />
           </div>
         </div>
       </section>

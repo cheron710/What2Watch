@@ -34,53 +34,56 @@ export default async function SearchPage({
       }
 
       const allMovies = await getMovies();
-      let rawResults: any[] = [];
+      const visibleDbMovies = allMovies.filter((m) => m.visibility !== "hidden" && m.status !== "draft");
+      const hiddenOrDraftIds = new Set(
+        allMovies.filter((m) => m.visibility === "hidden" || m.status === "draft").map((m) => m.id)
+      );
 
+      const queryLower = query.toLowerCase();
+      const dbMatching = visibleDbMovies.filter((m) => {
+        const titleMatch = m.title?.toLowerCase().includes(queryLower);
+        const originalTitleMatch = m.original_title?.toLowerCase().includes(queryLower);
+        const overviewMatch = m.overview?.toLowerCase().includes(queryLower);
+        return titleMatch || originalTitleMatch || overviewMatch;
+      });
+
+      const dbMapped = dbMatching.map((m) => ({
+        id: m.id,
+        title: m.title,
+        poster_path: m.poster_path ? (m.poster_path.startsWith("http") ? m.poster_path : tmdbImageUrl(m.poster_path)) : "/placeholder-poster.svg",
+        backdrop_path: m.backdrop_path ? (m.backdrop_path.startsWith("http") ? m.backdrop_path : tmdbImageUrl(m.backdrop_path)) : "/placeholder-backdrop.svg",
+        release_date: m.release_date,
+        vote_average: m.vote_average,
+        genre_ids: m.genre_ids || []
+      }));
+
+      const seenIds = new Set(dbMapped.map((m) => m.id));
+
+      let rawResults: any[] = [];
       if (!fallback && data && data.results && data.results.length > 0) {
         rawResults = data.results;
-      } else {
-        fallback = true;
       }
 
-      if (fallback) {
-        const queryLower = query.toLowerCase();
-        results = allMovies
-          .filter((m) => {
-            const titleMatch = m.title?.toLowerCase().includes(queryLower);
-            const originalTitleMatch = m.original_title?.toLowerCase().includes(queryLower);
-            const overviewMatch = m.overview?.toLowerCase().includes(queryLower);
-            const visible = m.visibility !== "hidden" && m.status !== "draft";
-            return (titleMatch || originalTitleMatch || overviewMatch) && visible;
-          })
-          .map((m) => ({
+      const tmdbMapped = rawResults
+        .filter((m: any) => (m.poster_path || m.release_date) && !hiddenOrDraftIds.has(m.id) && !seenIds.has(m.id))
+        .map((m: any) => {
+          const dbOverride = visibleDbMovies.find((dm) => dm.id === m.id);
+          return {
             id: m.id,
-            title: m.title,
-            poster_path: m.poster_path ? (m.poster_path.startsWith("http") ? m.poster_path : tmdbImageUrl(m.poster_path)) : "/placeholder-poster.svg",
-            backdrop_path: m.backdrop_path ? (m.backdrop_path.startsWith("http") ? m.backdrop_path : tmdbImageUrl(m.backdrop_path)) : "/placeholder-backdrop.svg",
-            release_date: m.release_date,
-            vote_average: m.vote_average,
-            genre_ids: m.genre_ids || []
-          }));
-      } else {
-        results = rawResults
-          .filter((m) => m.poster_path || m.release_date)
-          .filter((m) => {
-            const dbMovie = allMovies.find((dm) => dm.id === m.id);
-            if (dbMovie) {
-              return dbMovie.visibility !== "hidden" && dbMovie.status !== "draft";
-            }
-            return true;
-          })
-          .map((m) => ({
-            id: m.id,
-            title: m.title,
-            poster_path: tmdbImageUrl(m.poster_path),
-            backdrop_path: tmdbImageUrl(m.backdrop_path),
-            release_date: m.release_date,
-            vote_average: m.vote_average,
-            genre_ids: m.genre_ids
-          }));
-      }
+            title: dbOverride?.title || m.title,
+            poster_path: dbOverride?.poster_path
+              ? (dbOverride.poster_path.startsWith("http") ? dbOverride.poster_path : tmdbImageUrl(dbOverride.poster_path))
+              : tmdbImageUrl(m.poster_path),
+            backdrop_path: dbOverride?.backdrop_path
+              ? (dbOverride.backdrop_path.startsWith("http") ? dbOverride.backdrop_path : tmdbImageUrl(dbOverride.backdrop_path))
+              : tmdbImageUrl(m.backdrop_path),
+            release_date: dbOverride?.release_date || m.release_date,
+            vote_average: dbOverride?.vote_average ?? m.vote_average,
+            genre_ids: dbOverride?.genre_ids || m.genre_ids || []
+          };
+        });
+
+      results = [...dbMapped, ...tmdbMapped];
       
       total = results.length;
     } catch (e) {

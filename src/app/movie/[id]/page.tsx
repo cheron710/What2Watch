@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { cache } from "react";
 import { getMoviePageData } from "@/services/movies";
 import { getMovies } from "@/services/adminService";
 import { tmdbImageUrl } from "@/lib/tmdb/client";
@@ -13,6 +14,9 @@ import TrailerModal from "@/components/movie/TrailerModal";
 import "../movie.css";
 
 export const dynamic = "force-dynamic";
+
+const getCachedMovies = cache(async () => getMovies());
+const getCachedMoviePageData = cache(async (id: number) => getMoviePageData(id));
 
 function formatRuntime(mins: number | null): string | null {
   if (!mins) return null;
@@ -34,14 +38,17 @@ export async function generateMetadata({
   const { id } = await params;
   try {
     const movieId = Number(id);
-    const allMovies = await getMovies();
+    const [allMovies, { movie }] = await Promise.all([
+      getCachedMovies(),
+      getCachedMoviePageData(movieId),
+    ]);
+
     const dbMovie = allMovies.find((m) => m.id === movieId);
     if (dbMovie) {
       if (dbMovie.visibility === "hidden" || dbMovie.status === "draft") {
         return { title: "Film Not Found — What2Watch" };
       }
     }
-    const { movie } = await getMoviePageData(movieId);
     const displayTitle = (dbMovie && dbMovie.title) || movie.title;
     const year = movie.release_date ? ` (${movie.release_date.slice(0, 4)})` : "";
     return {
@@ -62,8 +69,13 @@ export default async function MoviePage({
   const movieId = Number(id);
   if (!Number.isInteger(movieId) || movieId <= 0) notFound();
 
-  // Check visibility restrictions for admin overrides
-  const allMovies = await getMovies();
+  // Execute all independent server fetches in parallel
+  const [allMovies, data, user] = await Promise.all([
+    getCachedMovies(),
+    getCachedMoviePageData(movieId),
+    getSessionUser(),
+  ]);
+
   const dbMovie = allMovies.find((m) => m.id === movieId);
   if (dbMovie) {
     if (dbMovie.visibility === "hidden" || dbMovie.status === "draft") {
@@ -71,7 +83,6 @@ export default async function MoviePage({
     }
   }
 
-  const data = await getMoviePageData(movieId);
   const { movie, directors, writers, topCast, trailer, providers, recommendations, editorial } = data;
 
   // Override movie fields with database customized values
@@ -83,12 +94,13 @@ export default async function MoviePage({
   
   const displayEditorial = dbMovie ? (dbMovie.custom_editorial_description || editorial) : editorial;
 
-  // Filter recommendations to show only other admin-uploaded and visible movies
-  const filteredRecommendations = recommendations.filter((rec) =>
-    allMovies.some((m) => m.id === rec.id && m.visibility !== "hidden" && m.status !== "draft")
+  const hiddenOrDraftIds = new Set(
+    allMovies.filter((m) => m.visibility === "hidden" || m.status === "draft").map((m) => m.id)
   );
 
-  const user = await getSessionUser();
+  // Filter recommendations to exclude hidden/draft movies
+  const filteredRecommendations = recommendations.filter((rec) => !hiddenOrDraftIds.has(rec.id));
+
   const libraryState = user
     ? await getLibraryState(user.id, movie.id)
     : { inWatchlist: false, inFavorites: false };

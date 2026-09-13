@@ -244,7 +244,7 @@ export default function DataTable<T extends { id: any }>({
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="admin-input pl-9 w-full"
+                className="admin-input !pl-10 has-icon w-full"
               />
             </div>
           )}

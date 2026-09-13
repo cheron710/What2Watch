@@ -11,6 +11,7 @@ export interface SessionUser {
   email: string | null;
   profile: Profile | null;
   role: string;
+  status: string;
   /** Display label — profile name, else email local-part. */
   name: string;
   /** Single-character avatar initial. */
@@ -43,6 +44,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
             updated_at: new Date().toISOString()
           },
           role: parsed.role || "user",
+          status: parsed.status || "active",
           name: parsed.name || "User",
           initial: parsed.initial || "U"
         };
@@ -81,12 +83,14 @@ export async function getSessionUser(): Promise<SessionUser | null> {
       "Cinephile";
 
     const role = profile?.role || "user";
+    const status = (profile as any)?.status || "active";
 
     return {
       id: user.id,
       email: user.email ?? null,
       profile: profile ?? null,
       role,
+      status,
       name,
       initial: name.charAt(0).toUpperCase(),
     };

@@ -115,7 +115,7 @@ export default function MoviesPage() {
     if (formValues.is_homepage_hero) {
       // Count other visible/published movies set as hero spotlight
       const activeHeroCount = movies.filter(
-        (m) => m.is_homepage_hero && m.id !== formValues.id && m.visibility !== "hidden" && m.status !== "draft"
+        (m) => m.is_homepage_hero && String(m.id) !== String(formValues.id) && m.visibility !== "hidden" && m.status !== "draft"
       ).length;
       if (activeHeroCount >= 4) {
         errs.is_homepage_hero = "Maximum of 4 movies are allowed in the hero spotlight section. Please disable spotlight on another movie first.";
@@ -135,6 +135,7 @@ export default function MoviesPage() {
       title: movie.title,
       custom_editorial_description: movie.custom_editorial_description || "",
       recommendation_score: movie.recommendation_score || 50,
+      vote_average: movie.vote_average ?? 7.5,
       visibility: movie.visibility || "visible",
       status: movie.status || "published",
       is_featured: !!movie.is_featured,
@@ -160,7 +161,8 @@ export default function MoviesPage() {
       const payload = {
         ...activeMovie, // retain raw TMDb values if editing
         ...formValues,
-        recommendation_score: parseInt(formValues.recommendation_score, 10)
+        recommendation_score: parseInt(formValues.recommendation_score, 10),
+        vote_average: parseFloat(formValues.vote_average) || 7.5
       };
 
       const saved = await saveMovie(payload);
@@ -283,15 +285,58 @@ export default function MoviesPage() {
       )
     },
     {
-      id: "recommendation_score",
-      label: "Score",
+      id: "vote_average",
+      label: "TMDb Rating",
       sortable: true,
       render: (row) => (
         <span className="font-bold text-[var(--admin-text)] flex items-center gap-1">
-          <Sparkles size={11} className="text-[var(--admin-accent)]" />
-          {row.recommendation_score || 50}/100
+          <Sparkles size={11} className="text-amber-500" />
+          {row.vote_average ? Number(row.vote_average).toFixed(1) : "7.5"} / 10
         </span>
       )
+    },
+    {
+      id: "is_homepage_hero",
+      label: "Hero Spotlight",
+      sortable: true,
+      filterOptions: ["Spotlight", "Standard"],
+      render: (row) => {
+        const isSpotlight = Boolean(row.is_homepage_hero);
+        return (
+          <button
+            onClick={async (e) => {
+              e.stopPropagation();
+              const nextVal = !isSpotlight;
+              if (nextVal) {
+                const activeHeroCount = movies.filter(
+                  (m) => m.is_homepage_hero && String(m.id) !== String(row.id) && m.visibility !== "hidden" && m.status !== "draft"
+                ).length;
+                if (activeHeroCount >= 4) {
+                  showToast("Maximum 4 movies allowed in Hero Spotlight. Remove another first.", "error");
+                  return;
+                }
+              }
+              await saveMovie({ ...row, is_homepage_hero: nextVal });
+              showToast(
+                nextVal
+                  ? `Marked "${row.title}" for Hero Spotlight!`
+                  : `Removed "${row.title}" from Hero Spotlight.`,
+                "success"
+              );
+              loadData();
+            }}
+            className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 cursor-pointer transition border ${
+              isSpotlight
+                ? "bg-amber-500/15 text-amber-500 border-amber-500/30 hover:bg-amber-500/25"
+                : "bg-black/5 dark:bg-white/5 text-[var(--admin-text-muted)] border-transparent hover:text-[var(--admin-text)]"
+            }`}
+            title={isSpotlight ? "Click to remove from Hero Spotlight" : "Click to set as Hero Spotlight"}
+          >
+            <Sparkles size={11} className={isSpotlight ? "fill-amber-500 text-amber-500" : ""} />
+            <span>{isSpotlight ? "Spotlight" : "Standard"}</span>
+          </button>
+        );
+      }
     },
     {
       id: "actions",
@@ -413,6 +458,30 @@ export default function MoviesPage() {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <InputField
+                label="TMDb API Rating (0 - 10)"
+                type="number"
+                step="0.1"
+                min="0"
+                max="10"
+                placeholder="7.5"
+                value={formValues.vote_average ?? 7.5}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value) || 0;
+                  const autoScore = val > 0 ? Math.round(val * 10) : 75;
+                  setFormValues({
+                    ...formValues,
+                    vote_average: e.target.value,
+                    recommendation_score: autoScore
+                  });
+                }}
+              />
+              <p className="text-[10px] text-[var(--admin-text-muted)] mt-1 flex items-center gap-1">
+                <Sparkles size={10} className="text-amber-500" />
+                <span>Auto Recommendation Score: <strong>{formValues.vote_average ? Math.round(Number(formValues.vote_average) * 10) : 75}%</strong> (Derived from TMDb / Internet data)</span>
+              </p>
+            </div>
             <SelectField
               label="Visibility"
               value={formValues.visibility}
@@ -422,6 +491,9 @@ export default function MoviesPage() {
                 { value: "hidden", label: "Hidden (Admin Only)" }
               ]}
             />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SelectField
               label="Publish Status"
               value={formValues.status}

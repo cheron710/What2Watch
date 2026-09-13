@@ -66,9 +66,13 @@ export async function getMoviePageData(id: number): Promise<MoviePageData> {
   let fallback = false;
 
   try {
-    movie = await getMovieDetail(id);
+    const tmdbPromise = getMovieDetail(id);
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("TMDb API request timeout")), 1500)
+    );
+    movie = await Promise.race([tmdbPromise, timeoutPromise]);
   } catch (err) {
-    console.warn(`TMDb getMovieDetail failed for movie ${id}, attempting local DB fallback:`, err);
+    console.warn(`TMDb getMovieDetail failed or timed out for movie ${id}, attempting local DB fallback:`, err);
     
     const { getMoviesDb } = await import("@/lib/db");
     const allMovies = await getMoviesDb();

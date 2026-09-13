@@ -9,7 +9,7 @@ export default async function Header() {
   const user = await getSessionUser();
   return (
     <HeaderClient
-      user={user ? { name: user.name, initial: user.initial } : null}
+      user={user ? { name: user.name, initial: user.initial, status: user.status } : null}
     />
   );
 }

@@ -1,7 +1,7 @@
 // src/components/admin/dialogs/Dialogs.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { searchTMDb, importFromTMDb } from "@/services/adminService";
 import { X, Search, Loader2, AlertTriangle, CloudDownload, Film } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -168,23 +168,67 @@ export function TmdbImportDialog({ isOpen, onClose, onImportSuccess }: TmdbImpor
   const [importingId, setImportingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
+  const searchRequestIdRef = useRef(0);
 
+  const executeSearch = async (searchTerm: string) => {
+    const trimmed = searchTerm.trim();
+    if (!trimmed) {
+      setResults([]);
+      setError(null);
+      setSearching(false);
+      return;
+    }
+
+    const currentReqId = ++searchRequestIdRef.current;
     setSearching(true);
     setError(null);
     try {
-      const res = await searchTMDb(query);
-      setResults(res);
-      if (res.length === 0) {
-        setError("No matching films found on TMDb.");
+      const res = await searchTMDb(trimmed);
+      if (currentReqId === searchRequestIdRef.current) {
+        setResults(res);
+        if (res.length === 0) {
+          setError("No matching films found on TMDb.");
+        }
       }
     } catch (err: any) {
-      setError(err.message || "Search failed.");
+      if (currentReqId === searchRequestIdRef.current) {
+        setError(err.message || "Search failed.");
+      }
     } finally {
-      setSearching(false);
+      if (currentReqId === searchRequestIdRef.current) {
+        setSearching(false);
+      }
     }
+  };
+
+  // Live debounced search as user types
+  useEffect(() => {
+    if (!isOpen) {
+      setQuery("");
+      setResults([]);
+      setError(null);
+      setSearching(false);
+      return;
+    }
+
+    const trimmed = query.trim();
+    if (!trimmed) {
+      setResults([]);
+      setError(null);
+      setSearching(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      executeSearch(query);
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [query, isOpen]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    executeSearch(query);
   };
 
   const handleImport = async (movieId: number) => {
@@ -215,7 +259,7 @@ export function TmdbImportDialog({ isOpen, onClose, onImportSuccess }: TmdbImpor
               placeholder="Search movie title (e.g. Inception, Dune)..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="admin-input pl-9"
+              className="admin-input !pl-10 has-icon"
               autoFocus
             />
           </div>

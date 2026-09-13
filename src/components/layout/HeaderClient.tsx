@@ -12,6 +12,7 @@ import "./header.css";
 export interface HeaderUser {
   name: string;
   initial: string;
+  status?: string;
 }
 
 interface SearchHit {
@@ -33,10 +34,12 @@ const NAV_LINKS = [
 
 export default function HeaderClient({ user }: { user: HeaderUser | null }) {
   const router = useRouter();
+  const logoutFormRef = useRef<HTMLFormElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<SearchHit[]>([]);
   const [searching, setSearching] = useState(false);
@@ -100,19 +103,26 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
         const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, {
           signal: controller.signal,
         });
-        const data = await res.json();
-        setResults(data.results ?? []);
-      } catch {
-        /* aborted or offline — ignore */
-      } finally {
-        setSearching(false);
+        if (res.ok) {
+          const data = await res.json();
+          setResults(data.results || []);
+        }
+      } catch (e: any) {
+        if (e.name !== "AbortError") {
+          console.warn("Header search fetch error", e);
+        }
       }
-    }, 300);
+    }, 250);
     return () => {
       controller.abort();
       clearTimeout(timer);
     };
   }, [searchQuery]);
+
+  const handleResultClick = (id: number) => {
+    closeSearch();
+    router.push(`/movie/${id}`);
+  };
 
   const goToSearchPage = useCallback(
     (e?: React.FormEvent) => {
@@ -125,13 +135,16 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
     [searchQuery, router, closeSearch]
   );
 
-  const openMovie = (id: number) => {
-    closeSearch();
-    router.push(`/movie/${id}`);
-  };
-
   return (
     <>
+      {/* Suspended User Warning Banner */}
+      {user?.status === "suspended" && (
+        <div className="w-full bg-red-600 text-white text-xs font-bold uppercase tracking-wider py-2.5 px-4 text-center flex items-center justify-center gap-2 shadow-md relative z-[1000] sticky top-0">
+          <span className="bg-white/20 px-2 py-0.5 rounded text-[10px] font-extrabold">ACCOUNT SUSPENDED</span>
+          <span>⚠️ Your account has been suspended by an administrator. Access to features is restricted.</span>
+        </div>
+      )}
+
       <header className={`site-header ${isScrolled ? "scrolled" : ""}`}>
         <Link href="/" className="brand">
           <span className="what2">What2</span>
@@ -172,7 +185,7 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
               {!isAuthenticated ? (
                 <User className="icon-guest" size={18} strokeWidth={1.5} />
               ) : (
-                <span className="avatar-user">{user.initial}</span>
+                <span className={`avatar-user ${user.status === "suspended" ? "ring-2 ring-red-500" : ""}`}>{user.initial}</span>
               )}
             </button>
 
@@ -192,6 +205,12 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
                 </div>
               ) : (
                 <div className="dropdown-user">
+                  {user.status === "suspended" && (
+                    <div className="px-3 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-md text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center justify-between">
+                      <span>Status</span>
+                      <span className="px-1.5 py-0.5 bg-red-600 text-white rounded text-[9px]">SUSPENDED</span>
+                    </div>
+                  )}
                   <Link href="/dashboard" className="dropdown-item" role="menuitem">
                     Dashboard
                   </Link>
@@ -208,15 +227,17 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
                     Settings
                   </Link>
                   <div className="dropdown-divider" />
-                  <form action={signOutAction}>
-                    <button
-                      type="submit"
-                      className="dropdown-item dropdown-item-exit w-full text-left"
-                      role="menuitem"
-                    >
-                      Log Out
-                    </button>
-                  </form>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      setShowLogoutConfirm(true);
+                    }}
+                    className="dropdown-item dropdown-item-exit w-full text-left cursor-pointer"
+                    role="menuitem"
+                  >
+                    Log Out
+                  </button>
                 </div>
               )}
             </div>
@@ -272,7 +293,7 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
               <p className="search-hint">No films found for “{searchQuery}”.</p>
             )}
             {results.map((hit) => (
-              <button key={hit.id} className="search-hit" onClick={() => openMovie(hit.id)}>
+              <button key={hit.id} className="search-hit" onClick={() => handleResultClick(hit.id)}>
                 <Image
                   src={hit.poster}
                   alt=""
@@ -368,18 +389,59 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
             >
               Settings
             </Link>
-            <form action={signOutAction}>
-              <button
-                type="submit"
-                className="mobile-account-link w-full text-left"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Log Out
-              </button>
-            </form>
+            <button
+              type="button"
+              className="mobile-account-link w-full text-left cursor-pointer"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                setShowLogoutConfirm(true);
+              }}
+            >
+              Log Out
+            </button>
           </div>
         )}
       </div>
+
+      {/* Hidden Sign Out Form */}
+      <form ref={logoutFormRef} action={signOutAction} className="hidden" />
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+            onClick={() => setShowLogoutConfirm(false)}
+          />
+          <div className="relative bg-[var(--color-bg,#F0EBE0)] text-[var(--color-text,#1A1A1A)] border border-[var(--color-border,rgba(0,0,0,0.1))] rounded-2xl p-6 max-w-sm w-full shadow-2xl z-10 space-y-4 font-sans">
+            <h3 className="text-lg font-bold tracking-tight text-[var(--color-text)]">
+              Confirm Log Out
+            </h3>
+            <p className="text-sm text-[var(--color-text-muted,#666)] leading-relaxed">
+              Are you sure you want to log out of your What2Watch account?
+            </p>
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2 rounded-full text-xs font-semibold border border-[var(--color-border,rgba(0,0,0,0.15))] hover:bg-black/5 cursor-pointer transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLogoutConfirm(false);
+                  logoutFormRef.current?.requestSubmit();
+                }}
+                className="px-5 py-2 rounded-full text-xs font-bold text-white bg-[var(--color-brand,#FF4D2D)] hover:opacity-90 cursor-pointer shadow-sm transition uppercase tracking-wider"
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -9,7 +9,7 @@ import {
   getSeasons, 
   getMovies 
 } from "@/services/adminService";
-import { getMovieDetail } from "@/lib/tmdb/client";
+import { getMovieDetail, discover } from "@/lib/tmdb/client";
 
 // Helper to slugify strings for matching
 const slugify = (str: string) =>
@@ -77,25 +77,54 @@ export default async function CollectionView({
   let movies: any[] = [];
   try {
     const allMovies = await getMovies();
-    const resolved = await Promise.all(
-      curatedMovieIds.map(async (id) => {
-        const local = allMovies.find((m) => m.id === id);
-        if (local) return local;
-        try {
-          const external = await getMovieDetail(id);
-          return {
-            id: external.id,
-            title: external.title,
-            poster_path: external.poster_path,
-            release_date: external.release_date,
-            vote_average: external.vote_average,
-          };
-        } catch {
-          return null;
-        }
-      })
+    const hiddenOrDraftIds = new Set(
+      allMovies.filter((m) => m.visibility === "hidden" || m.status === "draft").map((m) => m.id)
     );
-    movies = resolved.filter((m) => m !== null);
+
+    if (curatedMovieIds.length > 0) {
+      const resolved = await Promise.all(
+        curatedMovieIds.map(async (id) => {
+          const local = allMovies.find((m) => m.id === id);
+          if (local) {
+            if (local.visibility === "hidden" || local.status === "draft") return null;
+            return local;
+          }
+          try {
+            const external = await getMovieDetail(id);
+            return {
+              id: external.id,
+              title: external.title,
+              poster_path: external.poster_path,
+              release_date: external.release_date,
+              vote_average: external.vote_average,
+            };
+          } catch {
+            return null;
+          }
+        })
+      );
+      movies = resolved.filter((m): m is NonNullable<typeof m> => m !== null);
+    } else {
+      try {
+        const discData = await discover(collection.query);
+        if (discData?.results) {
+          movies = discData.results
+            .filter((m: any) => !hiddenOrDraftIds.has(m.id) && (m.poster_path || m.release_date))
+            .map((m: any) => {
+              const dbMovie = allMovies.find((dm) => dm.id === m.id);
+              return {
+                id: m.id,
+                title: dbMovie?.title || m.title,
+                poster_path: dbMovie?.poster_path || m.poster_path,
+                release_date: dbMovie?.release_date || m.release_date,
+                vote_average: dbMovie?.vote_average ?? m.vote_average,
+              };
+            });
+        }
+      } catch (err) {
+        console.warn("Fallback discovery fetch failed:", err);
+      }
+    }
   } catch (e) {
     console.error("Failed to resolve curation movies detail:", e);
     movies = [];

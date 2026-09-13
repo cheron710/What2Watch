@@ -3,6 +3,7 @@
 
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient as createSupabaseServerClient } from "@/lib/supabase/server";
+import { withSupabaseTimeout } from "@/lib/supabase/resilient";
 import fs from "fs";
 import path from "path";
 
@@ -106,10 +107,22 @@ const MOCK_ANALYTICS = {
 };
 
 // ── File DB Helpers ────────────────────────────────────────────────
+
+let cachedDbData: any = null;
+let lastReadTime = 0;
+const CACHE_TTL_MS = 3000; // 3 seconds in-memory cache for fast SSR responses
+
 function readMockDb() {
+  const now = Date.now();
+  if (cachedDbData && now - lastReadTime < CACHE_TTL_MS) {
+    return cachedDbData;
+  }
   try {
     if (fs.existsSync(MOCK_DB_PATH)) {
-      return JSON.parse(fs.readFileSync(MOCK_DB_PATH, "utf8"));
+      const data = JSON.parse(fs.readFileSync(MOCK_DB_PATH, "utf8"));
+      cachedDbData = data;
+      lastReadTime = now;
+      return data;
     }
   } catch (e) {
     console.error("Read mock database error:", e);
@@ -177,179 +190,332 @@ function saveTable(tableKey: string, data: any) {
 
 // ── 1. MOVIE CRUD SERVICE ───────────────────────────────────────────
 export async function getMovies(): Promise<any[]> {
+  const getFallback = () => getTable("movies", MOCK_MOVIES);
   if (!isSupabaseConfigured) {
-    return getTable("movies", MOCK_MOVIES);
+    return getFallback();
   }
-  try {
-    const supabase = await getSupabaseClient();
-    if (!supabase) return getTable("movies", MOCK_MOVIES);
-    const { data, error } = await supabase.from("movies").select("*").order("popularity", { ascending: false });
-    if (error) {
-      console.warn("Supabase movies query notice:", error.message || error.details || "Falling back to local database.");
-      return getTable("movies", MOCK_MOVIES);
-    }
-    const merged = [...(data || [])];
-    const mockList = getTable("movies", MOCK_MOVIES);
-    mockList.forEach((mock: any) => {
-      if (!merged.some((m) => m.id === mock.id)) {
-        merged.push(mock);
-      }
-    });
-    return merged;
-  } catch (e: any) {
-    console.warn("Supabase fetch exception in getMovies:", e?.message || e);
-    return getTable("movies", MOCK_MOVIES);
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+      const { data, error } = await supabase.from("movies").select("*").order("popularity", { ascending: false });
+      if (error) throw error;
+
+      const supabaseMovies = data || [];
+      const localMovies = getFallback();
+
+      // Build a lookup of local DB movies (these have the latest admin edits)
+      const localMap = new Map<string, any>();
+      localMovies.forEach((m: any) => localMap.set(String(m.id), m));
+
+      // Merge: start with Supabase data, but overlay local admin edits on top
+      const merged: any[] = [];
+      const seenIds = new Set<string>();
+
+      supabaseMovies.forEach((sbMovie: any) => {
+        const id = String(sbMovie.id);
+        const localOverride = localMap.get(id);
+        if (localOverride) {
+          // Local admin edits (is_homepage_hero, is_featured, visibility, etc.) win
+          merged.push({ ...sbMovie, ...localOverride });
+        } else {
+          merged.push(sbMovie);
+        }
+        seenIds.add(id);
+      });
+
+      // Add any local-only movies that don't exist in Supabase
+      localMovies.forEach((mock: any) => {
+        if (!seenIds.has(String(mock.id))) {
+          merged.push(mock);
+        }
+      });
+
+      return merged;
+    },
+    getFallback
+  );
+}
+
+export async function calculateRecommendationScore(movie: any): Promise<number> {
+  if (movie.vote_average != null && Number(movie.vote_average) > 0) {
+    // TMDB Rating scale [0 - 10] -> Percentage Recommendation Score [0 - 100]
+    return Math.round(Number(movie.vote_average) * 10);
   }
+  if (movie.popularity != null && Number(movie.popularity) > 0) {
+    // Internet popularity algorithm fallback
+    return Math.min(98, Math.max(50, Math.round(Number(movie.popularity) / 2 + 50)));
+  }
+  return 75; // Default internet baseline
 }
 
 export async function saveMovie(movie: any): Promise<any> {
+  const computedScore = await calculateRecommendationScore(movie);
+  const updatedMovie = {
+    ...movie,
+    is_homepage_hero: Boolean(movie.is_homepage_hero),
+    is_featured: Boolean(movie.is_featured),
+    recommendation_score: computedScore,
+    updated_at: new Date().toISOString()
+  };
+  
+  // Always update local database cache/fallback first to guarantee UI updates
+  const list = getTable("movies", MOCK_MOVIES);
+  const index = list.findIndex((m: any) => String(m.id) === String(movie.id));
+  if (index > -1) {
+    list[index] = { ...list[index], ...updatedMovie };
+  } else {
+    updatedMovie.created_at = updatedMovie.created_at || new Date().toISOString();
+    list.push(updatedMovie);
+  }
+  saveTable("movies", list);
+
   if (!isSupabaseConfigured) {
-    const list = getTable("movies", MOCK_MOVIES);
-    const index = list.findIndex((m: any) => m.id === movie.id);
-    const updatedMovie = { ...movie, updated_at: new Date().toISOString() };
-    if (index > -1) {
-      list[index] = updatedMovie;
-    } else {
-      updatedMovie.created_at = new Date().toISOString();
-      list.push(updatedMovie);
-    }
-    saveTable("movies", list);
     return updatedMovie;
   }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return movie;
-  const { data, error } = await supabase.from("movies").upsert(movie).select().single();
-  if (error) throw error;
-  return data;
-}
 
-export async function deleteMovie(id: number): Promise<boolean> {
-  if (!isSupabaseConfigured) {
-    const list = getTable("movies", MOCK_MOVIES);
-    const updated = list.filter((m: any) => m.id !== id);
-    saveTable("movies", updated);
-    return true;
-  }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return false;
-  const { error } = await supabase.from("movies").delete().eq("id", id);
-  if (error) throw error;
-  return true;
-}
-
-export async function bulkDeleteMovies(ids: number[]): Promise<boolean> {
-  if (!isSupabaseConfigured) {
-    const list = getTable("movies", MOCK_MOVIES);
-    const updated = list.filter((m: any) => !ids.includes(m.id));
-    saveTable("movies", updated);
-    return true;
-  }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return false;
-  const { error } = await supabase.from("movies").delete().in("id", ids);
-  if (error) throw error;
-  return true;
-}
-
-export async function bulkUpdateMovies(ids: number[], payload: any): Promise<boolean> {
-  if (!isSupabaseConfigured) {
-    const list = getTable("movies", MOCK_MOVIES);
-    const updated = list.map((m: any) => {
-      if (ids.includes(m.id)) {
-        return { ...m, ...payload, updated_at: new Date().toISOString() };
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return updatedMovie;
+      const { data, error } = await supabase.from("movies").upsert(updatedMovie).select().maybeSingle();
+      if (error) {
+        console.warn("Supabase upsert movie notice (saved to local DB fallback):", error.message || error);
+        return updatedMovie;
       }
-      return m;
-    });
-    saveTable("movies", updated);
+      return data || updatedMovie;
+    },
+    () => updatedMovie
+  );
+}
+
+export async function deleteMovie(id: number | string): Promise<boolean> {
+  const list = getTable("movies", MOCK_MOVIES);
+  const updated = list.filter((m: any) => String(m.id) !== String(id));
+  saveTable("movies", updated);
+
+  if (!isSupabaseConfigured) {
     return true;
   }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return false;
-  const { error } = await supabase.from("movies").update(payload).in("id", ids);
-  if (error) throw error;
-  return true;
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return true;
+      const { error } = await supabase.from("movies").delete().eq("id", id);
+      if (error) {
+        console.warn("Supabase deleteMovie notice (deleted from local DB fallback):", error.message || error);
+      }
+      return true;
+    },
+    () => true
+  );
+}
+
+export async function bulkDeleteMovies(ids: (number | string)[]): Promise<boolean> {
+  const strIds = ids.map(String);
+  const list = getTable("movies", MOCK_MOVIES);
+  const updated = list.filter((m: any) => !strIds.includes(String(m.id)));
+  saveTable("movies", updated);
+
+  if (!isSupabaseConfigured) {
+    return true;
+  }
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return false;
+      const { error } = await supabase.from("movies").delete().in("id", ids);
+      if (error) throw error;
+      return true;
+    },
+    () => true
+  );
+}
+
+export async function bulkUpdateMovies(ids: (number | string)[], payload: any): Promise<boolean> {
+  const strIds = ids.map(String);
+  const list = getTable("movies", MOCK_MOVIES);
+  const updated = list.map((m: any) => {
+    if (strIds.includes(String(m.id))) {
+      return { ...m, ...payload, updated_at: new Date().toISOString() };
+    }
+    return m;
+  });
+  saveTable("movies", updated);
+
+  if (!isSupabaseConfigured) {
+    return true;
+  }
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return false;
+      const { error } = await supabase.from("movies").update(payload).in("id", ids);
+      if (error) throw error;
+      return true;
+    },
+    () => true
+  );
 }
 
 // ── 2. USER MANAGEMENT SERVICE ─────────────────────────────────────
 export async function getUsers(): Promise<any[]> {
+  const getFallback = () => {
+    const localUsers = getTable("users", MOCK_USERS);
+    const deletedUsers: string[] = getTable("deleted_users", []);
+    return localUsers.filter(
+      (u: any) => !deletedUsers.includes(u.id) && !deletedUsers.includes(u.email)
+    );
+  };
+
   if (!isSupabaseConfigured) {
-    return getTable("users", MOCK_USERS);
+    return getFallback();
   }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return MOCK_USERS;
-  const { data, error } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
-  if (error) {
-    console.warn("Supabase users query notice:", error.message || error.details || "Falling back to local database.");
-    return getTable("users", MOCK_USERS);
-  }
-  return data.map((u: any) => ({
-    id: u.id,
-    display_name: u.display_name || u.username || "Cinephile",
-    email: u.email || `${u.username || 'user'}@what2watch.com`,
-    username: u.username || "user",
-    role: u.role || "user",
-    created_at: u.created_at,
-    last_login: u.updated_at,
-    avatar_url: u.avatar_url || "",
-    status: u.status || "active"
-  })) || [];
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+      const { data, error } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+      if (error || !data) throw error || new Error("No profiles data");
+
+      const activeLocalUsers = getFallback();
+      const deletedUsers: string[] = getTable("deleted_users", []);
+      const filteredData = data.filter(
+        (u: any) => !deletedUsers.includes(u.id) && !deletedUsers.includes(u.email)
+      );
+
+      const mapped = filteredData.map((u: any) => {
+        const local = activeLocalUsers.find((l: any) => l.id === u.id || l.email === u.email);
+        const status = local?.status || u.status || "active";
+        return {
+          id: u.id,
+          display_name: u.display_name || u.username || local?.display_name || "Cinephile",
+          email: u.email || local?.email || `${u.username || 'user'}@what2watch.com`,
+          username: u.username || local?.username || "user",
+          role: u.role || local?.role || "user",
+          created_at: u.created_at || local?.created_at || new Date().toISOString(),
+          last_login: u.updated_at || local?.last_login,
+          avatar_url: u.avatar_url || local?.avatar_url || "",
+          status
+        };
+      });
+
+      activeLocalUsers.forEach((mock: any) => {
+        if (!mapped.some((m: any) => m.id === mock.id || m.email === mock.email)) {
+          mapped.push(mock);
+        }
+      });
+
+      return mapped;
+    },
+    getFallback
+  );
 }
 
 export async function saveUser(user: any): Promise<any> {
-  if (!isSupabaseConfigured) {
-    const list = getTable("users", MOCK_USERS);
-    const idx = list.findIndex((u: any) => u.id === user.id);
-    if (idx > -1) {
-      list[idx] = { ...list[idx], ...user };
-    } else {
-      user.id = `usr-${Math.random().toString(36).substr(2, 9)}`;
-      user.created_at = new Date().toISOString();
-      user.last_login = new Date().toISOString();
-      list.push(user);
-    }
-    saveTable("users", list);
-    return user;
+  const updatedUser = {
+    ...user,
+    updated_at: new Date().toISOString()
+  };
+
+  // Always update local database fallback first to ensure instant UI responsiveness
+  const list = getTable("users", MOCK_USERS);
+  const idx = list.findIndex((u: any) => u.id === user.id || u.email === user.email);
+  if (idx > -1) {
+    list[idx] = { ...list[idx], ...updatedUser };
+  } else {
+    updatedUser.id = user.id || `usr-${Math.random().toString(36).substr(2, 9)}`;
+    updatedUser.created_at = updatedUser.created_at || new Date().toISOString();
+    updatedUser.last_login = new Date().toISOString();
+    list.push(updatedUser);
   }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return user;
-  const { data, error } = await supabase.from("profiles").upsert({
-    id: user.id,
-    display_name: user.display_name,
-    username: user.username,
-    role: user.role,
-    avatar_url: user.avatar_url
-  }).select().single();
-  if (error) throw error;
-  return data;
+  saveTable("users", list);
+
+  if (!isSupabaseConfigured) {
+    return updatedUser;
+  }
+
+  try {
+    const supabase = await getSupabaseClient();
+    if (!supabase) return updatedUser;
+    
+    const profilePayload: any = {
+      id: updatedUser.id,
+      display_name: updatedUser.display_name,
+      username: updatedUser.username,
+      role: updatedUser.role,
+      avatar_url: updatedUser.avatar_url
+    };
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .upsert(profilePayload)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.warn("Supabase upsert user profile notice (saved to local DB fallback):", error.message || error);
+      return updatedUser;
+    }
+    return data || updatedUser;
+  } catch (e: any) {
+    console.warn("Supabase saveUser exception (saved to local DB fallback):", e?.message || e);
+    return updatedUser;
+  }
 }
 
-export async function deleteUser(id: string): Promise<boolean> {
+export async function deleteUser(id: string, email?: string): Promise<boolean> {
+  // Update local users list
+  const list = getTable("users", MOCK_USERS);
+  const updated = list.filter((u: any) => u.id !== id && u.email !== id && (email ? u.email !== email : true));
+  saveTable("users", updated);
+
+  // Track in deleted_users persistent blocklist
+  const deletedList: string[] = getTable("deleted_users", []);
+  if (id && !deletedList.includes(id)) deletedList.push(id);
+  if (email && !deletedList.includes(email)) deletedList.push(email);
+  saveTable("deleted_users", deletedList);
+
   if (!isSupabaseConfigured) {
-    const list = getTable("users", MOCK_USERS);
-    const updated = list.filter((u: any) => u.id !== id);
-    saveTable("users", updated);
     return true;
   }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return false;
-  const { error } = await supabase.from("profiles").delete().eq("id", id);
-  if (error) throw error;
-  return true;
+
+  try {
+    const supabase = await getSupabaseClient();
+    if (!supabase) return true;
+    const { error } = await supabase.from("profiles").delete().eq("id", id);
+    if (error) {
+      console.warn("Supabase deleteUser notice (deleted from local DB fallback):", error.message || error);
+    }
+    return true;
+  } catch (e: any) {
+    console.warn("Supabase deleteUser exception:", e?.message || e);
+    return true;
+  }
 }
 
 // ── 3. CURATION MODULES (Staff Picks) ───────────────────────────────
 export async function getStaffPicks(): Promise<any[]> {
-  if (!isSupabaseConfigured) {
-    return getTable("staff_picks", []);
-  }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return [];
-  const { data, error } = await supabase.from("staff_pick_collections").select("*, staff_pick_movies(movie_id, sort_order)");
-  if (error) return [];
-  return data.map((d: any) => ({
-    ...d,
-    movies: d.staff_pick_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
-  }));
+  const getFallback = () => getTable("staff_picks", []);
+  if (!isSupabaseConfigured) return getFallback();
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+      const { data, error } = await supabase.from("staff_pick_collections").select("*, staff_pick_movies(movie_id, sort_order)");
+      if (error) throw error;
+      return data.map((d: any) => ({
+        ...d,
+        movies: d.staff_pick_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
+      }));
+    },
+    getFallback
+  );
 }
 
 export async function saveStaffPick(collection: any): Promise<any> {
@@ -390,17 +556,22 @@ export async function saveStaffPick(collection: any): Promise<any> {
 
 // ── 4. FESTIVALS CURATION ──────────────────────────────────────────
 export async function getFestivals(): Promise<any[]> {
-  if (!isSupabaseConfigured) {
-    return getTable("festivals", []);
-  }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return [];
-  const { data, error } = await supabase.from("festival_collections").select("*, festival_movies(movie_id, sort_order)");
-  if (error) return [];
-  return data.map((d: any) => ({
-    ...d,
-    movies: d.festival_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
-  }));
+  const getFallback = () => getTable("festivals", []);
+  if (!isSupabaseConfigured) return getFallback();
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+      const { data, error } = await supabase.from("festival_collections").select("*, festival_movies(movie_id, sort_order)");
+      if (error) throw error;
+      return data.map((d: any) => ({
+        ...d,
+        movies: d.festival_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
+      }));
+    },
+    getFallback
+  );
 }
 
 export async function saveFestival(collection: any): Promise<any> {
@@ -442,17 +613,22 @@ export async function saveFestival(collection: any): Promise<any> {
 
 // ── 5. WATCH WITH SOMEONE (Seasons) ───────────────────────────────
 export async function getSeasons(): Promise<any[]> {
-  if (!isSupabaseConfigured) {
-    return getTable("seasons", []);
-  }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return [];
-  const { data, error } = await supabase.from("watch_with_someone_categories").select("*, watch_with_someone_movies(movie_id, sort_order)");
-  if (error) return [];
-  return data.map((d: any) => ({
-    ...d,
-    movies: d.watch_with_someone_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
-  }));
+  const getFallback = () => getTable("seasons", []);
+  if (!isSupabaseConfigured) return getFallback();
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+      const { data, error } = await supabase.from("watch_with_someone_categories").select("*, watch_with_someone_movies(movie_id, sort_order)");
+      if (error) throw error;
+      return data.map((d: any) => ({
+        ...d,
+        movies: d.watch_with_someone_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
+      }));
+    },
+    getFallback
+  );
 }
 
 export async function saveSeason(category: any): Promise<any> {
@@ -494,17 +670,22 @@ export async function saveSeason(category: any): Promise<any> {
 
 // ── 6. CINEMA EXPERIENCE SERVICE ───────────────────────────────────
 export async function getExperiences(): Promise<any[]> {
-  if (!isSupabaseConfigured) {
-    return getTable("experiences", []);
-  }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return [];
-  const { data, error } = await supabase.from("cinema_experience_categories").select("*, cinema_experience_movies(movie_id, sort_order)");
-  if (error) return [];
-  return data.map((d: any) => ({
-    ...d,
-    movies: d.cinema_experience_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
-  }));
+  const getFallback = () => getTable("experiences", []);
+  if (!isSupabaseConfigured) return getFallback();
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+      const { data, error } = await supabase.from("cinema_experience_categories").select("*, cinema_experience_movies(movie_id, sort_order)");
+      if (error) throw error;
+      return data.map((d: any) => ({
+        ...d,
+        movies: d.cinema_experience_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
+      }));
+    },
+    getFallback
+  );
 }
 
 export async function saveExperience(exp: any): Promise<any> {
@@ -544,25 +725,30 @@ export async function saveExperience(exp: any): Promise<any> {
 
 // ── 7. KIDS SECTION SERVICE ────────────────────────────────────────
 export async function getKids(): Promise<any[]> {
-  if (!isSupabaseConfigured) {
-    return getTable("kids", []);
-  }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return [];
-  const { data, error } = await supabase.from("kids_categories").select("*, kids_movies(movie_id, safety_rating, educational_tags, family_tags, sort_order)");
-  if (error) return [];
-  return data.map((d: any) => ({
-    ...d,
-    movies: d.kids_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id),
-    movie_details: d.kids_movies.reduce((acc: any, m: any) => {
-      acc[m.movie_id] = {
-        safety_rating: m.safety_rating,
-        educational_tags: m.educational_tags,
-        family_tags: m.family_tags
-      };
-      return acc;
-    }, {})
-  }));
+  const getFallback = () => getTable("kids", []);
+  if (!isSupabaseConfigured) return getFallback();
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+      const { data, error } = await supabase.from("kids_categories").select("*, kids_movies(movie_id, safety_rating, educational_tags, family_tags, sort_order)");
+      if (error) throw error;
+      return data.map((d: any) => ({
+        ...d,
+        movies: d.kids_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id),
+        movie_details: d.kids_movies.reduce((acc: any, m: any) => {
+          acc[m.movie_id] = {
+            safety_rating: m.safety_rating,
+            educational_tags: m.educational_tags,
+            family_tags: m.family_tags
+          };
+          return acc;
+        }, {})
+      }));
+    },
+    getFallback
+  );
 }
 
 export async function saveKids(cat: any): Promise<any> {
@@ -609,17 +795,22 @@ export async function saveKids(cat: any): Promise<any> {
 
 // ── 8. EMOTIONAL SPECTRUM SERVICE ─────────────────────────────────
 export async function getEmotions(): Promise<any[]> {
-  if (!isSupabaseConfigured) {
-    return getTable("emotions", []);
-  }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return [];
-  const { data, error } = await supabase.from("emotions").select("*, emotion_movies(movie_id, sort_order)");
-  if (error) return [];
-  return data.map((d: any) => ({
-    ...d,
-    movies: d.emotion_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
-  }));
+  const getFallback = () => getTable("emotions", []);
+  if (!isSupabaseConfigured) return getFallback();
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+      const { data, error } = await supabase.from("emotions").select("*, emotion_movies(movie_id, sort_order)");
+      if (error) throw error;
+      return data.map((d: any) => ({
+        ...d,
+        movies: d.emotion_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
+      }));
+    },
+    getFallback
+  );
 }
 
 export async function saveEmotion(emotion: any): Promise<any> {
@@ -660,14 +851,19 @@ export async function saveEmotion(emotion: any): Promise<any> {
 
 // ── 9. SYSTEM SETTINGS SERVICE ─────────────────────────────────────
 export async function getSystemSettings(): Promise<any> {
-  if (!isSupabaseConfigured) {
-    return getTable("settings", MOCK_SETTINGS);
-  }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return MOCK_SETTINGS;
-  const { data, error } = await supabase.from("system_settings").select("*").eq("id", "global").maybeSingle();
-  if (error || !data) return MOCK_SETTINGS;
-  return data;
+  const getFallback = () => getTable("settings", MOCK_SETTINGS);
+  if (!isSupabaseConfigured) return getFallback();
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+      const { data, error } = await supabase.from("system_settings").select("*").eq("id", "global").maybeSingle();
+      if (error || !data) return getFallback();
+      return data;
+    },
+    getFallback
+  );
 }
 
 export async function saveSystemSettings(settings: any): Promise<any> {
@@ -728,30 +924,37 @@ export async function saveGuillaumeSettings(payload: any): Promise<boolean> {
 }
 
 export async function getGuillaumeLogs(): Promise<any[]> {
-  if (!isSupabaseConfigured) {
+  const getFallback = () => {
     const data = getTable("guillaume", MOCK_GUILLAUME);
     return data.logs || [];
-  }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return [];
-  const { data, error } = await supabase.from("ai_logs").select("*, profiles(display_name)").order("created_at", { ascending: false });
-  if (error) return [];
-  return data.map((l: any) => ({
-    id: l.id,
-    timestamp: l.created_at,
-    user: l.profiles?.display_name || "Guest",
-    prompt: l.prompt,
-    model: l.model,
-    response: l.response,
-    status: l.status,
-    tokens: l.tokens_used,
-    latency: 1200
-  }));
+  };
+  if (!isSupabaseConfigured) return getFallback();
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+      const { data, error } = await supabase.from("ai_logs").select("*, profiles(display_name)").order("created_at", { ascending: false });
+      if (error) throw error;
+      return data.map((l: any) => ({
+        id: l.id,
+        timestamp: l.created_at,
+        user: l.profiles?.display_name || "Guest",
+        prompt: l.prompt,
+        model: l.model,
+        response: l.response,
+        status: l.status,
+        tokens: l.tokens_used,
+        latency: 1200
+      }));
+    },
+    getFallback
+  );
 }
 
 // ── 11. ANALYTICS Telemetry ────────────────────────────────────────
 export async function getAnalyticsData(): Promise<any> {
-  if (!isSupabaseConfigured) {
+  const getFallback = () => {
     const localMovies = getTable("movies", MOCK_MOVIES);
     const localUsers = getTable("users", MOCK_USERS);
     const gLogs = getTable("guillaume", MOCK_GUILLAUME).logs || [];
@@ -778,52 +981,63 @@ export async function getAnalyticsData(): Promise<any> {
         }))
       ]
     };
-  }
+  };
 
-  const supabase = await getSupabaseClient();
-  if (!supabase) return MOCK_ANALYTICS;
-  try {
-    const [moviesCount, profilesCount, favoritesCount, watchlistCount, aiLogsCount] = await Promise.all([
-      supabase.from("movies").select("*", { count: "exact", head: true }),
-      supabase.from("profiles").select("*", { count: "exact", head: true }),
-      supabase.from("favorites").select("*", { count: "exact", head: true }),
-      supabase.from("watchlist").select("*", { count: "exact", head: true }),
-      supabase.from("ai_logs").select("*", { count: "exact", head: true })
-    ]);
+  if (!isSupabaseConfigured) return getFallback();
 
-    return {
-      stats: {
-        totalUsers: profilesCount.count || 0,
-        totalMovies: moviesCount.count || 0,
-        totalFavorites: favoritesCount.count || 0,
-        totalWatchlists: watchlistCount.count || 0,
-        todayVisits: 240,
-        monthlyVisits: 4500,
-        aiRequests: aiLogsCount.count || 0,
-        recCount: (watchlistCount.count || 0) + (favoritesCount.count || 0) + 120
-      },
-      charts: MOCK_ANALYTICS.charts,
-      recentActivity: MOCK_ANALYTICS.recentActivity
-    };
-  } catch (err) {
-    console.error("Error generating analytics:", err);
-    return MOCK_ANALYTICS;
-  }
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+
+      const [moviesCount, profilesCount, favoritesCount, watchlistCount, aiLogsCount] = await Promise.all([
+        supabase.from("movies").select("*", { count: "exact", head: true }),
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase.from("favorites").select("*", { count: "exact", head: true }),
+        supabase.from("watchlist").select("*", { count: "exact", head: true }),
+        supabase.from("ai_logs").select("*", { count: "exact", head: true })
+      ]);
+
+      return {
+        stats: {
+          totalUsers: profilesCount.count || 0,
+          totalMovies: moviesCount.count || 0,
+          totalFavorites: favoritesCount.count || 0,
+          totalWatchlists: watchlistCount.count || 0,
+          todayVisits: 240,
+          monthlyVisits: 4500,
+          aiRequests: aiLogsCount.count || 0,
+          recCount: (watchlistCount.count || 0) + (favoritesCount.count || 0) + 120
+        },
+        charts: MOCK_ANALYTICS.charts,
+        recentActivity: MOCK_ANALYTICS.recentActivity
+      };
+    },
+    getFallback
+  );
 }
 
 // ── 12. TMDB API SECURITY BRIDGE ──────────────────────────────────
+import { searchMovies as tmdbClientSearch, getMovieDetail as tmdbClientGetDetail, tmdbImageUrl as tmdbClientImageUrl, pickTrailer as tmdbClientPickTrailer } from "@/lib/tmdb/client";
+
 export async function searchTMDb(query: string): Promise<any[]> {
-  if (!isSupabaseConfigured) {
-    return [
-      { id: 438631, title: "Dune", release_date: "2021-09-15", poster_path: "https://preview.redd.it/lee-cronins-mummy-2026-imax-textless-v0-0a31y3m7h6vg1.jpeg?width=1080&crop=smart&auto=webp&s=ada9e8a0d4dc49666aa0e4e47653284b19ba34c9", backdrop_path: "/dune_bg.jpg", overview: "Paul Atreides, a brilliant and gifted young man born into a great destiny..." },
-      { id: 693134, title: "Dune: Part Two", release_date: "2024-02-27", poster_path: "https://preview.redd.it/nosferatu-2024-textless-v0-1ow07comz23e1.jpeg?auto=webp&s=02016edee8382031a7ac0bcaf73733b25aac623e", backdrop_path: "/dune2_bg.jpg", overview: "Follow the mythic journey of Paul Atreides as he unites with Chani and the Fremen..." }
-    ].filter(m => m.title.toLowerCase().includes(query.toLowerCase()));
-  }
+  if (!query || query.trim().length < 2) return [];
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/tmdb?action=search&query=${encodeURIComponent(query)}`);
-    if (!res.ok) throw new Error("Search request failed");
-    return await res.json();
+    const data = await tmdbClientSearch(query);
+    if (!data || !data.results) return [];
+
+    return data.results.map((m: any) => ({
+      id: m.id,
+      title: m.title,
+      original_title: m.original_title || m.title,
+      release_date: m.release_date || "",
+      overview: m.overview || "",
+      poster_path: m.poster_path ? tmdbClientImageUrl(m.poster_path, "w185") : null,
+      backdrop_path: m.backdrop_path ? tmdbClientImageUrl(m.backdrop_path, "w1280") : null,
+      vote_average: m.vote_average || 0.0,
+      popularity: m.popularity || 0.0,
+    }));
   } catch (e) {
     console.error("TMDb search error:", e);
     return [];
@@ -831,21 +1045,35 @@ export async function searchTMDb(query: string): Promise<any[]> {
 }
 
 export async function importFromTMDb(tmdbId: number): Promise<any> {
-  if (!isSupabaseConfigured) {
-    const mockDetails = {
-      id: tmdbId,
-      title: `Imported Movie (${tmdbId})`,
-      original_title: "Imported Movie",
-      release_date: new Date().toISOString().split("T")[0],
-      overview: "This movie was imported from TMDb via mock simulation.",
-      poster_path: "https://wallpapercave.com/wp/wp7039123.jpg",
-      backdrop_path: "/lalaland_bg.jpg",
-      vote_average: 7.5,
-      vote_count: 100,
-      popularity: 50.0,
-      runtime: 120,
-      tagline: "A mock tagline.",
-      custom_editorial_description: "Custom description.",
+  try {
+    const details = await tmdbClientGetDetail(tmdbId);
+    const trailerVideo = details.videos?.results ? tmdbClientPickTrailer(details.videos.results) : null;
+    const trailerUrl = trailerVideo ? `https://www.youtube.com/watch?v=${trailerVideo.key}` : "";
+    
+    const providers = details["watch/providers"]?.results?.US?.flatrate?.map((p: any) => ({
+      name: p.provider_name,
+      price: "Subscription"
+    })) || [];
+
+    const voteAvg = details.vote_average || 7.5;
+    const calculatedScore = Math.round(voteAvg * 10);
+
+    const movieRecord = {
+      id: details.id,
+      title: details.title,
+      original_title: details.original_title || details.title,
+      overview: details.overview || "",
+      release_date: details.release_date || null,
+      poster_path: details.poster_path ? tmdbClientImageUrl(details.poster_path, "w500") : null,
+      backdrop_path: details.backdrop_path ? tmdbClientImageUrl(details.backdrop_path, "w1280") : null,
+      genre_ids: details.genres ? details.genres.map((g: any) => g.id) : [],
+      vote_average: voteAvg,
+      vote_count: details.vote_count || 0,
+      popularity: details.popularity || 0.0,
+      runtime: details.runtime || null,
+      tagline: details.tagline || null,
+      imdb_id: details.imdb_id || null,
+      custom_editorial_description: details.overview || "",
       emotional_tags: [],
       context_tags: [],
       craft_tags: [],
@@ -854,20 +1082,15 @@ export async function importFromTMDb(tmdbId: number): Promise<any> {
       is_homepage_hero: false,
       visibility: "visible",
       status: "published",
-      trailer_url: "",
-      streaming_providers: [],
-      recommendation_score: 70
+      trailer_url: trailerUrl,
+      streaming_providers: providers,
+      recommendation_score: calculatedScore
     };
-    await saveMovie(mockDetails);
-    return mockDetails;
-  }
 
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/tmdb?action=import&id=${tmdbId}`, { method: "POST" });
-    if (!res.ok) throw new Error("Import request failed");
-    return await res.json();
-  } catch (e) {
+    const saved = await saveMovie(movieRecord);
+    return saved;
+  } catch (e: any) {
     console.error("TMDb import error:", e);
-    throw e;
+    throw new Error(e.message || "Failed to import movie from TMDb API.");
   }
 }

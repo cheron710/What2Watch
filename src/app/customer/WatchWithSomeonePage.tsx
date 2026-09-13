@@ -119,13 +119,21 @@ function rand(min: number, max: number) { return Math.random() * (max - min) + m
 function pick<T>(arr: T[]) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 // ─── Movie Card ───────────────────────────────────────────────────────────────
-interface MovieEntry { t: string; y: number; tags: readonly string[]; note: string; }
+import Link from "next/link";
+import { tmdbImageUrl } from "@/lib/tmdb/client";
+
+interface MovieEntry { id?: number; t: string; y: number; tags: readonly string[]; note: string; poster?: string | null; }
 
 function MovieCardW({ movie, delay }: { movie: MovieEntry; delay: number }) {
-  const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
+  const [imgSrc, setImgSrc] = useState<string | null>(movie.poster ? tmdbImageUrl(movie.poster, "w500") : null);
+  const [status, setStatus] = useState<"loading" | "loaded" | "error">(movie.poster ? "loaded" : "loading");
 
   React.useEffect(() => {
+    if (movie.poster) {
+      setImgSrc(tmdbImageUrl(movie.poster, "w500"));
+      setStatus("loaded");
+      return;
+    }
     const q = encodeURIComponent(`${movie.t} ${movie.y} film`);
     const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=${q}&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=600&origin=*`;
     fetch(url)
@@ -137,10 +145,12 @@ function MovieCardW({ movie, delay }: { movie: MovieEntry; delay: number }) {
         else setStatus("error");
       })
       .catch(() => setStatus("error"));
-  }, [movie.t, movie.y]);
+  }, [movie.t, movie.y, movie.poster]);
+
+  const href = movie.id ? `/movie/${movie.id}` : `/search?q=${encodeURIComponent(movie.t)}`;
 
   return (
-    <div className="movie-card-w" style={{ animationDelay: `${delay}ms` }}>
+    <Link href={href} className="movie-card-w" style={{ animationDelay: `${delay}ms`, textDecoration: 'none', color: 'inherit' }}>
       <div className="movie-poster-wrap">
         {status === "loading" && <div className="poster-skeleton" />}
         {status === "loaded" && imgSrc && (
@@ -159,7 +169,7 @@ function MovieCardW({ movie, delay }: { movie: MovieEntry; delay: number }) {
         <span className="mctitle">{movie.t}</span>
         <span className="mcyear">{movie.y}</span>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -250,13 +260,15 @@ export default function WatchWithSomeonePage({ initialSeasons = [], allMovies = 
       if (matchedCat.movies && matchedCat.movies.length > 0) {
         const mapped = matchedCat.movies
           .map((mid: number) => {
-            const movie = allMovies.find((m) => m.id === mid);
+            const movie = allMovies.find((m) => m.id === mid && m.visibility !== "hidden" && m.status !== "draft");
             if (!movie) return null;
             return {
+              id: movie.id,
               t: movie.title,
               y: movie.release_date ? parseInt(movie.release_date.split("-")[0], 10) : 2026,
               tags: [w] as string[],
               note: movie.custom_editorial_description || movie.tagline || movie.overview || "Recommended for this occasion.",
+              poster: movie.poster_path,
             };
           });
         pool = mapped.filter((m: any): m is MovieEntry => m !== null);
