@@ -611,6 +611,24 @@ export async function saveFestival(collection: any): Promise<any> {
   return { ...col, movies: collection.movies };
 }
 
+export async function deleteFestival(id: string): Promise<boolean> {
+  const list = getTable("festivals", []);
+  const updated = list.filter((c: any) => c.id !== id);
+  saveTable("festivals", updated);
+
+  if (!isSupabaseConfigured) return true;
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return true;
+      await supabase.from("festival_collections").delete().eq("id", id);
+      return true;
+    },
+    () => true
+  );
+}
+
 // ── 5. WATCH WITH SOMEONE (Seasons) ───────────────────────────────
 export async function getSeasons(): Promise<any[]> {
   const getFallback = () => getTable("seasons", []);
@@ -666,6 +684,24 @@ export async function saveSeason(category: any): Promise<any> {
     await supabase.from("watch_with_someone_movies").insert(inserts);
   }
   return { ...cat, movies: category.movies };
+}
+
+export async function deleteSeason(id: string): Promise<boolean> {
+  const list = getTable("seasons", []);
+  const updated = list.filter((c: any) => c.id !== id);
+  saveTable("seasons", updated);
+
+  if (!isSupabaseConfigured) return true;
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return true;
+      await supabase.from("watch_with_someone_categories").delete().eq("id", id);
+      return true;
+    },
+    () => true
+  );
 }
 
 // ── 6. CINEMA EXPERIENCE SERVICE ───────────────────────────────────

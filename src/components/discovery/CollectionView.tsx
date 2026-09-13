@@ -29,50 +29,83 @@ export default async function CollectionView({
   group: CollectionGroup;
   slug: string;
 }) {
-  const collection = findCollection(group, slug);
-  if (!collection) notFound();
+  const staticCollection = findCollection(group, slug);
 
   let curatedMovieIds: number[] = [];
-  let displayTitle = collection.title;
-  let displayLede = collection.lede;
+  let displayTitle = staticCollection?.title || "";
+  let displayLede = staticCollection?.lede || "";
+  let displayEyebrow = staticCollection?.eyebrow || (group === "festival" ? "Festival Season" : group === "season" ? "Seasonal Collections" : "Curated Collection");
+  let foundBackend = false;
 
   try {
     if (group === "emotion") {
       const emotions = await getEmotions();
-      const found = emotions.find((e) => slugify(e.name) === slug || e.slug === slug);
+      const found = emotions.find((e) => slugify(e.name) === slug || e.slug === slug || e.id === slug);
       if (found) {
+        foundBackend = true;
         curatedMovieIds = found.movies || [];
         if (found.name) displayTitle = found.name;
         if (found.description) displayLede = found.description;
       }
     } else if (group === "experience") {
       const experiences = await getExperiences();
-      const found = experiences.find((e) => slugify(e.name) === slug || slugify(e.experience_type) === slug);
+      const found = experiences.find((e) => slugify(e.name) === slug || slugify(e.experience_type || "") === slug || e.id === slug);
       if (found) {
+        foundBackend = true;
         curatedMovieIds = found.movies || [];
         if (found.name) displayTitle = found.name;
         if (found.description) displayLede = found.description;
       }
     } else if (group === "festival") {
       const festivals = await getFestivals();
-      const found = festivals.find((f) => slugify(f.festival_name) === slug || slugify(f.title) === slug);
+      const found = festivals.find((f) => 
+        slugify(f.title || f.festival_name || "") === slug || 
+        slugify(f.festival_name || "") === slug || 
+        f.id === slug
+      );
       if (found) {
+        foundBackend = true;
         curatedMovieIds = found.movies || [];
-        if (found.title || found.festival_name) displayTitle = found.title || found.festival_name;
+        displayTitle = found.title || found.festival_name || "Festival Showcase";
         if (found.description) displayLede = found.description;
+        if (found.festival_name) {
+          displayEyebrow = `${found.festival_name} ${found.year || ""}`.trim();
+        }
       }
     } else if (group === "season") {
       const seasons = await getSeasons();
-      const found = seasons.find((s) => slugify(s.season) === slug || slugify(s.name) === slug);
+      const found = seasons.find((s) => 
+        slugify(s.name || s.season || "") === slug || 
+        slugify(s.season || "") === slug || 
+        s.id === slug
+      );
       if (found) {
+        foundBackend = true;
         curatedMovieIds = found.movies || [];
-        if (found.name || found.season) displayTitle = found.name || found.season;
+        displayTitle = found.name || found.season || "Seasonal Curation";
         if (found.description) displayLede = found.description;
+        if (found.season) {
+          displayEyebrow = `${found.season} Collection`;
+        }
       }
     }
   } catch (e) {
     console.error("Failed to load curation categories from backend:", e);
   }
+
+  if (!staticCollection && !foundBackend) {
+    notFound();
+  }
+
+  const collection = staticCollection || {
+    slug,
+    eyebrow: displayEyebrow,
+    title: displayTitle,
+    teaser: "",
+    lede: displayLede,
+    color: "#B84200",
+    query: {},
+  };
 
   let movies: any[] = [];
   try {

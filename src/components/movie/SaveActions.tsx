@@ -74,6 +74,7 @@ export default function SaveActions({
         onClick={onWatchlist}
         disabled={isPending}
         aria-pressed={inWatchlist}
+        suppressHydrationWarning
       >
         <Bookmark size={17} strokeWidth={1.6} fill={inWatchlist ? "currentColor" : "none"} />
         {inWatchlist ? "In Watchlist" : "Add to Watchlist"}
@@ -83,6 +84,7 @@ export default function SaveActions({
         onClick={onFavorite}
         disabled={isPending}
         aria-pressed={inFavorites}
+        suppressHydrationWarning
       >
         <Heart size={17} strokeWidth={1.6} fill={inFavorites ? "currentColor" : "none"} />
         {inFavorites ? "Favorited" : "Favorite"}

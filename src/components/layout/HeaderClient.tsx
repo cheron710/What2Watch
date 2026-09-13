@@ -26,6 +26,7 @@ interface SearchHit {
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/kids", label: "Kids" },
+  { href: "/watch-with-someone", label: "Watch With Someone" },
   { href: "/seasons", label: "Seasons" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
@@ -248,6 +249,7 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={isMobileMenuOpen}
+            suppressHydrationWarning
           >
             <span />
             <span />
@@ -262,6 +264,7 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
           className="search-close-overlay"
           onClick={closeSearch}
           aria-label="Close search"
+          suppressHydrationWarning
         >
           ✕
         </button>
@@ -274,6 +277,7 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
               placeholder="Search films, directors, moods…"
               autoComplete="off"
               value={searchQuery}
+              suppressHydrationWarning
               onChange={(e) => {
                 const val = e.target.value;
                 setSearchQuery(val);
@@ -283,7 +287,12 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
                 }
               }}
             />
-            <button className="search-submit-btn" type="submit" aria-label="Search">
+            <button
+              className="search-submit-btn"
+              type="submit"
+              aria-label="Search"
+              suppressHydrationWarning
+            >
               →
             </button>
           </form>
@@ -326,6 +335,7 @@ export default function HeaderClient({ user }: { user: HeaderUser | null }) {
             className="mobile-menu-close"
             onClick={() => setIsMobileMenuOpen(false)}
             aria-label="Close menu"
+            suppressHydrationWarning
           >
             ✕
           </button>

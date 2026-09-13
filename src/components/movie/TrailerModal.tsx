@@ -21,7 +21,7 @@ export default function TrailerModal({ youtubeKey, label = "Watch Trailer" }: { 
 
   return (
     <>
-      <button className="mv-trailer-btn" onClick={() => setOpen(true)}>
+      <button className="mv-trailer-btn" onClick={() => setOpen(true)} suppressHydrationWarning>
         <Play size={16} strokeWidth={2} fill="currentColor" />
         {label}
       </button>

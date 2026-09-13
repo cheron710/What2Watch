@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getFestivals, saveFestival, getMovies } from "@/services/adminService";
+import { getFestivals, saveFestival, deleteFestival, getMovies } from "@/services/adminService";
 import DataTable, { Column } from "@/components/admin/tables/DataTable";
 import { useToast } from "@/components/admin/layout/AdminLayout";
 import { InputField, TextareaField, SelectField } from "@/components/admin/forms/FormFields";
@@ -100,6 +100,17 @@ export default function FestivalsPage() {
     }
   };
 
+  const handleDelete = async (col: any) => {
+    if (!window.confirm(`Are you sure you want to delete "${col.title || col.festival_name}"?`)) return;
+    try {
+      await deleteFestival(col.id);
+      showToast(`Deleted festival showcase "${col.title || col.festival_name}".`, "info");
+      loadData();
+    } catch (e) {
+      showToast("Failed to delete festival showcase.", "error");
+    }
+  };
+
   const handleAddMovie = () => {
     if (!selectedMovieId) return;
     const id = Number(selectedMovieId);
@@ -168,13 +179,22 @@ export default function FestivalsPage() {
       id: "actions",
       label: "Actions",
       render: (row) => (
-        <button
-          onClick={() => handleOpenEdit(row)}
-          className="p-1.5 rounded text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
-          title="Edit Showcase"
-        >
-          <Edit2 size={13} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => handleOpenEdit(row)}
+            className="p-1.5 rounded text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+            title="Edit Showcase"
+          >
+            <Edit2 size={13} />
+          </button>
+          <button
+            onClick={() => handleDelete(row)}
+            className="p-1.5 rounded text-red-500 hover:bg-red-500/10 cursor-pointer"
+            title="Delete Showcase"
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
       )
     }
   ];

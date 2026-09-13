@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getSeasons, saveSeason, getMovies } from "@/services/adminService";
+import { getSeasons, saveSeason, deleteSeason, getMovies } from "@/services/adminService";
 import DataTable, { Column } from "@/components/admin/tables/DataTable";
 import { useToast } from "@/components/admin/layout/AdminLayout";
 import { InputField, TextareaField, SelectField } from "@/components/admin/forms/FormFields";
@@ -50,19 +50,43 @@ export default function SeasonsPage() {
     loadData();
   }, []);
 
-  const handleOpenEdit = (item: any) => {
+  const handleOpenEdit = (item?: any) => {
     setSelectedMovieId("");
-    setActiveSeason(item);
-    setFormValues({
-      id: item.id,
-      season: item.season,
-      name: item.name,
-      description: item.description || "",
-      featured_movie_id: item.featured_movie_id || "",
-      is_published: !!item.is_published,
-      movies: item.movies || []
-    });
+    if (item) {
+      setActiveSeason(item);
+      setFormValues({
+        id: item.id,
+        season: item.season || "Spring",
+        name: item.name || "Partner",
+        description: item.description || "",
+        featured_movie_id: item.featured_movie_id || "",
+        is_published: !!item.is_published,
+        movies: item.movies || []
+      });
+    } else {
+      setActiveSeason(null);
+      setFormValues({
+        id: "",
+        season: "Spring",
+        name: "Partner",
+        description: "",
+        featured_movie_id: "",
+        is_published: true,
+        movies: []
+      });
+    }
     setEditOpen(true);
+  };
+
+  const handleDelete = async (item: any) => {
+    if (!window.confirm(`Are you sure you want to delete "${item.name} (${item.season})"?`)) return;
+    try {
+      await deleteSeason(item.id);
+      showToast(`Deleted seasonal curation "${item.name}".`, "info");
+      loadData();
+    } catch (e) {
+      showToast("Failed to delete seasonal curation.", "error");
+    }
   };
 
   const handleSaveSubmit = async (e: React.FormEvent) => {
@@ -157,13 +181,22 @@ export default function SeasonsPage() {
       id: "actions",
       label: "Actions",
       render: (row) => (
-        <button
-          onClick={() => handleOpenEdit(row)}
-          className="p-1.5 rounded text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
-          title="Edit Category Curation"
-        >
-          <Edit2 size={13} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => handleOpenEdit(row)}
+            className="p-1.5 rounded text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+            title="Edit Category Curation"
+          >
+            <Edit2 size={13} />
+          </button>
+          <button
+            onClick={() => handleDelete(row)}
+            className="p-1.5 rounded text-red-500 hover:bg-red-500/10 cursor-pointer"
+            title="Delete Category Curation"
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
       )
     }
   ];
@@ -172,11 +205,18 @@ export default function SeasonsPage() {
     <div className="space-y-6 animate-fadeIn">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Watch With Someone</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">Seasonal & Companion Curation</h1>
           <p className="text-sm text-[var(--admin-text-muted)]">
-            Configure movie catalogs for relationship templates based on seasonal mood templates.
+            Configure movie catalogs for relationship and seasonal mood templates shown in the customer section.
           </p>
         </div>
+        <button
+          onClick={() => handleOpenEdit()}
+          className="admin-btn admin-btn-primary h-10 px-5 flex items-center gap-1.5 cursor-pointer text-xs font-semibold tracking-wider shrink-0 select-none"
+        >
+          <Plus size={16} />
+          <span>New Season Curation</span>
+        </button>
       </div>
 
       {loading ? (

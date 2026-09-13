@@ -11,6 +11,7 @@ import { getLibraryState } from "@/services/library";
 import PosterCard from "@/components/ui/PosterCard";
 import SaveActions from "@/components/movie/SaveActions";
 import TrailerModal from "@/components/movie/TrailerModal";
+import CastSection from "@/components/movie/CastSection";
 import "../movie.css";
 
 export const dynamic = "force-dynamic";
@@ -38,11 +39,16 @@ export async function generateMetadata({
   const { id } = await params;
   try {
     const movieId = Number(id);
-    const [allMovies, { movie }] = await Promise.all([
+    const [allMovies, data] = await Promise.all([
       getCachedMovies(),
       getCachedMoviePageData(movieId),
     ]);
 
+    if (!data || !data.movie) {
+      return { title: "Film Not Found — What2Watch" };
+    }
+
+    const { movie } = data;
     const dbMovie = allMovies.find((m) => m.id === movieId);
     if (dbMovie) {
       if (dbMovie.visibility === "hidden" || dbMovie.status === "draft") {
@@ -75,6 +81,10 @@ export default async function MoviePage({
     getCachedMoviePageData(movieId),
     getSessionUser(),
   ]);
+
+  if (!data || !data.movie) {
+    notFound();
+  }
 
   const dbMovie = allMovies.find((m) => m.id === movieId);
   if (dbMovie) {
@@ -212,27 +222,7 @@ export default async function MoviePage({
             <p className="mv-editorial">{displayEditorial}</p>
           </section>
 
-          {topCast.length > 0 && (
-            <section className="mv-section">
-              <span className="mv-section-label">Cast</span>
-              <div className="mv-cast-grid">
-                {topCast.map((c) => (
-                  <Link key={c.id} href={`/person/${c.id}`} className="mv-cast-card">
-                    <div className="mv-cast-photo">
-                      <Image
-                        src={tmdbImageUrl(c.profile_path, "w185")}
-                        alt={c.name}
-                        fill
-                        sizes="120px"
-                      />
-                    </div>
-                    <div className="mv-cast-name">{c.name}</div>
-                    <div className="mv-cast-role">{c.character}</div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}
+          <CastSection topCast={topCast} />
 
           {(movie.genres?.length ?? 0) > 0 && (
             <section className="mv-section">

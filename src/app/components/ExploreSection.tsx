@@ -28,8 +28,8 @@ export default function ExploreSection() {
               <div className="exp-description">
                 <p>Cinema changes when you share it. Films curated for every season and every kind of company.</p>
               </div>
-              <Link href="/seasons" className="exp-explore-btn">
-                Explore seasons <span>→</span>
+              <Link href="/watch-with-someone" className="exp-explore-btn">
+                Explore Watch with Someone <span>→</span>
               </Link>
             </div>
           </div>

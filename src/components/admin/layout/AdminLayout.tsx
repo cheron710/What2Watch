@@ -33,6 +33,7 @@ export function useToast() {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
@@ -70,6 +71,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       console.warn("Analytics telemetry fail", e);
     }
   }, [pathname]);
+
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
 
   const toggleDarkMode = () => {
     const next = !darkMode;

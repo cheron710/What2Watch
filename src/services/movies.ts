@@ -61,73 +61,73 @@ export function composeEditorial(movie: TMDbMovieDetail, directors: TMDbCrewMemb
   return `${opening}${craft} ${reception}.${genreClause} leaving you with the sense that its images were composed rather than captured.`.trim();
 }
 
-export async function getMoviePageData(id: number): Promise<MoviePageData> {
+export async function getMoviePageData(id: number): Promise<MoviePageData | null> {
   let movie: TMDbMovieDetail;
   let fallback = false;
 
   try {
-    const tmdbPromise = getMovieDetail(id);
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("TMDb API request timeout")), 1500)
-    );
-    movie = await Promise.race([tmdbPromise, timeoutPromise]);
+    movie = await getMovieDetail(id);
   } catch (err) {
-    console.warn(`TMDb getMovieDetail failed or timed out for movie ${id}, attempting local DB fallback:`, err);
+    console.warn(`TMDb getMovieDetail failed for movie ${id}, attempting local DB fallback:`, err);
     
-    const { getMoviesDb } = await import("@/lib/db");
-    const allMovies = await getMoviesDb();
-    const dbMovie = allMovies.find((m) => m.id === id);
-    if (!dbMovie) {
-      throw new Error(`Movie not found in TMDb or local DB: ${id}`);
-    }
+    try {
+      const { getMoviesDb } = await import("@/lib/db");
+      const allMovies = await getMoviesDb();
+      const dbMovie = allMovies.find((m) => m.id === id);
+      if (!dbMovie) {
+        return null;
+      }
 
-    movie = {
-      id: dbMovie.id,
-      title: dbMovie.title || "",
-      original_title: dbMovie.original_title || dbMovie.title || "",
-      overview: dbMovie.overview || "",
-      release_date: dbMovie.release_date || "",
-      poster_path: dbMovie.poster_path || null,
-      backdrop_path: dbMovie.backdrop_path || null,
-      genre_ids: [],
-      vote_average: dbMovie.vote_average || 0,
-      vote_count: dbMovie.vote_count || 0,
-      popularity: dbMovie.popularity || 0,
-      runtime: dbMovie.runtime || 0,
-      tagline: dbMovie.tagline || "",
-      budget: 0,
-      revenue: 0,
-      homepage: null,
-      genres: [],
-      production_countries: [],
-      production_companies: [],
-      spoken_languages: [],
-      status: dbMovie.status || "released",
-      imdb_id: "",
-      credits: {
-        cast: [],
-        crew: []
-      },
-      similar: {
-        page: 1,
-        results: [],
-        total_pages: 0,
-        total_results: 0
-      },
-      keywords: { keywords: [] },
-      videos: { results: dbMovie.trailer_url ? [{ id: "1", key: dbMovie.trailer_url.split("v=")[1] || "", name: "Trailer", site: "YouTube", type: "Trailer", official: true }] : [] },
-      "watch/providers": {
-        results: {
-          US: {
-            link: "",
-            flatrate: dbMovie.streaming_providers?.filter((p: any) => p.price === "Subscription").map((p: any) => ({ provider_id: 1, provider_name: p.name, logo_path: null })) || [],
-            rent: dbMovie.streaming_providers?.filter((p: any) => p.price === "Rent").map((p: any) => ({ provider_id: 2, provider_name: p.name, logo_path: null })) || [],
-            buy: dbMovie.streaming_providers?.filter((p: any) => p.price === "Buy").map((p: any) => ({ provider_id: 3, provider_name: p.name, logo_path: null })) || [],
+      movie = {
+        id: dbMovie.id,
+        title: dbMovie.title || "",
+        original_title: dbMovie.original_title || dbMovie.title || "",
+        overview: dbMovie.overview || "",
+        release_date: dbMovie.release_date || "",
+        poster_path: dbMovie.poster_path || null,
+        backdrop_path: dbMovie.backdrop_path || null,
+        genre_ids: [],
+        vote_average: dbMovie.vote_average || 0,
+        vote_count: dbMovie.vote_count || 0,
+        popularity: dbMovie.popularity || 0,
+        runtime: dbMovie.runtime || 0,
+        tagline: dbMovie.tagline || "",
+        budget: 0,
+        revenue: 0,
+        homepage: null,
+        genres: [],
+        production_countries: [],
+        production_companies: [],
+        spoken_languages: [],
+        status: dbMovie.status || "released",
+        imdb_id: "",
+        credits: {
+          cast: [],
+          crew: []
+        },
+        similar: {
+          page: 1,
+          results: [],
+          total_pages: 0,
+          total_results: 0
+        },
+        keywords: { keywords: [] },
+        videos: { results: dbMovie.trailer_url ? [{ id: "1", key: dbMovie.trailer_url.split("v=")[1] || "", name: "Trailer", site: "YouTube", type: "Trailer", official: true }] : [] },
+        "watch/providers": {
+          results: {
+            US: {
+              link: "",
+              flatrate: dbMovie.streaming_providers?.filter((p: any) => p.price === "Subscription").map((p: any) => ({ provider_id: 1, provider_name: p.name, logo_path: null })) || [],
+              rent: dbMovie.streaming_providers?.filter((p: any) => p.price === "Rent").map((p: any) => ({ provider_id: 2, provider_name: p.name, logo_path: null })) || [],
+              buy: dbMovie.streaming_providers?.filter((p: any) => p.price === "Buy").map((p: any) => ({ provider_id: 3, provider_name: p.name, logo_path: null })) || [],
+            }
           }
         }
-      }
-    };
-    fallback = true;
+      };
+      fallback = true;
+    } catch {
+      return null;
+    }
   }
 
   const directors = findDirectors(movie.credits?.crew ?? []);

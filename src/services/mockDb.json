@@ -25,7 +25,7 @@
       "craft_tags": [],
       "festival_tags": [],
       "is_featured": true,
-      "is_homepage_hero": true,
+      "is_homepage_hero": false,
       "visibility": "visible",
       "status": "published",
       "trailer_url": "https://www.youtube.com/watch?v=hIR8Ar-Z4hw",
@@ -40,7 +40,7 @@
         }
       ],
       "recommendation_score": 80,
-      "updated_at": "2026-09-13T07:00:57.043Z",
+      "updated_at": "2026-09-13T10:46:08.448Z",
       "created_at": "2026-09-13T07:00:34.790Z"
     },
     {
@@ -196,6 +196,56 @@
       "recommendation_score": 40,
       "updated_at": "2026-09-13T07:05:14.539Z",
       "created_at": "2026-09-13T07:04:44.304Z"
+    },
+    {
+      "id": 652,
+      "title": "Troy",
+      "original_title": "Troy",
+      "overview": "In year 1250 B.C. during the late Bronze age, two emerging nations begin to clash. Paris, the Trojan prince, convinces Helen, Queen of Sparta, to leave her husband Menelaus, and sail with him back to Troy. After Menelaus finds out that his wife was taken by the Trojans, he asks his brother Agamemnon to help him get her back. Agamemnon sees this as an opportunity for power. They set off with 1,000 ships holding 50,000 Greeks to Troy.",
+      "release_date": "2004-05-13",
+      "poster_path": "https://image.tmdb.org/t/p/w500/a07wLy4ONfpsjnBqMwhlWTJTcm.jpg",
+      "backdrop_path": "https://image.tmdb.org/t/p/w1280/ZPcC5hJh21QiW0jmhMQhZeSoGu.jpg",
+      "genre_ids": [
+        28,
+        12
+      ],
+      "vote_average": 7,
+      "vote_count": 11493,
+      "popularity": 29.2554,
+      "runtime": 163,
+      "tagline": "For passion. For honor. For destiny. For victory. For love.",
+      "imdb_id": "tt0332452",
+      "custom_editorial_description": "In year 1250 B.C. during the late Bronze age, two emerging nations begin to clash. Paris, the Trojan prince, convinces Helen, Queen of Sparta, to leave her husband Menelaus, and sail with him back to Troy. After Menelaus finds out that his wife was taken by the Trojans, he asks his brother Agamemnon to help him get her back. Agamemnon sees this as an opportunity for power. They set off with 1,000 ships holding 50,000 Greeks to Troy.",
+      "emotional_tags": [],
+      "context_tags": [],
+      "craft_tags": [],
+      "festival_tags": [],
+      "is_featured": false,
+      "is_homepage_hero": true,
+      "visibility": "visible",
+      "status": "published",
+      "trailer_url": "https://www.youtube.com/watch?v=P8xLgg-MNKw",
+      "streaming_providers": [
+        {
+          "name": "Apple TV",
+          "price": "Subscription"
+        },
+        {
+          "name": "VIX ",
+          "price": "Subscription"
+        },
+        {
+          "name": "ViX Premium Amazon Channel",
+          "price": "Subscription"
+        },
+        {
+          "name": "Apple TV Amazon Channel",
+          "price": "Subscription"
+        }
+      ],
+      "recommendation_score": 70,
+      "updated_at": "2026-09-13T11:11:02.316Z",
+      "created_at": "2026-09-13T10:48:54.269Z"
     }
   ],
   "emotions": [
@@ -321,5 +371,10 @@
       "ttl": 3600
     },
     "updated_at": "2026-09-13T06:59:28.381Z"
-  }
+  },
+  "festivals": [],
+  "experiences": [],
+  "seasons": [],
+  "kids": [],
+  "staff_picks": []
 }

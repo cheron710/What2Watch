@@ -1,57 +1,150 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from "react";
+import Link from "next/link";
+import { tmdbImageUrl } from "@/lib/tmdb/client";
 import "./watch.css";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 const MOVIES = {
   summer: [
-    { t: "Call Me by Your Name", y: 2017, tags: ["date-night","solo-viewing"], note: "A slow-burn Italian summer that lingers in the chest." },
-    { t: "La La Land", y: 2016, tags: ["date-night","friends-gathering"], note: "Golden-hour romance built for porch dancing afterward." },
-    { t: "Mamma Mia!", y: 2008, tags: ["friends-gathering","family-movie"], note: "ABBA, an island, and absolutely no chill." },
-    { t: "Jaws", y: 1975, tags: ["family-movie","friends-gathering"], note: "The reason nobody trusts the ocean anymore." },
-    { t: "The Sandlot", y: 1993, tags: ["family-movie"], note: "Endless summer, in the best possible way." },
-    { t: "Stand By Me", y: 1986, tags: ["friends-gathering","solo-viewing"], note: "Walking the tracks with the people who knew you first." },
-    { t: "Dirty Dancing", y: 1987, tags: ["date-night","friends-gathering"], note: "Nobody puts this one in the corner." },
-    { t: "Moonrise Kingdom", y: 2012, tags: ["family-movie","solo-viewing"], note: "Runaway love, told like a storybook." },
-    { t: "Almost Famous", y: 2000, tags: ["friends-gathering","solo-viewing"], note: "A tour bus, a band, and the feeling of being almost there." },
-    { t: "Palm Springs", y: 2020, tags: ["date-night","friends-gathering"], note: "A wedding day stuck on repeat, in the funniest way." },
+    { id: 398818, t: "Call Me by Your Name", y: 2017, tags: ["date-night","solo-viewing"], note: "A slow-burn Italian summer that lingers in the chest." },
+    { id: 313369, t: "La La Land", y: 2016, tags: ["date-night","friends-gathering"], note: "Golden-hour romance built for porch dancing afterward." },
+    { id: 11631, t: "Mamma Mia!", y: 2008, tags: ["friends-gathering","family-movie"], note: "ABBA, an island, and absolutely no chill." },
+    { id: 578, t: "Jaws", y: 1975, tags: ["family-movie","friends-gathering"], note: "The reason nobody trusts the ocean anymore." },
+    { id: 11528, t: "The Sandlot", y: 1993, tags: ["family-movie"], note: "Endless summer, in the best possible way." },
+    { id: 235, t: "Stand By Me", y: 1986, tags: ["friends-gathering","solo-viewing"], note: "Walking the tracks with the people who knew you first." },
+    { id: 88, t: "Dirty Dancing", y: 1987, tags: ["date-night","friends-gathering"], note: "Nobody puts this one in the corner." },
+    { id: 8321, t: "Moonrise Kingdom", y: 2012, tags: ["family-movie","solo-viewing"], note: "Runaway love, told like a storybook." },
+    { id: 786, t: "Almost Famous", y: 2000, tags: ["friends-gathering","solo-viewing"], note: "A tour bus, a band, and the feeling of being almost there." },
+    { id: 587792, t: "Palm Springs", y: 2020, tags: ["date-night","friends-gathering"], note: "A wedding day stuck on repeat, in the funniest way." },
+    { id: 19404, t: "Dazed and Confused", y: 1993, tags: ["friends-gathering","solo-viewing"], note: "The last day of school in 1976." },
+    { id: 118, t: "Before Sunrise", y: 1995, tags: ["date-night","solo-viewing"], note: "A nocturnal walking tour of Vienna and instant chemistry." },
+    { id: 10515, t: "Ferris Bueller's Day Off", y: 1986, tags: ["family-movie","friends-gathering"], note: "Playing hooky in Chicago on a perfect day." },
+    { id: 37165, t: "The Truman Show", y: 1998, tags: ["family-movie","solo-viewing"], note: "Bright blue skies hiding an extraordinary truth." },
+    { id: 914, t: "The Great Gatsby", y: 2013, tags: ["date-night","friends-gathering"], note: "Extravagant summer parties on Long Island." },
+    { id: 82690, t: "Wreck-It Ralph", y: 2012, tags: ["family-movie"], note: "Arcade fun and sweet Sugar Rush speedway races." },
+    { id: 12153, t: "National Lampoon's Vacation", y: 1983, tags: ["family-movie","friends-gathering"], note: "The Griswold family cross-country road trip." },
+    { id: 508442, t: "Soul", y: 2020, tags: ["family-movie","solo-viewing"], note: "Finding purpose in the small moments of living." },
+    { id: 10625, t: "Mean Girls", y: 2004, tags: ["friends-gathering"], note: "Pink on Wednesdays and high school social hierarchy." },
+    { id: 284052, t: "Doctor Strange", y: 2016, tags: ["friends-gathering"], note: "Mind-bending visual spectacles and mystic arts." },
+    { id: 299536, t: "Avengers: Infinity War", y: 2018, tags: ["friends-gathering"], note: "The ultimate superhero spectacle built for crowds." },
+    { id: 414906, t: "The Batman", y: 2022, tags: ["solo-viewing","friends-gathering"], note: "Gotham City noir and rain-soaked detective work." },
+    { id: 438631, t: "Dune", y: 2021, tags: ["solo-viewing","friends-gathering"], note: "Sweeping desert sands and epic cinematic worldbuilding." },
+    { id: 671039, t: "Bronx Tale", y: 1993, tags: ["family-movie","solo-viewing"], note: "Growing up in New York with street wisdom and heart." },
+    { id: 329, t: "Jurassic Park", y: 1993, tags: ["family-movie","friends-gathering"], note: "Welcome to Jurassic Park — Spielberg's summer masterpiece." },
+    { id: 181808, t: "Star Wars: The Force Awakens", y: 2015, tags: ["family-movie","friends-gathering"], note: "Returning to a galaxy far, far away." },
+    { id: 361743, t: "Top Gun: Maverick", y: 2022, tags: ["family-movie","friends-gathering","date-night"], note: "Adrenaline, supersonic jets, and pure big-screen magic." },
+    { id: 335984, t: "Blade Runner 2049", y: 2017, tags: ["solo-viewing"], note: "Visually breathtaking sci-fi masterpiece." },
+    { id: 157336, t: "Interstellar", y: 2014, tags: ["solo-viewing","date-night"], note: "Love transcending time, space, and gravity." },
+    { id: 420818, t: "The Lion King", y: 2019, tags: ["family-movie"], note: "The circle of life in stunning animation." }
   ],
   fall: [
-    { t: "Dead Poets Society", y: 1989, tags: ["solo-viewing","family-movie"], note: "Carpe diem, with tissues nearby." },
-    { t: "When Harry Met Sally...", y: 1989, tags: ["date-night","friends-gathering"], note: "The deli scene alone is worth the rewatch." },
-    { t: "Knives Out", y: 2019, tags: ["friends-gathering","family-movie"], note: "A whodunit built for shouting theories at the screen." },
-    { t: "Hocus Pocus", y: 1993, tags: ["family-movie","friends-gathering"], note: "Three witches, one candle, infinite rewatches." },
-    { t: "Good Will Hunting", y: 1997, tags: ["solo-viewing","date-night"], note: "Equations on a chalkboard, feelings underneath." },
-    { t: "You've Got Mail", y: 1998, tags: ["date-night"], note: "Email flirting before email flirting was a thing." },
-    { t: "Coraline", y: 2009, tags: ["family-movie","solo-viewing"], note: "A button-eyed nightmare wrapped in stop-motion beauty." },
-    { t: "Fantastic Mr. Fox", y: 2009, tags: ["family-movie","friends-gathering"], note: "Corduroy, autumn light, and a very good heist." },
-    { t: "Practical Magic", y: 1998, tags: ["friends-gathering","date-night"], note: "Sisters, spells, and a midnight margarita ritual." },
-    { t: "The Social Network", y: 2010, tags: ["solo-viewing","friends-gathering"], note: "Ambition with a soundtrack that hums under your skin." },
+    // ── FALL: Cozy Autumn to Horror ──
+    { id: 10439, t: "Hocus Pocus", y: 1993, tags: ["family-movie","friends-gathering"], note: "Three Salem witches, one black flame candle, infinite autumn vibes." },
+    { id: 4011, t: "Beetlejuice", y: 1988, tags: ["friends-gathering","family-movie"], note: "Say his name three times — the ultimate spooky season comedy." },
+    { id: 917496, t: "Beetlejuice Beetlejuice", y: 2024, tags: ["friends-gathering","family-movie"], note: "The ghost with the most is back for more Halloween mischief." },
+    { id: 546554, t: "Knives Out", y: 2019, tags: ["friends-gathering","family-movie","date-night"], note: "Cozy sweater-weather whodunit with an autumn New England backdrop." },
+    { id: 948, t: "Halloween", y: 1978, tags: ["friends-gathering","solo-viewing"], note: "The night HE came home — John Carpenter's slasher masterpiece." },
+    { id: 694, t: "The Shining", y: 1980, tags: ["solo-viewing","date-night"], note: "Here's Johnny! Creepy isolation in the Overlook Hotel." },
+    { id: 4232, t: "Scream", y: 1996, tags: ["friends-gathering","date-night"], note: "What's your favorite scary movie? Meta horror perfection." },
+    { id: 12162, t: "Practical Magic", y: 1998, tags: ["date-night","friends-gathering"], note: "Witchy sisters, autumn leaves, and midnight margaritas." },
+    { id: 207, t: "Dead Poets Society", y: 1989, tags: ["solo-viewing","family-movie"], note: "Crisp New England prep school, autumn trees, and Carpe Diem." },
+    { id: 639, t: "When Harry Met Sally...", y: 1989, tags: ["date-night","friends-gathering"], note: "Walking through Central Park in peak autumn foliage." },
+    { id: 14836, t: "Coraline", y: 2009, tags: ["family-movie","solo-viewing"], note: "Button eyes, rainy afternoons, and creepy stop-motion wonders." },
+    { id: 10315, t: "Fantastic Mr. Fox", y: 2009, tags: ["family-movie","friends-gathering"], note: "Golden corduroy, cider, autumn light, and a grand heist." },
+    { id: 947, t: "Sleepy Hollow", y: 1999, tags: ["date-night","solo-viewing"], note: "Tim Burton's foggy, gothic autumn mystery of the Headless Horseman." },
+    { id: 13380, t: "Trick 'r Treat", y: 2007, tags: ["friends-gathering"], note: "Four intertwined tales of Halloween rules and autumn horror." },
+    { id: 377, t: "A Nightmare on Elm Street", y: 1984, tags: ["friends-gathering"], note: "One, two, Freddy's coming for you..." },
+    { id: 2907, t: "The Addams Family", y: 1991, tags: ["family-movie","friends-gathering"], note: "They're creepy and they're kooky, mysterious and spooky!" },
+    { id: 270303, t: "What We Do in the Shadows", y: 2014, tags: ["friends-gathering","date-night"], note: "Vampire roommates doing dishes and hosting scary night out." },
+    { id: 141, t: "Donnie Darko", y: 2001, tags: ["solo-viewing","friends-gathering"], note: "A giant rabbit warning of the end of the world in October." },
+    { id: 942, t: "The Blair Witch Project", y: 1999, tags: ["solo-viewing","friends-gathering"], note: "Lost in the creepy autumn woods of Maryland..." },
+    { id: 620, t: "Ghostbusters", y: 1984, tags: ["family-movie","friends-gathering"], note: "Who ya gonna call? NYC spooky paranormal comedy classic." },
+    { id: 489, t: "Good Will Hunting", y: 1997, tags: ["solo-viewing","date-night"], note: "Harvard autumn, bench talks, and deep emotional healing." },
+    { id: 9489, t: "You've Got Mail", y: 1998, tags: ["date-night"], note: "Bouquets of newly sharpened pencils and crisp fall walks." },
+    { id: 530385, t: "Midsommar", y: 2019, tags: ["solo-viewing"], note: "Sunlit folk horror that breaks every genre convention." },
+    { id: 419430, t: "Get Out", y: 2017, tags: ["date-night","friends-gathering","solo-viewing"], note: "Jordan Peele's gripping, psychological horror masterclass." },
+    { id: 493922, t: "Hereditary", y: 2018, tags: ["solo-viewing"], note: "Dark family secrets and relentless, dread-inducing horror." },
+    { id: 348, t: "Alien", y: 1979, tags: ["solo-viewing","friends-gathering"], note: "In space, no one can hear you scream." },
+    { id: 447332, t: "A Quiet Place", y: 2018, tags: ["date-night","family-movie","friends-gathering"], note: "If they hear you, they hunt you. Silent horror tension." },
+    { id: 138843, t: "The Conjuring", y: 2013, tags: ["date-night","friends-gathering"], note: "Ed and Lorraine Warren facing a dark presence in a haunted house." },
+    { id: 565, t: "The Ring", y: 2002, tags: ["friends-gathering","solo-viewing"], note: "Seven days... the ultimate rainy autumn horror tape." },
+    { id: 162, t: "Edward Scissorhands", y: 1990, tags: ["family-movie","date-night"], note: "Gothic fairytale with dark, tender autumn vibes." },
+    { id: 8834, t: "Casper", y: 1995, tags: ["family-movie"], note: "The friendly ghost in a grand Halloween mansion." },
+    { id: 9297, t: "Monster House", y: 2006, tags: ["family-movie"], note: "The house on the block is alive and very angry!" },
+    { id: 1091, t: "The Thing", y: 1982, tags: ["solo-viewing","friends-gathering"], note: "John Carpenter's shape-shifting horror masterpiece." },
+    { id: 539, t: "Psycho", y: 1960, tags: ["solo-viewing"], note: "Hitchcock's iconic shower scene and Bates Motel horror." },
+    { id: 22970, t: "The Cabin in the Woods", y: 2011, tags: ["friends-gathering"], note: "A satirical horror masterpiece with every monster imaginable." },
+    { id: 49018, t: "Insidious", y: 2010, tags: ["friends-gathering","date-night"], note: "The Further, red-faced demon, and terrifying jump scares." },
+    { id: 310131, t: "The Witch", y: 2015, tags: ["solo-viewing"], note: "1630s New England wilderness folk horror." }
   ],
   winter: [
-    { t: "Little Women", y: 2019, tags: ["family-movie","date-night"], note: "A fire crackling, four sisters, one impossible choice." },
-    { t: "Carol", y: 2015, tags: ["date-night","solo-viewing"], note: "Longing, shot in the hush of a department-store winter." },
-    { t: "The Holiday", y: 2006, tags: ["date-night","friends-gathering"], note: "Two women, two countries, one very good house swap." },
-    { t: "Love Actually", y: 2003, tags: ["friends-gathering","family-movie"], note: "Eight stories, one airport, all the feelings." },
-    { t: "Klaus", y: 2019, tags: ["family-movie"], note: "An origin story that earns every bit of its warmth." },
-    { t: "Home Alone", y: 1990, tags: ["family-movie","friends-gathering"], note: "Booby traps as a love language." },
-    { t: "A Christmas Story", y: 1983, tags: ["family-movie","friends-gathering"], note: "You'll shoot your eye out, kid." },
-    { t: "In Bruges", y: 2008, tags: ["friends-gathering","solo-viewing"], note: "Hitmen, guilt, and a very scenic Belgian city." },
-    { t: "Phantom Thread", y: 2017, tags: ["date-night","solo-viewing"], note: "Obsession, tailored within an inch of its life." },
-    { t: "The Muppet Christmas Carol", y: 1992, tags: ["family-movie","friends-gathering"], note: "Dickens, but with felt and better singing." },
+    // ── WINTER: Christmas & Festive Holiday Movies ──
+    { id: 10719, t: "Elf", y: 2003, tags: ["family-movie","friends-gathering","date-night"], note: "Son of a nutcracker! Pure festive Christmas joy." },
+    { id: 771, t: "Home Alone", y: 1990, tags: ["family-movie","friends-gathering"], note: "Booby traps as a holiday love language." },
+    { id: 772, t: "Home Alone 2: Lost in New York", y: 1992, tags: ["family-movie","friends-gathering"], note: "Kevin vs. the Sticky Bandits in festive NYC." },
+    { id: 1585, t: "It's a Wonderful Life", y: 1946, tags: ["family-movie","solo-viewing"], note: "The ultimate Christmas classic that warms every soul." },
+    { id: 5255, t: "The Polar Express", y: 2004, tags: ["family-movie"], note: "All aboard for magic, silver bells, and hot chocolate." },
+    { id: 508965, t: "Klaus", y: 2019, tags: ["family-movie","date-night"], note: "A gorgeous Christmas origin story that earns every tear." },
+    { id: 1581, t: "The Holiday", y: 2006, tags: ["date-night","friends-gathering"], note: "Snowy English cottage vs. sunny LA mansion Christmas house swap." },
+    { id: 508, t: "Love Actually", y: 2003, tags: ["date-night","friends-gathering"], note: "Nine intertwined Christmas stories, one airport, all the feelings." },
+    { id: 11881, t: "National Lampoon's Christmas Vacation", y: 1989, tags: ["family-movie","friends-gathering"], note: "25,000 lights and complete holiday family chaos." },
+    { id: 8871, t: "How the Grinch Stole Christmas", y: 2000, tags: ["family-movie","friends-gathering"], note: "Jim Carrey bringing Whoville Christmas to life." },
+    { id: 850, t: "A Christmas Story", y: 1983, tags: ["family-movie","friends-gathering"], note: "You'll shoot your eye out, kid!" },
+    { id: 9479, t: "The Nightmare Before Christmas", y: 1993, tags: ["family-movie","friends-gathering"], note: "Jack Skellington taking over Christmas Town." },
+    { id: 11395, t: "The Santa Clause", y: 1994, tags: ["family-movie"], note: "Tim Allen accidentally putting on Santa's suit." },
+    { id: 43593, t: "Arthur Christmas", y: 2011, tags: ["family-movie"], note: "How 2 billion presents get delivered in one night." },
+    { id: 10437, t: "The Muppet Christmas Carol", y: 1992, tags: ["family-movie","friends-gathering"], note: "Dickens, but with Michael Caine and felt." },
+    { id: 11529, t: "Scrooged", y: 1988, tags: ["friends-gathering","family-movie"], note: "Bill Murray in a hilarious modern Christmas Carol." },
+    { id: 11886, t: "Miracle on 34th Street", y: 1994, tags: ["family-movie"], note: "Proving Kris Kringle is the real deal." },
+    { id: 562, t: "Die Hard", y: 1988, tags: ["friends-gathering","solo-viewing"], note: "Welcome to the party, pal — the ultimate Christmas action film." },
+    { id: 12113, t: "Four Christmases", y: 2008, tags: ["date-night","friends-gathering"], note: "Surviving four family gatherings in one day." },
+    { id: 10140, t: "Bad Santa", y: 2003, tags: ["friends-gathering"], note: "A hilariously profane, dark holiday comedy." },
+    { id: 360920, t: "The Grinch", y: 2018, tags: ["family-movie"], note: "Illumination's colorful, heartwarming Christmas animation." },
+    { id: 899112, t: "Violent Night", y: 2022, tags: ["friends-gathering"], note: "Santa fighting mercenaries with holiday spirit." },
+    { id: 9279, t: "Jingle All the Way", y: 1996, tags: ["family-movie","friends-gathering"], note: "Arnold Schwarzenegger's desperate search for Turbo-Man." },
+    { id: 641501, t: "A Boy Called Christmas", y: 2021, tags: ["family-movie"], note: "A magical Nordic quest to find the village of elves." },
+    { id: 331482, t: "Little Women", y: 2019, tags: ["family-movie","date-night"], note: "A crackling fire, snow-dusted Concord, and sisterly love." },
+    { id: 258480, t: "Carol", y: 2015, tags: ["date-night","solo-viewing"], note: "Longing, shot in the hush of a department-store winter." },
+    { id: 162, t: "Edward Scissorhands", y: 1990, tags: ["date-night","family-movie"], note: "Snowfall made of ice sculptures and gothic romance." },
+    { id: 671, t: "Harry Potter and the Sorcerer's Stone", y: 2001, tags: ["family-movie"], note: "The Great Hall decorated for Christmas magic." },
+    { id: 411, t: "The Chronicles of Narnia", y: 2005, tags: ["family-movie"], note: "Always winter and never Christmas, until Aslan returns." },
+    { id: 81188, t: "Rise of the Guardians", y: 2012, tags: ["family-movie"], note: "Jack Frost and Santa defending childhood wonder." },
+    { id: 615777, t: "Spirited", y: 2022, tags: ["family-movie","friends-gathering"], note: "Will Ferrell and Ryan Reynolds in a musical Christmas Carol." },
+    { id: 546121, t: "Last Christmas", y: 2019, tags: ["date-night"], note: "Emilia Clarke working as a Christmas elf in London." },
+    { id: 9655, t: "The Family Stone", y: 2005, tags: ["family-movie","date-night"], note: "Meeting the eccentric family for Christmas." },
+    { id: 9969, t: "Deck the Halls", y: 2006, tags: ["family-movie"], note: "Battle of the brightest Christmas light displays." },
+    { id: 11013, t: "Jack Frost", y: 1998, tags: ["family-movie"], note: "A father returning as a magical snowman." },
+    { id: 400617, t: "Phantom Thread", y: 2017, tags: ["date-night","solo-viewing"], note: "Obsession, tailored within an inch of its life." }
   ],
   spring: [
-    { t: "The Secret Life of Walter Mitty", y: 2013, tags: ["solo-viewing","date-night"], note: "Daydreams that finally pack a bag." },
-    { t: "Spirited Away", y: 2001, tags: ["family-movie","solo-viewing"], note: "A bathhouse full of spirits and one brave kid." },
-    { t: "Paddington 2", y: 2017, tags: ["family-movie","friends-gathering"], note: "Kindness as a genuine plot device. Still flawless." },
-    { t: "Pride & Prejudice", y: 2005, tags: ["date-night","family-movie"], note: "A hand-flex across a field that ruined other romances." },
-    { t: "Crazy Rich Asians", y: 2018, tags: ["date-night","friends-gathering"], note: "A wedding, a fortune, and one unforgettable mahjong scene." },
-    { t: "Booksmart", y: 2019, tags: ["friends-gathering","solo-viewing"], note: "One wild night before everything changes." },
-    { t: "The Grand Budapest Hotel", y: 2014, tags: ["friends-gathering","family-movie"], note: "Pastry boxes, prison breaks, and Wes Anderson's pinkest film." },
-    { t: "My Neighbor Totoro", y: 1988, tags: ["family-movie","solo-viewing"], note: "Soft, slow, and gently magical." },
-    { t: "About Time", y: 2013, tags: ["date-night","family-movie"], note: "A love story that's secretly about fathers and time." },
-    { t: "Sing Street", y: 2016, tags: ["friends-gathering","date-night"], note: "Falling in love by starting a band for the wrong reasons." },
+    { id: 116745, t: "The Secret Life of Walter Mitty", y: 2013, tags: ["solo-viewing","date-night"], note: "Daydreams that finally pack a bag." },
+    { id: 129, t: "Spirited Away", y: 2001, tags: ["family-movie","solo-viewing"], note: "A bathhouse full of spirits and one brave kid." },
+    { id: 346648, t: "Paddington 2", y: 2017, tags: ["family-movie","friends-gathering"], note: "Kindness as a genuine plot device. Still flawless." },
+    { id: 4348, t: "Pride & Prejudice", y: 2005, tags: ["date-night","family-movie"], note: "A hand-flex across a field that ruined other romances." },
+    { id: 455207, t: "Crazy Rich Asians", y: 2018, tags: ["date-night","friends-gathering"], note: "A wedding, a fortune, and one unforgettable mahjong scene." },
+    { id: 505600, t: "Booksmart", y: 2019, tags: ["friends-gathering","solo-viewing"], note: "One wild night before everything changes." },
+    { id: 120467, t: "The Grand Budapest Hotel", y: 2014, tags: ["friends-gathering","family-movie"], note: "Pastry boxes, prison breaks, and Wes Anderson's pinkest film." },
+    { id: 8392, t: "My Neighbor Totoro", y: 1988, tags: ["family-movie","solo-viewing"], note: "Soft, slow, and gently magical." },
+    { id: 122906, t: "About Time", y: 2013, tags: ["date-night","family-movie"], note: "A love story that's secretly about fathers and time." },
+    { id: 366692, t: "Sing Street", y: 2016, tags: ["friends-gathering","date-night"], note: "Falling in love by starting a band for the wrong reasons." },
+    { id: 155, t: "The Dark Knight", y: 2008, tags: ["friends-gathering","solo-viewing"], note: "Unmatched tension and legendary villain performance." },
+    { id: 27205, t: "Inception", y: 2010, tags: ["solo-viewing","friends-gathering"], note: "Dreams within dreams and infinite possibilities." },
+    { id: 98, t: "Gladiator", y: 2000, tags: ["family-movie","solo-viewing"], note: "Are you not entertained? Epic Roman glory." },
+    { id: 13, t: "Forrest Gump", y: 1994, tags: ["family-movie","date-night"], note: "Life is like a box of chocolates." },
+    { id: 680, t: "Pulp Fiction", y: 1994, tags: ["friends-gathering"], note: "Non-linear storytelling and unforgettable dialogue." },
+    { id: 550, t: "Fight Club", y: 1999, tags: ["solo-viewing"], note: "First rule of fight club..." },
+    { id: 278, t: "The Shawshank Redemption", y: 1994, tags: ["family-movie","solo-viewing"], note: "Hope is a good thing, maybe the best of things." },
+    { id: 238, t: "The Godfather", y: 1972, tags: ["solo-viewing","friends-gathering"], note: "An offer you can't refuse." },
+    { id: 496243, t: "Parasite", y: 2019, tags: ["friends-gathering","date-night"], note: "Masterful class thriller that won the Palme d'Or and Oscars." },
+    { id: 120, t: "The Lord of the Rings: The Fellowship of the Ring", y: 2001, tags: ["family-movie","friends-gathering"], note: "One ring to rule them all." },
+    { id: 603, t: "The Matrix", y: 1999, tags: ["friends-gathering","solo-viewing"], note: "Take the red pill and see how deep the rabbit hole goes." },
+    { id: 11, t: "Star Wars", y: 1977, tags: ["family-movie","friends-gathering"], note: "The space opera that defined generations." },
+    { id: 857, t: "Saving Private Ryan", y: 1998, tags: ["solo-viewing"], note: "Raw, gripping Normandy invasion and brotherhood." },
+    { id: 597, t: "Titanic", y: 1997, tags: ["date-night"], note: "Every night in my dreams I see you..." },
+    { id: 497, t: "The Green Mile", y: 1999, tags: ["family-movie","solo-viewing"], note: "Miracles happen in unexpected places." },
+    { id: 24428, t: "The Avengers", y: 2012, tags: ["family-movie","friends-gathering"], note: "Earth's mightiest heroes assembling for the first time." }
   ],
 } as const;
 
@@ -67,8 +160,8 @@ const WITH_LABEL: Record<WithKey, string> = {
 };
 const CONTEXT_DESC: Record<Season, Record<WithKey, string>> = {
   summer: { "date-night": "Summer romance, tension under stars.", "family-movie": "Outdoor cinema vibes, adventure.", "friends-gathering": "Blockbuster energy, fun rewatches.", "solo-viewing": "Escapism, road-trip energy." },
-  fall: { "date-night": "Cozy, intimate, crisp-weather romance.", "family-movie": "Gratitude-focused, warmth.", "friends-gathering": "Spooky, fun, ensemble.", "solo-viewing": "Introspection as leaves fall." },
-  winter: { "date-night": "Snowed-in intimacy, New Year reflection.", "family-movie": "Traditions, multigenerational appeal.", "friends-gathering": "Holiday chaos, comedies, ensemble fun.", "solo-viewing": "Fireplace cinema, meditation." },
+  fall: { "date-night": "Cozy, intimate, crisp-weather romance.", "family-movie": "Gratitude-focused, warmth & autumn mystery.", "friends-gathering": "Spooky Halloween fun, horror & thrillers.", "solo-viewing": "Gothic atmosphere & introspective chills." },
+  winter: { "date-night": "Snowed-in intimacy, festive Christmas romance.", "family-movie": "Holiday traditions, Christmas classics & magic.", "friends-gathering": "Festive holiday chaos, Christmas comedies.", "solo-viewing": "Fireplace Christmas cinema & reflection." },
   spring: { "date-night": "Renewal, fresh starts, hope.", "family-movie": "Rebirth, adventure, growth.", "friends-gathering": "Outdoor hangouts, lighter tone.", "solo-viewing": "Personal transformation films." },
 };
 
@@ -98,7 +191,6 @@ const SeasonIcon = ({ season }: { season: Season }) => {
   );
 };
 
-// ─── Arrow SVG ───────────────────────────────────────────────────────────────
 const ArrowIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M5 12h14M13 6l6 6-6 6"/>
@@ -119,35 +211,41 @@ function rand(min: number, max: number) { return Math.random() * (max - min) + m
 function pick<T>(arr: T[]) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 // ─── Movie Card ───────────────────────────────────────────────────────────────
-import Link from "next/link";
-import { tmdbImageUrl } from "@/lib/tmdb/client";
-
 interface MovieEntry { id?: number; t: string; y: number; tags: readonly string[]; note: string; poster?: string | null; }
 
 function MovieCardW({ movie, delay }: { movie: MovieEntry; delay: number }) {
-  const [imgSrc, setImgSrc] = useState<string | null>(movie.poster ? tmdbImageUrl(movie.poster, "w500") : null);
+  const [imgSrc, setImgSrc] = useState<string | null>(movie.poster ? (movie.poster.startsWith("http") ? movie.poster : tmdbImageUrl(movie.poster, "w500")) : null);
   const [status, setStatus] = useState<"loading" | "loaded" | "error">(movie.poster ? "loaded" : "loading");
+  const [targetId, setTargetId] = useState<number | undefined>(movie.id);
 
   React.useEffect(() => {
     if (movie.poster) {
-      setImgSrc(tmdbImageUrl(movie.poster, "w500"));
+      setImgSrc(movie.poster.startsWith("http") ? movie.poster : tmdbImageUrl(movie.poster, "w500"));
       setStatus("loaded");
       return;
     }
-    const q = encodeURIComponent(`${movie.t} ${movie.y} film`);
-    const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=${q}&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=600&origin=*`;
-    fetch(url)
-      .then(r => r.json())
-      .then(data => {
-        const pages = data?.query?.pages;
-        const src = pages ? Object.values(pages as Record<string, { thumbnail?: { source: string } }>)[0]?.thumbnail?.source : null;
-        if (src) { setImgSrc(src); setStatus("loaded"); }
-        else setStatus("error");
+
+    const q = encodeURIComponent(movie.t);
+    fetch(`/api/admin/tmdb?action=search&query=${q}`)
+      .then((r) => r.json())
+      .then((results) => {
+        if (Array.isArray(results) && results.length > 0) {
+          const match = results.find((m: any) => m.poster_path) || results[0];
+          if (match) {
+            if (match.id) setTargetId(match.id);
+            if (match.poster_path) {
+              setImgSrc(tmdbImageUrl(match.poster_path, "w500"));
+              setStatus("loaded");
+              return;
+            }
+          }
+        }
+        setStatus("error");
       })
       .catch(() => setStatus("error"));
   }, [movie.t, movie.y, movie.poster]);
 
-  const href = movie.id ? `/movie/${movie.id}` : `/search?q=${encodeURIComponent(movie.t)}`;
+  const href = targetId ? `/movie/${targetId}` : `/search?q=${encodeURIComponent(movie.t)}`;
 
   return (
     <Link href={href} className="movie-card-w" style={{ animationDelay: `${delay}ms`, textDecoration: 'none', color: 'inherit' }}>
@@ -188,11 +286,29 @@ interface WatchWithSomeoneProps {
   allMovies: any[];
 }
 
+const MOVIES_PER_PAGE = 20;
+
+function getPaginationRange(current: number, total: number) {
+  const delta = 2;
+  const range: (number | string)[] = [];
+  for (let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+      range.push(i);
+    } else if (range[range.length - 1] !== "...") {
+      range.push("...");
+    }
+  }
+  return range;
+}
+
 // ─── Main Page Component ──────────────────────────────────────────────────────
 export default function WatchWithSomeonePage({ initialSeasons = [], allMovies = [] }: WatchWithSomeoneProps) {
   const [season, setSeason] = useState<Season | null>(null);
   const [withKey, setWithKey] = useState<WithKey | null>(null);
   const [picks, setPicks] = useState<MovieEntry[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(50);
+  const [loading, setLoading] = useState<boolean>(false);
   const [fxParticles, setFxParticles] = useState<React.ReactNode[]>([]);
   const [customLede, setCustomLede] = useState("");
 
@@ -233,70 +349,108 @@ export default function WatchWithSomeonePage({ initialSeasons = [], allMovies = 
     setFxParticles(particles);
   }, []);
 
+  const fetchPageResults = useCallback(async (s: Season, w: WithKey, pageNum: number) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/watch-with-someone?season=${s}&with=${w}&page=${pageNum}`);
+      const data = await res.json();
+      const apiMovies: MovieEntry[] = data.results || [];
+      setTotalPages(data.total_pages || 50);
+
+      const seasonName = s === "fall" ? "autumn" : s;
+      const matchedCat = (initialSeasons || []).find(
+        (cat) =>
+          (cat.season.toLowerCase() === seasonName || cat.season.toLowerCase() === s) &&
+          cat.is_published !== false &&
+          matchCategory(cat.name, w)
+      );
+
+      let customDescription = matchedCat?.description || "";
+      setCustomLede(customDescription);
+
+      if (pageNum === 1) {
+        // Merge top curated seasonal list with API discover results for Page 1
+        const seasonPool = [...MOVIES[s]];
+        const matching = seasonPool.filter((m: any) => (m.tags as readonly string[]).includes(w));
+        const rest = seasonPool.filter((m: any) => !(m.tags as readonly string[]).includes(w));
+        const curatedPool = [...matching, ...rest];
+
+        const titleSet = new Set(curatedPool.map((m) => m.t.toLowerCase()));
+        const filteredApi = apiMovies.filter((m) => !titleSet.has(m.t.toLowerCase()));
+        const combined = [...curatedPool, ...filteredApi].slice(0, MOVIES_PER_PAGE);
+        setPicks(combined);
+      } else {
+        // Page 2..50: use API discover items directly
+        if (apiMovies.length > 0) {
+          setPicks(apiMovies.slice(0, MOVIES_PER_PAGE));
+        } else {
+          // Fallback slice
+          const seasonPool = [...MOVIES[s]];
+          const matching = seasonPool.filter((m: any) => (m.tags as readonly string[]).includes(w));
+          const rest = seasonPool.filter((m: any) => !(m.tags as readonly string[]).includes(w));
+          const pool = [...matching, ...rest];
+          const start = ((pageNum - 1) * MOVIES_PER_PAGE) % pool.length;
+          setPicks(pool.slice(start, start + MOVIES_PER_PAGE));
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching watch-with-someone page:", err);
+      const seasonPool = [...MOVIES[s]];
+      const matching = seasonPool.filter((m: any) => (m.tags as readonly string[]).includes(w));
+      const rest = seasonPool.filter((m: any) => !(m.tags as readonly string[]).includes(w));
+      const pool = [...matching, ...rest];
+      setPicks(pool.slice(0, MOVIES_PER_PAGE));
+    } finally {
+      setLoading(false);
+    }
+  }, [initialSeasons]);
+
   const selectSeason = (s: Season) => {
     setSeason(s);
-    if (withKey) renderResults(s, withKey);
-    else setTimeout(() => withStepRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 150);
+    setCurrentPage(1); // Reset to Page 1 when changing season
+    if (withKey) {
+      fetchPageResults(s, withKey, 1);
+      spawnFx(s);
+      setTimeout(() => resultsStepRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 200);
+    } else {
+      setTimeout(() => withStepRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 150);
+    }
   };
 
   const selectWith = (w: WithKey) => {
     setWithKey(w);
-    if (season) renderResults(season, w);
-  };
-
-  const renderResults = (s: Season, w: WithKey) => {
-    const seasonName = s === "fall" ? "autumn" : s;
-    const matchedCat = (initialSeasons || []).find(
-      (cat) =>
-        cat.season.toLowerCase() === seasonName &&
-        matchCategory(cat.name, w)
-    );
-
-    let pool: MovieEntry[] = [];
-    let customDescription = "";
-
-    if (matchedCat) {
-      customDescription = matchedCat.description || "";
-      if (matchedCat.movies && matchedCat.movies.length > 0) {
-        const mapped = matchedCat.movies
-          .map((mid: number) => {
-            const movie = allMovies.find((m) => m.id === mid && m.visibility !== "hidden" && m.status !== "draft");
-            if (!movie) return null;
-            return {
-              id: movie.id,
-              t: movie.title,
-              y: movie.release_date ? parseInt(movie.release_date.split("-")[0], 10) : 2026,
-              tags: [w] as string[],
-              note: movie.custom_editorial_description || movie.tagline || movie.overview || "Recommended for this occasion.",
-              poster: movie.poster_path,
-            };
-          });
-        pool = mapped.filter((m: any): m is MovieEntry => m !== null);
-      }
+    setCurrentPage(1); // Reset to Page 1 when changing "Who Are You Watching With?" companion
+    if (season) {
+      fetchPageResults(season, w, 1);
+      spawnFx(season);
+      setTimeout(() => resultsStepRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 200);
     }
-
-    // Fallback to static items if no curation is present
-    if (pool.length === 0) {
-      pool = [...MOVIES[s]].filter((m: any) => (m.tags as readonly string[]).includes(w));
-    }
-
-    setCustomLede(customDescription);
-    setPicks(pool.slice(0, 10));
-    spawnFx(s);
-    setTimeout(() => resultsStepRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 200);
   };
 
   const resetPicker = () => {
     setSeason(null);
     setWithKey(null);
     setPicks([]);
+    setCurrentPage(1);
+    setTotalPages(50);
     setFxParticles([]);
     setCustomLede("");
     document.getElementById("seasonGrid")?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+    if (season && withKey) {
+      fetchPageResults(season, withKey, newPage);
+    }
+    resultsStepRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const showWithStep = season !== null;
-  const showResults = picks.length > 0;
+  const showResults = picks.length > 0 || loading;
+
+  const paginationRange = getPaginationRange(currentPage, totalPages);
 
   return (
     <>
@@ -346,7 +500,7 @@ export default function WatchWithSomeonePage({ initialSeasons = [], allMovies = 
           <div className="seasonal-intro">
             <span className="seasonal-intro-label">Seasonal Cinema</span>
             <h2 className="seasonal-intro-h">Watch by the Season</h2>
-            <p className="seasonal-intro-sub">Pick a season, then who you&apos;re watching with — we&apos;ll set the mood and bring ten films to match.</p>
+            <p className="seasonal-intro-sub">Pick a season, then who you&apos;re watching with — we&apos;ll set the mood and bring films to match.</p>
           </div>
 
           {/* Step 1: Season grid */}
@@ -365,8 +519,8 @@ export default function WatchWithSomeonePage({ initialSeasons = [], allMovies = 
                   </div>
                   <p className="season-tagline">
                     {s === "summer" && "Sun-warmed nights, open windows, and films that taste like the last day of school."}
-                    {s === "fall" && "Sweaters, candlelight, and stories that ask you to slow down and pay attention."}
-                    {s === "winter" && "Fogged-up windows, low light, and the kind of stillness that asks for company."}
+                    {s === "fall" && "Sweaters, candlelight, cozy mysteries, and spooky horror movies for crisp autumn nights."}
+                    {s === "winter" && "Fogged-up windows, crackling fireplaces, and warm festive Christmas classics."}
                     {s === "spring" && "New light, open air, and films that feel like exhaling for the first time."}
                   </p>
                 </div>
@@ -403,17 +557,67 @@ export default function WatchWithSomeonePage({ initialSeasons = [], allMovies = 
                 <span className="results-eyebrow">
                   {season ? SEASON_LABEL[season] : ""}{season && withKey ? " · " : ""}{withKey ? WITH_LABEL[withKey] : ""}
                 </span>
-                <h3 className="results-h">Ten Films for the Occasion</h3>
                 <p className="results-sub">
                   {customLede || (season && withKey ? CONTEXT_DESC[season][withKey] : "")}
                 </p>
               </div>
-              <div className="movie-grid">
-                {picks.map((movie, i) => (
-                  <MovieCardW key={`${movie.t}-${i}`} movie={movie} delay={i * 55} />
-                ))}
-              </div>
+
+              {loading ? (
+                <div className="movie-grid-loading" style={{ textAlign: "center", padding: "60px 0", color: "#a0a0a0" }}>
+                  <div className="spinner" style={{ fontSize: "1.2rem", fontWeight: 500 }}>Loading movies for Page {currentPage}...</div>
+                </div>
+              ) : (
+                <div className="movie-grid">
+                  {picks.map((movie, i) => (
+                    <MovieCardW key={`${movie.t}-${i}`} movie={movie} delay={i * 25} />
+                  ))}
+                </div>
+              )}
+
+              {/* Pagination Controls supporting up to 50 pages */}
+              {totalPages > 1 && (
+                <div className="watch-pagination">
+                  <button
+                    type="button"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1 || loading}
+                    className="watch-page-btn"
+                  >
+                    ← Previous Page
+                  </button>
+
+                  <div className="watch-page-numbers">
+                    {paginationRange.map((item, idx) =>
+                      item === "..." ? (
+                        <span key={`ellipsis-${idx}`} className="watch-page-ellipsis" style={{ padding: "0 6px", color: "rgba(255,255,255,0.4)", alignSelf: "center" }}>
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          key={`page-${item}`}
+                          type="button"
+                          onClick={() => handlePageChange(item as number)}
+                          disabled={loading}
+                          className={`watch-page-num ${currentPage === item ? "is-active" : ""}`}
+                        >
+                          {item}
+                        </button>
+                      )
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages || loading}
+                    className="watch-page-btn"
+                  >
+                    Next Page →
+                  </button>
+                </div>
+              )}
             </div>
+
             <button className="start-over-btn" onClick={resetPicker}>Start Over</button>
           </div>
         </div>
@@ -421,3 +625,4 @@ export default function WatchWithSomeonePage({ initialSeasons = [], allMovies = 
     </>
   );
 }
+

@@ -18,6 +18,7 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="footer-col">
             <div className="footer-col-title">Explore</div>
+            <Link href="/watch-with-someone" className="footer-link">Watch with Someone</Link>
             <Link href="/seasons" className="footer-link">Seasons</Link>
             <Link href="/emotional-spectrum" className="footer-link">Emotional Spectrum</Link>
             <Link href="/staff-picks" className="footer-link">Staff Picks</Link>
