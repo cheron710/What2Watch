@@ -1,122 +1,6 @@
 {
   "movies": [
     {
-      "id": 24428,
-      "title": "The Avengers",
-      "original_title": "The Avengers",
-      "overview": "When an unexpected enemy emerges and threatens global safety and security, Nick Fury, director of the international peacekeeping agency known as S.H.I.E.L.D., finds himself in need of a team to pull the world back from the brink of disaster. Spanning the globe, a daring recruitment effort begins!",
-      "release_date": "2012-04-25",
-      "poster_path": "https://image.tmdb.org/t/p/w500/RYMX2wcKCBAr24UyPD7xwmjaTn.jpg",
-      "backdrop_path": "https://image.tmdb.org/t/p/w1280/9BBTo63ANSmhC4e6r62OJFuK2GL.jpg",
-      "genre_ids": [
-        878,
-        28,
-        12
-      ],
-      "vote_average": 8,
-      "vote_count": 39681,
-      "popularity": 57.5334,
-      "runtime": 143,
-      "tagline": "Some assembly required.",
-      "imdb_id": "tt0848228",
-      "custom_editorial_description": "When an unexpected enemy emerges and threatens global safety and security, Nick Fury, director of the international peacekeeping agency known as S.H.I.E.L.D., finds himself in need of a team to pull the world back from the brink of disaster. Spanning the globe, a daring recruitment effort begins!",
-      "emotional_tags": [],
-      "context_tags": [],
-      "craft_tags": [],
-      "festival_tags": [],
-      "is_featured": true,
-      "is_homepage_hero": false,
-      "visibility": "visible",
-      "status": "published",
-      "trailer_url": "https://www.youtube.com/watch?v=hIR8Ar-Z4hw",
-      "streaming_providers": [
-        {
-          "name": "Disney Plus",
-          "price": "Subscription"
-        },
-        {
-          "name": "Hulu",
-          "price": "Subscription"
-        }
-      ],
-      "recommendation_score": 80,
-      "updated_at": "2026-09-13T10:46:08.448Z",
-      "created_at": "2026-09-13T07:00:34.790Z"
-    },
-    {
-      "id": 1368337,
-      "title": "The Odyssey",
-      "original_title": "The Odyssey",
-      "overview": "Odysseus, the legendary King of Ithaca, embarks on a long and perilous journey home following the Trojan War. Throughout his voyage, he is forced to confront the whims of gods, mythological monsters, and trials that stretch both his cunning and his humanity to the breaking point.",
-      "release_date": "2026-07-15",
-      "poster_path": "https://image.tmdb.org/t/p/w500/5rhTDKUhPYvpdQIijFIs5VoWsON.jpg",
-      "backdrop_path": "https://image.tmdb.org/t/p/w1280/iuylzRSllrGn7YB322kwKoOVMcq.jpg",
-      "genre_ids": [
-        12,
-        28,
-        14
-      ],
-      "vote_average": 8,
-      "vote_count": 3640,
-      "popularity": 408.5067,
-      "runtime": 173,
-      "tagline": "Defy the gods.",
-      "imdb_id": "tt33764258",
-      "custom_editorial_description": "Odysseus, the legendary King of Ithaca, embarks on a long and perilous journey home following the Trojan War. Throughout his voyage, he is forced to confront the whims of gods, mythological monsters, and trials that stretch both his cunning and his humanity to the breaking point.",
-      "emotional_tags": [],
-      "context_tags": [],
-      "craft_tags": [],
-      "festival_tags": [],
-      "is_featured": true,
-      "is_homepage_hero": true,
-      "visibility": "visible",
-      "status": "published",
-      "trailer_url": "https://www.youtube.com/watch?v=AyIZ9tiiN8I",
-      "streaming_providers": [],
-      "recommendation_score": 80,
-      "updated_at": "2026-09-13T07:01:41.314Z",
-      "created_at": "2026-09-13T07:01:26.661Z"
-    },
-    {
-      "id": 1479832,
-      "title": "DC",
-      "original_title": "டிசி",
-      "overview": "Rebel Devadas  joins forces with Chandra in a dangerous world where passion and peril collide. Their turbulent alliance demands bloodshed and tests loyalties as survival becomes the ultimate stake in their fight.",
-      "release_date": "2026-08-07",
-      "poster_path": "https://image.tmdb.org/t/p/w500/cB6ZAWK70cR5HVnGK6BaCr8W4FH.jpg",
-      "backdrop_path": "https://image.tmdb.org/t/p/w1280/9GmAODqkVdRvSgg5C4Vfeomi5Nj.jpg",
-      "genre_ids": [
-        10749,
-        28,
-        18
-      ],
-      "vote_average": 7.8,
-      "vote_count": 18,
-      "popularity": 18.9835,
-      "runtime": 142,
-      "tagline": null,
-      "imdb_id": "tt37501035",
-      "custom_editorial_description": "Rebel Devadas  joins forces with Chandra in a dangerous world where passion and peril collide. Their turbulent alliance demands bloodshed and tests loyalties as survival becomes the ultimate stake in their fight.",
-      "emotional_tags": [],
-      "context_tags": [],
-      "craft_tags": [],
-      "festival_tags": [],
-      "is_featured": true,
-      "is_homepage_hero": true,
-      "visibility": "visible",
-      "status": "published",
-      "trailer_url": "https://www.youtube.com/watch?v=4WuvS-w3J10",
-      "streaming_providers": [
-        {
-          "name": "Sun Nxt",
-          "price": "Subscription"
-        }
-      ],
-      "recommendation_score": 78,
-      "updated_at": "2026-09-13T07:02:23.780Z",
-      "created_at": "2026-09-13T07:02:15.013Z"
-    },
-    {
       "id": 1339713,
       "title": "Obsession",
       "original_title": "Obsession",
@@ -140,7 +24,7 @@
       "craft_tags": [],
       "festival_tags": [],
       "is_featured": true,
-      "is_homepage_hero": true,
+      "is_homepage_hero": false,
       "visibility": "visible",
       "status": "published",
       "trailer_url": "https://www.youtube.com/watch?v=gMC8kkwbIQQ",
@@ -155,97 +39,284 @@
         }
       ],
       "recommendation_score": 80,
-      "updated_at": "2026-09-13T07:03:10.425Z",
+      "updated_at": "2026-09-14T11:07:55.252Z",
       "created_at": "2026-09-13T07:02:55.570Z"
     },
     {
-      "id": 330420,
-      "title": "Puli",
-      "original_title": "புலி",
-      "overview": "A virtuous soldier Magadheera aka Puli (Tiger) vows to save his people from the rule of a cruel queen and her treacherous Marshal. Does good triumph over evil?",
-      "release_date": "2015-10-01",
-      "poster_path": "https://image.tmdb.org/t/p/w500/jOaQRIwweY6pkqp7TEZpklNqrvd.jpg",
-      "backdrop_path": "https://image.tmdb.org/t/p/w1280/ntHGUdeosYWniQbYc13Gm2jAL3c.jpg",
+      "id": 872585,
+      "title": "Oppenheimer",
+      "original_title": "Oppenheimer",
+      "overview": "The story of J. Robert Oppenheimer's role in the development of the atomic bomb during World War II.",
+      "release_date": "2023-07-19",
+      "poster_path": "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+      "backdrop_path": "https://wallpaperaccess.com/full/8881280.jpg",
       "genre_ids": [
-        14,
-        28,
-        12
+        18,
+        36
       ],
-      "vote_average": 4,
-      "vote_count": 50,
-      "popularity": 1.2738,
-      "runtime": 155,
-      "tagline": null,
-      "imdb_id": "tt3803860",
-      "custom_editorial_description": "A virtuous soldier Magadheera aka Puli (Tiger) vows to save his people from the rule of a cruel queen and her treacherous Marshal. Does good triumph over evil?",
+      "vote_average": 5.9,
+      "vote_count": 12456,
+      "popularity": 45.2153,
+      "runtime": 181,
+      "tagline": "The world forever changes.",
+      "imdb_id": "tt15398776",
+      "custom_editorial_description": "The story of J. Robert Oppenheimer's role in the development of the atomic bomb during World War II.",
       "emotional_tags": [],
       "context_tags": [],
       "craft_tags": [],
       "festival_tags": [],
       "is_featured": true,
-      "is_homepage_hero": false,
+      "is_homepage_hero": true,
       "visibility": "visible",
       "status": "published",
-      "trailer_url": "https://www.youtube.com/watch?v=U9kCY9psgOc",
+      "trailer_url": "https://www.youtube.com/watch?v=qiuSBWVdgLI",
       "streaming_providers": [
         {
-          "name": "Sun Nxt",
+          "name": "Peacock Premium",
+          "price": "Subscription"
+        },
+        {
+          "name": "YouTube TV",
+          "price": "Subscription"
+        },
+        {
+          "name": "Peacock Premium Plus",
           "price": "Subscription"
         }
       ],
-      "recommendation_score": 40,
-      "updated_at": "2026-09-13T07:05:14.539Z",
-      "created_at": "2026-09-13T07:04:44.304Z"
+      "recommendation_score": 59,
+      "updated_at": "2026-09-14T11:06:07.991Z",
+      "created_at": "2026-09-14T11:05:05.088Z"
     },
     {
-      "id": 652,
-      "title": "Troy",
-      "original_title": "Troy",
-      "overview": "In year 1250 B.C. during the late Bronze age, two emerging nations begin to clash. Paris, the Trojan prince, convinces Helen, Queen of Sparta, to leave her husband Menelaus, and sail with him back to Troy. After Menelaus finds out that his wife was taken by the Trojans, he asks his brother Agamemnon to help him get her back. Agamemnon sees this as an opportunity for power. They set off with 1,000 ships holding 50,000 Greeks to Troy.",
-      "release_date": "2004-05-13",
-      "poster_path": "https://image.tmdb.org/t/p/w500/a07wLy4ONfpsjnBqMwhlWTJTcm.jpg",
-      "backdrop_path": "https://image.tmdb.org/t/p/w1280/ZPcC5hJh21QiW0jmhMQhZeSoGu.jpg",
+      "id": 313369,
+      "title": "La La Land",
+      "original_title": "La La Land",
+      "overview": "Mia, an aspiring actress, serves lattes to movie stars in between auditions and Sebastian, a jazz musician, scrapes by playing cocktail party gigs in dingy bars, but as success mounts they are faced with decisions that begin to fray the fragile fabric of their love affair, and the dreams they worked so hard to maintain in each other threaten to rip them apart.",
+      "release_date": "2016-12-01",
+      "poster_path": "https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg",
+      "backdrop_path": "https://wallpaperaccess.com/full/1231879.jpg",
       "genre_ids": [
-        28,
-        12
+        35,
+        18,
+        10749
       ],
-      "vote_average": 7,
-      "vote_count": 11493,
-      "popularity": 29.2554,
-      "runtime": 163,
-      "tagline": "For passion. For honor. For destiny. For victory. For love.",
-      "imdb_id": "tt0332452",
-      "custom_editorial_description": "In year 1250 B.C. during the late Bronze age, two emerging nations begin to clash. Paris, the Trojan prince, convinces Helen, Queen of Sparta, to leave her husband Menelaus, and sail with him back to Troy. After Menelaus finds out that his wife was taken by the Trojans, he asks his brother Agamemnon to help him get her back. Agamemnon sees this as an opportunity for power. They set off with 1,000 ships holding 50,000 Greeks to Troy.",
+      "vote_average": 6,
+      "vote_count": 18459,
+      "popularity": 19.322,
+      "runtime": 129,
+      "tagline": "Here's to the fools who dream.",
+      "imdb_id": "tt3783958",
+      "custom_editorial_description": "Mia, an aspiring actress, serves lattes to movie stars in between auditions and Sebastian, a jazz musician, scrapes by playing cocktail party gigs in dingy bars, but as success mounts they are faced with decisions that begin to fray the fragile fabric of their love affair, and the dreams they worked so hard to maintain in each other threaten to rip them apart.",
+      "emotional_tags": [],
+      "context_tags": [],
+      "craft_tags": [],
+      "festival_tags": [],
+      "is_featured": true,
+      "is_homepage_hero": true,
+      "visibility": "visible",
+      "status": "published",
+      "trailer_url": "https://www.youtube.com/watch?v=_oBwwSXdO_E",
+      "streaming_providers": [
+        {
+          "name": "fuboTV",
+          "price": "Subscription"
+        },
+        {
+          "name": "Lionsgate+ Amazon Channels",
+          "price": "Subscription"
+        }
+      ],
+      "recommendation_score": 60,
+      "updated_at": "2026-09-14T11:07:27.287Z",
+      "created_at": "2026-09-14T11:06:48.324Z"
+    },
+    {
+      "id": 374720,
+      "title": "Dunkirk",
+      "original_title": "Dunkirk",
+      "overview": "The story of the miraculous evacuation of Allied soldiers from Belgium, Britain, Canada and France, who were cut off and surrounded by the German army from the beaches and harbour of Dunkirk between May 26th and June 4th 1940 during World War II.",
+      "release_date": "2017-07-19",
+      "poster_path": "https://image.tmdb.org/t/p/w500/b4Oe15CGLL61Ped0RAS9JpqdmCt.jpg",
+      "backdrop_path": "https://image.tmdb.org/t/p/w1280/ddIkmH3TpR6XSc47jj0BrGK5Rbz.jpg",
+      "genre_ids": [
+        10752,
+        28,
+        18
+      ],
+      "vote_average": 7.45,
+      "vote_count": 17960,
+      "popularity": 15.5378,
+      "runtime": 107,
+      "tagline": "When 400,000 men couldn't get home, home came for them.",
+      "imdb_id": "tt5013056",
+      "custom_editorial_description": "The story of the miraculous evacuation of Allied soldiers from Belgium, Britain, Canada and France, who were cut off and surrounded by the German army from the beaches and harbour of Dunkirk between May 26th and June 4th 1940 during World War II.",
       "emotional_tags": [],
       "context_tags": [],
       "craft_tags": [],
       "festival_tags": [],
       "is_featured": false,
+      "is_homepage_hero": false,
+      "visibility": "visible",
+      "status": "published",
+      "trailer_url": "https://www.youtube.com/watch?v=T7O7BtBnsG4",
+      "streaming_providers": [
+        {
+          "name": "fuboTV",
+          "price": "Subscription"
+        },
+        {
+          "name": "Paramount Plus Premium",
+          "price": "Subscription"
+        },
+        {
+          "name": "Paramount Plus Essential",
+          "price": "Subscription"
+        },
+        {
+          "name": "Paramount+ Amazon Channel",
+          "price": "Subscription"
+        },
+        {
+          "name": "Paramount+ Roku Premium Channel",
+          "price": "Subscription"
+        }
+      ],
+      "recommendation_score": 75,
+      "updated_at": "2026-09-14T11:07:49.295Z",
+      "created_at": "2026-09-14T11:07:49.297Z"
+    },
+    {
+      "id": 530915,
+      "title": "1917",
+      "original_title": "1917",
+      "overview": "At the height of the First World War, two young British soldiers must cross enemy territory and deliver a message that will stop a deadly attack on hundreds of soldiers.",
+      "release_date": "2019-12-25",
+      "poster_path": "https://image.tmdb.org/t/p/w500/iZf0KyrE25z1sage4SYFLCCrMi9.jpg",
+      "backdrop_path": "https://wallpaperaccess.com/full/11371206.jpg",
+      "genre_ids": [
+        10752,
+        18,
+        36
+      ],
+      "vote_average": 7,
+      "vote_count": 13876,
+      "popularity": 13.9682,
+      "runtime": 119,
+      "tagline": "Time is the enemy.",
+      "imdb_id": "tt8579674",
+      "custom_editorial_description": "At the height of the First World War, two young British soldiers must cross enemy territory and deliver a message that will stop a deadly attack on hundreds of soldiers.",
+      "emotional_tags": [],
+      "context_tags": [],
+      "craft_tags": [],
+      "festival_tags": [],
+      "is_featured": true,
       "is_homepage_hero": true,
       "visibility": "visible",
       "status": "published",
-      "trailer_url": "https://www.youtube.com/watch?v=P8xLgg-MNKw",
+      "trailer_url": "https://www.youtube.com/watch?v=gZjQROMAh_s",
       "streaming_providers": [
         {
-          "name": "Apple TV",
+          "name": "Netflix",
           "price": "Subscription"
         },
         {
-          "name": "VIX ",
-          "price": "Subscription"
-        },
-        {
-          "name": "ViX Premium Amazon Channel",
-          "price": "Subscription"
-        },
-        {
-          "name": "Apple TV Amazon Channel",
+          "name": "Netflix Standard with Ads",
           "price": "Subscription"
         }
       ],
       "recommendation_score": 70,
-      "updated_at": "2026-09-13T11:11:02.316Z",
-      "created_at": "2026-09-13T10:48:54.269Z"
+      "updated_at": "2026-09-14T11:11:06.128Z",
+      "created_at": "2026-09-14T11:10:49.406Z"
+    },
+    {
+      "id": 426063,
+      "title": "Nosferatu",
+      "original_title": "Nosferatu",
+      "overview": "A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her, causing untold horror in its wake.",
+      "release_date": "2024-12-25",
+      "poster_path": "https://image.tmdb.org/t/p/w500/5qGIxdEO841C0tdY8vOdLoRVrr0.jpg",
+      "backdrop_path": "https://preview.redd.it/i-am-going-to-get-some-4k-shots-for-wallpapers-and-post-v0-wu6xeb2djeee1.png?width=3456&format=png&auto=webp&s=08d69d26bd85c03c68bc9ccd172595b91ff84f80",
+      "genre_ids": [
+        27,
+        14
+      ],
+      "vote_average": 6,
+      "vote_count": 3952,
+      "popularity": 17.262,
+      "runtime": 133,
+      "tagline": "Succumb to the darkness.",
+      "imdb_id": "tt5040012",
+      "custom_editorial_description": "A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her, causing untold horror in its wake.",
+      "emotional_tags": [],
+      "context_tags": [],
+      "craft_tags": [],
+      "festival_tags": [],
+      "is_featured": true,
+      "is_homepage_hero": true,
+      "visibility": "visible",
+      "status": "published",
+      "trailer_url": "https://www.youtube.com/watch?v=nulvWqYUM8k",
+      "streaming_providers": [
+        {
+          "name": "Hulu",
+          "price": "Subscription"
+        }
+      ],
+      "recommendation_score": 60,
+      "updated_at": "2026-09-14T11:16:47.313Z",
+      "created_at": "2026-09-14T11:13:07.909Z"
+    },
+    {
+      "id": 1061474,
+      "title": "Superman",
+      "original_title": "Superman",
+      "overview": "Superman, a journalist in Metropolis, embarks on a journey to reconcile his Kryptonian heritage with his human upbringing as Clark Kent.",
+      "release_date": "2025-07-09",
+      "poster_path": "https://image.tmdb.org/t/p/w500/ldyfo0BKmz5rWtJJKCvwaNS4cJT.jpg",
+      "backdrop_path": "https://image.tmdb.org/t/p/w1280/yRBc6WY3r1Fz5Cjd6DhSvzqunED.jpg",
+      "genre_ids": [
+        878,
+        12,
+        28
+      ],
+      "vote_average": 7.325,
+      "vote_count": 5432,
+      "popularity": 33.7787,
+      "runtime": 130,
+      "tagline": "Look up.",
+      "imdb_id": "tt5950044",
+      "custom_editorial_description": "Superman, a journalist in Metropolis, embarks on a journey to reconcile his Kryptonian heritage with his human upbringing as Clark Kent.",
+      "emotional_tags": [],
+      "context_tags": [],
+      "craft_tags": [],
+      "festival_tags": [],
+      "is_featured": false,
+      "is_homepage_hero": false,
+      "visibility": "visible",
+      "status": "published",
+      "trailer_url": "https://www.youtube.com/watch?v=MikgqM0LXr4",
+      "streaming_providers": [
+        {
+          "name": "Amazon Prime Video",
+          "price": "Subscription"
+        },
+        {
+          "name": "HBO Max Amazon Channel",
+          "price": "Subscription"
+        },
+        {
+          "name": "HBO Max",
+          "price": "Subscription"
+        },
+        {
+          "name": "Amazon Prime Video with Ads",
+          "price": "Subscription"
+        }
+      ],
+      "recommendation_score": 73,
+      "updated_at": "2026-09-14T11:17:33.090Z",
+      "created_at": "2026-09-14T11:17:33.092Z"
     }
   ],
   "emotions": [
@@ -276,7 +347,11 @@
   ],
   "deleted_users": [
     "d553e7d3-62c1-4181-9451-ca31b13976ee",
-    "user@what2watch.com"
+    "user@what2watch.com",
+    "usr-user-2",
+    "john@doe.com",
+    "usr-user-3",
+    "jane@smith.com"
   ],
   "users": [
     {
@@ -291,26 +366,26 @@
       "status": "active"
     },
     {
-      "id": "usr-user-2",
-      "display_name": "John Doe",
-      "email": "john@doe.com",
-      "username": "johndoe",
+      "id": "usr-ay89j03uy",
+      "display_name": "Walter White",
+      "email": "Heisenberg@gmail.com",
+      "username": "Hesienberg",
       "role": "user",
-      "created_at": "2026-02-15T12:00:00Z",
-      "last_login": "2026-07-20T18:45:00Z",
-      "avatar_url": "",
-      "status": "active"
+      "status": "active",
+      "updated_at": "2026-09-14T08:59:54.909Z",
+      "created_at": "2026-09-14T08:59:54.911Z",
+      "last_login": "2026-09-14T08:59:54.911Z"
     },
     {
-      "id": "usr-user-3",
-      "display_name": "Jane Smith",
-      "email": "jane@smith.com",
-      "username": "janesmith",
+      "id": "usr-rw7vki7rn",
+      "display_name": "Gloria Pritchett",
+      "email": "PLatina@gmail.com",
+      "username": "Gloria",
       "role": "user",
-      "created_at": "2026-03-10T09:30:00Z",
-      "last_login": "2026-07-15T14:20:00Z",
-      "avatar_url": "",
-      "status": "suspended"
+      "status": "suspended",
+      "updated_at": "2026-09-14T09:00:41.475Z",
+      "created_at": "2026-09-14T09:00:41.476Z",
+      "last_login": "2026-09-14T09:00:41.476Z"
     }
   ],
   "guillaume": {
@@ -376,5 +451,24 @@
   "experiences": [],
   "seasons": [],
   "kids": [],
-  "staff_picks": []
+  "staff_picks": [
+    {
+      "id": "dev-3",
+      "name": "Cheron Jesuthasan",
+      "title": "Cheron Jesuthasan",
+      "role": "Full stack Developper",
+      "initial": "SC",
+      "note": "Films that explore language, time, and consciousness get me every time. Intelligent science fiction at its peak.",
+      "description": "Films that explore language, time, and consciousness get me every time. Intelligent science fiction at its peak.",
+      "pick": "Arrival",
+      "tmdbId": 329865,
+      "movies": [
+        329865,
+        1339713,
+        313369,
+        530915
+      ],
+      "is_published": true
+    }
+  ]
 }

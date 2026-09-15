@@ -64,18 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export async function generateStaticParams() {
-  return [
-    { slug: "cinema-by-experience" },
-    { slug: "emotional-spectrum" },
-    { slug: "festival-season" },
-    { slug: "grief-helper" },
-    { slug: "guillaume" },
-    { slug: "kids" },
-    { slug: "staff-picks" },
-    { slug: "watch-with-someone" },
-  ];
-}
+
 
 export default async function DynamicCustomerPage({ params }: Props) {
   const { slug } = await params;

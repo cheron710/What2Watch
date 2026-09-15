@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta name="description" content="Films chosen for their craft — visual style, sound, performance, direction and story twists.">
+<title>Cinema by Experience · What2Watch</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:wght@400;500;600;700;800;900&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --paper: #f2ede3;
+  --paper-2: #e9e3d7;
+  --ink: #0f0e0b;
+  --ink-2: #3a3830;
+  --ink-3: #8a8780;
+  --accent: #b84200;
+  --what2watch-orange: #FF4D2D; /* Guillaume / AI elements only */
+  --muted-label: #6B6B6B;
+}
+html { scroll-behavior: smooth; }
+body { font-family:'Lora','Georgia',serif; background:#F0EBE0; color:#000000; -webkit-font-smoothing:antialiased; overflow-x:hidden; font-weight:400; font-size:16px; line-height:1.7; letter-spacing:-0.01em; }
+em, i { font-style: normal; }
+
+/* ===== Shared type/utility atoms ===== */
+.eyebrow { display:block; font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.24em; text-transform:uppercase; color:var(--muted-label); margin-bottom:22px; }
+.display-h { font-family:'Playfair Display',serif; font-weight:700; letter-spacing:-0.02em; font-size:clamp(40px,6vw,68px); line-height:1.05; color:var(--ink); margin-bottom:26px; }
+.display-h-sm { font-family:'Playfair Display',serif; font-weight:700; letter-spacing:-0.02em; font-size:clamp(30px,4vw,44px); line-height:1.15; color:var(--ink); margin-bottom:22px; }
+.lede { font-family:'Lora','Georgia',serif; font-size:19px; line-height:1.65; color:var(--ink-2); max-width:620px; margin:0 auto; }
+.feature-label { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted-label); }
+.cta-btn { display:inline-flex; align-items:center; gap:10px; background:var(--ink); color:#F0EBE0; border:none; padding:16px 36px; border-radius:40px; font-family:'Inter',sans-serif; font-weight:700; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer; text-decoration:none; transition:background 0.2s; }
+.cta-btn:hover { background:#000; }
+.cta-btn:focus-visible { outline:2px solid var(--ink); outline-offset:4px; border-radius:40px; }
+
+/* ===== Skip link (a11y) ===== */
+.skip-link { position:absolute; top:-48px; left:16px; background:var(--ink); color:var(--paper); padding:12px 20px; border-radius:8px; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; text-decoration:none; z-index:400; transition:top 0.2s ease; }
+.skip-link:focus { top:16px; }
+
+/* ===== HEADER ===== */
+header { position:fixed; top:0; left:0; width:100%; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:22px 52px; background:#F0EBE0; border-bottom:0.5px solid rgba(15,14,11,0.1); transition:background 0.4s ease, backdrop-filter 0.4s ease, box-shadow 0.35s ease, border-color 0.4s ease; }
+header.scrolled { background:rgba(240,235,224,0.72); backdrop-filter:blur(18px) saturate(180%); -webkit-backdrop-filter:blur(18px) saturate(180%); box-shadow:0 1px 0 rgba(15,14,11,0.06), 0 16px 40px rgba(15,14,11,0.05); border-bottom-color:rgba(15,14,11,0.06); }
+.brand { font-family:'Inter',sans-serif; font-size:17px; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; display:inline-flex; align-items:baseline; text-decoration:none; color:var(--ink); cursor:pointer; }
+nav { display:flex; gap:34px; align-items:center; }
+.nav-a { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.02em; text-transform:uppercase; color:var(--ink-3); text-decoration:none; transition:color 0.2s; position:relative; white-space:nowrap; }
+.nav-a::after { content:'';position:absolute;bottom:-3px;left:0;width:0;height:1.5px;background:var(--ink);transition:width 0.25s ease; }
+.nav-a:hover { color:var(--ink); }
+.nav-a:hover::after, .nav-a.on::after { width:100%; }
+.nav-a.on { color:var(--ink); }
+.nav-a:focus-visible { outline:2px solid var(--ink); outline-offset:4px; border-radius:2px; }
+.header-actions { display:flex; align-items:center; gap:14px; }
+.search-container { position:relative; display:flex; align-items:center; }
+.search-icon { background:none; border:none; cursor:pointer; color:var(--ink); border-radius:50%; width:40px; height:40px; padding:0; display:flex; align-items:center; justify-content:center; transition:background 0.25s ease, color 0.2s ease; }
+.search-icon:hover { background:rgba(15,14,11,0.06); }
+.profile-section { position:relative; }
+.profile-trigger { position:relative; width:40px; height:40px; border-radius:50%; border:1px solid rgba(15,14,11,0.16); background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink); transition:border-color 0.25s ease, background 0.25s ease, transform 0.2s ease; }
+.profile-trigger:hover { background:rgba(15,14,11,0.05); border-color:rgba(15,14,11,0.32); }
+.profile-trigger:active { transform:scale(0.94); }
+.profile-trigger .avatar-user { display:none; width:100%; height:100%; border-radius:50%; align-items:center; justify-content:center; background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif; font-size:13px; font-weight:700; }
+body.is-authenticated .profile-trigger { border-color:transparent; }
+body.is-authenticated .profile-trigger .icon-guest { display:none; }
+body.is-authenticated .profile-trigger .avatar-user { display:flex; }
+.profile-dropdown { position:absolute; top:calc(100% + 14px); right:0; min-width:216px; background:rgba(242,237,227,0.88); backdrop-filter:blur(22px) saturate(180%); -webkit-backdrop-filter:blur(22px) saturate(180%); border:0.5px solid rgba(15,14,11,0.1); border-radius:14px; box-shadow:0 20px 50px rgba(15,14,11,0.14), 0 4px 14px rgba(15,14,11,0.06); padding:8px; opacity:0; visibility:hidden; transform:translateY(-6px) scale(0.98); transform-origin:top right; transition:opacity 0.28s cubic-bezier(0.2,0.9,0.4,1.1), transform 0.28s cubic-bezier(0.2,0.9,0.4,1.1), visibility 0s linear 0.28s; z-index:150; }
+.profile-dropdown.open { opacity:1; visibility:visible; transform:translateY(0) scale(1); transition:opacity 0.28s cubic-bezier(0.2,0.9,0.4,1.1), transform 0.28s cubic-bezier(0.2,0.9,0.4,1.1), visibility 0s; }
+.dropdown-guest, .dropdown-user { display:flex; flex-direction:column; gap:2px; }
+.dropdown-user { display:none; }
+body.is-authenticated .dropdown-guest { display:none; }
+body.is-authenticated .dropdown-user { display:flex; }
+.dropdown-item { display:flex; align-items:center; padding:11px 14px; border-radius:9px; font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600; letter-spacing:0.02em; color:var(--ink-2); text-decoration:none; cursor:pointer; transition:background 0.2s ease, color 0.2s ease, padding-left 0.2s ease; }
+.dropdown-item:hover { background:rgba(15,14,11,0.055); color:var(--ink); padding-left:18px; }
+.dropdown-item-primary { background:var(--ink); color:var(--paper); font-weight:700; margin-top:2px; }
+.dropdown-item-primary:hover { background:#000; color:#fff; padding-left:14px; }
+.dropdown-divider { height:0.5px; background:rgba(15,14,11,0.1); margin:6px 4px; }
+.dropdown-item-exit { color:var(--ink-3); }
+.dropdown-item-exit:hover { color:var(--ink); }
+.hamburger-btn { display:none; flex-direction:column; justify-content:center; align-items:center; gap:5px; width:40px; height:40px; background:none; border:none; cursor:pointer; }
+.hamburger-btn span { display:block; width:20px; height:1.5px; background:var(--ink); transition:transform 0.3s cubic-bezier(0.2,0.9,0.4,1.1), opacity 0.3s ease; }
+.hamburger-btn.active span:nth-child(1) { transform:translateY(6.5px) rotate(45deg); }
+.hamburger-btn.active span:nth-child(2) { opacity:0; }
+.hamburger-btn.active span:nth-child(3) { transform:translateY(-6.5px) rotate(-45deg); }
+.profile-trigger:focus-visible, .hamburger-btn:focus-visible, .search-icon:focus-visible { outline:2px solid var(--ink); outline-offset:3px; border-radius:50%; }
+.dropdown-item:focus-visible { outline:2px solid var(--ink); outline-offset:2px; border-radius:9px; }
+@media (prefers-reduced-motion: reduce) { header, .profile-dropdown, .mobile-menu-overlay, .mobile-link, .hamburger-btn span, .mobile-menu-close, .auth-modal, .auth-modal-overlay, .search-overlay { transition:none !important; } }
+@media (max-width: 1180px) { header > nav { display:none; } .profile-section { display:none; } .hamburger-btn { display:flex; } }
+@media (max-width: 550px) { .header-actions { gap:8px; } }
+
+/* ===== SEARCH OVERLAY ===== */
+.search-overlay { position:fixed; top:0; left:0; width:100%; height:45vh; background:#0A0A0A; z-index:1000; transform:translateY(-100%); transition:transform 0.4s cubic-bezier(0.2,0.9,0.4,1.1); box-shadow:0 20px 40px rgba(0,0,0,0.3); display:flex; flex-direction:column; justify-content:center; padding:0 10vw; }
+.search-overlay.active { transform:translateY(0); }
+.search-overlay-inner { width:100%; max-width:1200px; margin:0 auto; position:relative; }
+.search-input-wrapper { display:flex; align-items:baseline; gap:16px; width:100%; }
+.search-overlay-input { flex:1; background:transparent; border:none; border-bottom:2px solid #FFFFFF; font-family:'Inter',sans-serif; font-size:56px; font-weight:600; color:#EDEDED; padding:0.2em 0 0.3em 0; outline:none; letter-spacing:-0.02em; min-width:0; }
+.search-overlay-input::placeholder { color:rgba(237,237,237,0.35); }
+.search-submit-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.7); font-size:28px; display:flex; align-items:center; justify-content:center; padding:0 0 6px 0; transition:color 0.2s, transform 0.2s; line-height:1; }
+.search-submit-btn:hover { color:#FFFFFF; transform:translateX(4px); }
+.search-close-overlay { position:absolute; top:-20px; right:0; background:none; border:none; font-size:28px; cursor:pointer; color:rgba(237,237,237,0.6); transition:color 0.2s; }
+.search-close-overlay:hover { color:#FFFFFF; }
+.search-results-overlay { margin-top:32px; max-height:160px; overflow-y:auto; padding-right:12px; }
+.search-results-overlay::-webkit-scrollbar { width:3px; background:rgba(255,255,255,0.15); }
+.search-results-overlay::-webkit-scrollbar-thumb { background:var(--ink-3); }
+.search-result-item { padding:12px 0; border-bottom:0.5px solid rgba(255,255,255,0.08); font-family:'Inter',sans-serif; font-size:18px; font-weight:500; display:flex; justify-content:space-between; align-items:baseline; gap:16px; cursor:pointer; transition:all 0.2s; color:#EDEDED; text-decoration:none; }
+.search-result-item:hover { padding-left:12px; color:var(--ink-3); border-bottom-color:var(--ink-3); }
+.search-result-title { font-weight:600; letter-spacing:-0.2px; }
+.search-result-year { font-family:'Inter',sans-serif; font-size:13px; font-weight:400; color:rgba(237,237,237,0.5); }
+.no-results { padding:20px 0; color:rgba(237,237,237,0.5); font-family:'Inter',sans-serif; font-size:15px; }
+
+/* ===== MOBILE MENU ===== */
+.mobile-menu-overlay { position:fixed; inset:0; z-index:200; background:#0A0A0A; display:flex; flex-direction:column; opacity:0; visibility:hidden; transform:translateY(-14px); transition:opacity 0.5s cubic-bezier(0.2,0.9,0.4,1.1), transform 0.5s cubic-bezier(0.2,0.9,0.4,1.1), visibility 0s linear 0.5s; padding:24px 28px 32px; overflow-y:auto; }
+.mobile-menu-overlay.active { opacity:1; visibility:visible; transform:translateY(0); transition:opacity 0.5s cubic-bezier(0.2,0.9,0.4,1.1), transform 0.5s cubic-bezier(0.2,0.9,0.4,1.1), visibility 0s; }
+.mobile-menu-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:44px; }
+.mobile-menu-brand { font-family:'Inter',sans-serif; font-size:16px; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; color:#fff; }
+.mobile-menu-close { background:none; border:none; font-size:22px; color:rgba(255,255,255,0.6); cursor:pointer; transition:color 0.2s ease, transform 0.4s cubic-bezier(0.2,0.9,0.4,1.1); line-height:1; padding:6px; }
+.mobile-menu-close:hover { color:#fff; transform:rotate(90deg); }
+.mobile-menu-links { display:flex; flex-direction:column; gap:2px; margin-bottom:36px; }
+.mobile-link { display:flex; align-items:baseline; gap:14px; text-decoration:none; padding:11px 0; border-bottom:0.5px solid rgba(255,255,255,0.07); transition:padding-left 0.25s ease; }
+.mobile-link-num { font-family:'Inter',sans-serif; font-size:11px; font-weight:500; color:rgba(255,255,255,0.35); letter-spacing:0.1em; }
+.mobile-link-text { font-family:'Playfair Display',serif; font-size:clamp(28px,8vw,40px); font-weight:700; color:#fff; letter-spacing:-0.02em; transition:color 0.2s ease; }
+.mobile-link:hover { padding-left:8px; }
+.mobile-link:hover .mobile-link-text { color:rgba(255,255,255,0.7); }
+.mobile-link.on .mobile-link-text { color:rgba(255,255,255,0.55); }
+.mobile-auth-guest, .mobile-auth-user { margin-top:auto; padding-top:28px; border-top:0.5px solid rgba(255,255,255,0.12); }
+.mobile-auth-guest h3 { font-family:'Playfair Display',serif; font-size:21px; font-weight:700; color:#fff; margin-bottom:10px; }
+.mobile-auth-guest p { font-family:'Inter',sans-serif; font-size:13px; font-weight:400; line-height:1.6; color:rgba(255,255,255,0.55); max-width:440px; margin-bottom:22px; }
+.mobile-auth-primary { display:block; width:100%; background:#fff; color:#000; border:none; padding:16px; border-radius:40px; font-family:'Inter',sans-serif; font-weight:700; font-size:11.5px; letter-spacing:0.14em; text-transform:uppercase; cursor:pointer; transition:background 0.25s ease, transform 0.2s ease; }
+.mobile-auth-primary:hover { background:rgba(255,255,255,0.85); }
+.mobile-auth-primary:active { transform:scale(0.98); }
+.mobile-auth-small { margin-top:16px; text-align:center; font-family:'Inter',sans-serif; font-size:12px; font-weight:400; color:rgba(255,255,255,0.5); }
+.mobile-auth-small a { color:#fff; font-weight:600; text-decoration:underline; text-underline-offset:3px; }
+.mobile-auth-user { display:none; }
+body.is-authenticated .mobile-auth-guest { display:none; }
+body.is-authenticated .mobile-auth-user { display:block; }
+.mobile-account-link { display:block; padding:14px 2px; font-family:'Inter',sans-serif; font-size:14px; font-weight:600; letter-spacing:0.01em; color:rgba(255,255,255,0.82); text-decoration:none; border-bottom:0.5px solid rgba(255,255,255,0.08); transition:color 0.2s ease, padding-left 0.2s ease; }
+.mobile-account-link:last-child { border-bottom:none; color:rgba(255,255,255,0.5); margin-top:4px; }
+.mobile-account-link:hover { color:#fff; padding-left:8px; }
+.mobile-link:focus-visible, .mobile-account-link:focus-visible, .mobile-auth-small a:focus-visible { outline:2px solid #fff; outline-offset:3px; border-radius:4px; }
+.mobile-menu-close:focus-visible { outline:2px solid #fff; outline-offset:3px; border-radius:50%; }
+.mobile-auth-primary:focus-visible { outline:2px solid #fff; outline-offset:3px; border-radius:40px; }
+@media (max-width: 550px) { .mobile-link-text { font-size:clamp(26px,10vw,32px); } .mobile-menu-overlay { padding:20px 24px 28px; } }
+
+/* ===== AUTH MODAL ===== */
+.auth-modal-overlay { position:fixed; inset:0; z-index:300; background:rgba(10,10,8,0.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:opacity 0.35s ease, visibility 0s linear 0.35s; padding:24px; }
+.auth-modal-overlay.active { opacity:1; visibility:visible; transition:opacity 0.35s ease, visibility 0s; }
+.auth-modal { width:100%; max-width:400px; background:var(--paper); border-radius:20px; padding:44px 40px 40px; position:relative; transform:translateY(16px) scale(0.98); transition:transform 0.35s cubic-bezier(0.2,0.9,0.4,1.1); box-shadow:0 30px 80px rgba(0,0,0,0.35); }
+.auth-modal-overlay.active .auth-modal { transform:translateY(0) scale(1); }
+.auth-modal-close { position:absolute; top:18px; right:18px; background:none; border:none; font-size:20px; color:var(--ink-3); cursor:pointer; padding:6px; line-height:1; transition:color 0.2s ease, transform 0.3s ease; }
+.auth-modal-close:hover { color:var(--ink); transform:rotate(90deg); }
+.auth-modal-tabs { display:flex; gap:28px; margin-bottom:30px; border-bottom:0.5px solid rgba(15,14,11,0.12); }
+.auth-modal-tab { font-family:'Inter',sans-serif; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-3); background:none; border:none; padding:0 0 14px; cursor:pointer; position:relative; transition:color 0.2s ease; }
+.auth-modal-tab::after { content:''; position:absolute; bottom:-0.5px; left:0; width:0; height:2px; background:var(--ink); transition:width 0.25s ease; }
+.auth-modal-tab.active { color:var(--ink); }
+.auth-modal-tab.active::after { width:100%; }
+.auth-modal-tab:focus-visible { outline:2px solid var(--ink); outline-offset:3px; border-radius:4px; }
+.auth-modal-h { font-family:'Playfair Display',serif; font-weight:700; font-size:26px; color:var(--ink); margin-bottom:8px; }
+.auth-modal-sub { font-family:'Lora',serif; font-size:14px; color:var(--ink-3); margin-bottom:28px; }
+.auth-field { margin-bottom:22px; }
+.auth-field label { display:block; font-family:'Inter',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-3); margin-bottom:8px; }
+.auth-field input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(15,14,11,0.25); padding:8px 0 10px; font-family:'Inter',sans-serif; font-size:15px; color:var(--ink); outline:none; transition:border-color 0.2s ease; }
+.auth-field input:focus { border-color:var(--ink); }
+.auth-modal-submit { width:100%; background:var(--ink); color:var(--paper); border:none; padding:15px; border-radius:40px; font-family:'Inter',sans-serif; font-weight:700; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; cursor:pointer; margin-top:8px; transition:background 0.2s ease; }
+.auth-modal-submit:hover { background:#000; }
+.auth-modal-submit:focus-visible { outline:2px solid var(--ink); outline-offset:3px; border-radius:40px; }
+.auth-modal-foot { text-align:center; margin-top:20px; font-family:'Inter',sans-serif; font-size:12px; color:var(--ink-3); }
+.auth-modal-foot a { color:var(--ink); font-weight:600; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+
+/* ===== FOOTER ===== */
+.footer-new { background:#000000; border-top:0.5px solid rgba(15,14,11,0.12); padding:64px 52px 0 52px; }
+.footer-grid { max-width:1400px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr 1.2fr; gap:48px; margin-bottom:56px; }
+.brand-col .brand-logo { font-family:'Inter', sans-serif; font-size:22px; font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; color:#FFFFFF; margin-bottom:16px; display:inline-block; }
+.brand-desc { font-family:'Inter', sans-serif; font-size:13px; line-height:1.5; color:rgba(255,255,255,0.6); max-width:240px; margin:16px 0 24px 0; font-weight:400; }
+.simple-links { display:flex; flex-direction:column; gap:12px; }
+.footer-link { font-family:'Inter', sans-serif; font-size:12px; font-weight:500; color:rgba(255,255,255,0.6); text-decoration:none; transition:color 0.2s; }
+.footer-link:hover { color:#FFFFFF; }
+.middle-col .footer-col-title { font-family:'Inter', sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#FFFFFF; margin-bottom:20px; }
+.social-links { display:flex; gap:28px; margin-bottom:28px; }
+.social-link { font-family:'Inter', sans-serif; font-size:13px; font-weight:500; color:rgba(255,255,255,0.6); text-decoration:none; transition:color 0.2s; }
+.social-link:hover { color:#FFFFFF; }
+.secondary-row { display:flex; gap:24px; flex-wrap:wrap; }
+.right-col .footer-col-title { font-family:'Inter', sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#FFFFFF; margin-bottom:12px; }
+.newsletter-copy { font-family:'Inter', sans-serif; font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:20px; line-height:1.4; font-weight:400; }
+.newsletter-form { display:flex; gap:12px; flex-wrap:wrap; }
+.newsletter-input { flex:1; background:transparent; border:0.5px solid rgba(255,255,255,0.25); padding:12px 16px; font-family:'Inter', sans-serif; font-size:13px; font-weight:400; color:#FFFFFF; outline:none; border-radius:40px; transition:border 0.2s; }
+.newsletter-input:focus { border-color:#FFFFFF; }
+.newsletter-input::placeholder { color:rgba(255,255,255,0.4); }
+.newsletter-btn { background:#FFFFFF; border:none; padding:0 20px; border-radius:40px; font-family:'Inter', sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#000000; cursor:pointer; transition:background 0.2s; }
+.newsletter-btn:hover { background:rgba(255,255,255,0.9); }
+.footer-legal-strip { border-top:0.5px solid rgba(255,255,255,0.1); padding:20px 52px 24px; background:#000000; text-align:center; }
+.footer-legal { font-family:'Inter', sans-serif; font-size:10px; font-weight:400; color:rgba(255,255,255,0.6); letter-spacing:0.02em; max-width:1400px; margin:0 auto; }
+@media (max-width: 1000px) { header, .footer-new { padding-left:32px; padding-right:32px; } .footer-grid { grid-template-columns:1fr; gap:40px; } .search-overlay-input { font-size:42px; } }
+@media (max-width: 680px) { .search-overlay-input { font-size:32px; } header, .footer-new { padding-left:20px; padding-right:20px; } }
+
+/* ===== PAGE-SPECIFIC CSS ===== */
+.craft-hero { padding:200px 52px 40px; background:#F0EBE0; text-align:center; }
+.craft-hero-inner { max-width:720px; margin:0 auto; }
+.craft-hero-inner .lede { margin:0 auto; }
+
+.craft-section { padding:0 52px 150px; background:#F0EBE0; }
+.craft-wrap { max-width:920px; margin:0 auto; }
+
+.craft-categories { display:flex; flex-wrap:wrap; gap:28px; justify-content:center; margin-bottom:48px; }
+.craft-cat { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3); background:none; border:none; padding:6px 0; cursor:pointer; position:relative; transition:color 0.2s ease; }
+.craft-cat::after { content:''; position:absolute; bottom:0; left:0; width:0; height:1.5px; background:var(--ink); transition:width 0.25s ease; }
+.craft-cat:hover { color:var(--ink); }
+.craft-cat.active { color:var(--ink); }
+.craft-cat.active::after { width:100%; }
+.craft-cat:focus-visible { outline:2px solid var(--ink); outline-offset:3px; border-radius:2px; }
+
+.craft-panel-head { border-bottom:0.5px solid rgba(15,14,11,0.14); padding-bottom:20px; margin-bottom:4px; }
+.craft-panel-title { font-family:'Playfair Display',serif; font-weight:700; font-size:24px; color:var(--ink); margin-bottom:6px; }
+.craft-panel-sub { font-family:'Lora','Georgia',serif; font-size:15px; color:var(--ink-2); max-width:62ch; }
+.craft-look { font-family:'Inter',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.13em; text-transform:uppercase; color:var(--ink-3); margin-top:12px; }
+.craft-look span { color:var(--ink-2); }
+
+.craft-list { transition:opacity 0.3s ease; }
+.craft-row { display:grid; grid-template-columns:30px 58px 1fr; gap:0 22px; align-items:start; padding:24px 0; border-bottom:0.5px solid rgba(15,14,11,0.08); transition:all 0.3s ease; }
+.craft-row:hover { padding-left:6px; background:rgba(0,0,0,0.02); }
+.craft-num { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em; color:var(--ink-3); padding-top:5px; }
+.craft-poster { width:58px; height:87px; background:var(--paper-2); border:0.5px solid rgba(15,14,11,0.12); overflow:hidden; position:relative; }
+.craft-poster img { width:100%; height:100%; object-fit:cover; display:block; }
+.craft-poster.loading::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg, rgba(15,14,11,0.04) 25%, rgba(15,14,11,0.09) 50%, rgba(15,14,11,0.04) 75%); background-size:200% 100%; animation:craftShimmer 1.4s infinite; }
+@keyframes craftShimmer { 0% { background-position:200% 0; } 100% { background-position:-200% 0; } }
+.craft-poster-fallback { display:flex; align-items:center; justify-content:center; height:100%; padding:6px; font-family:'Inter',sans-serif; font-size:8.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-3); text-align:center; line-height:1.3; }
+.craft-title { font-family:'Playfair Display',serif; font-weight:700; font-size:21px; color:var(--ink); letter-spacing:-0.01em; }
+a.craft-title { display:inline-block; text-decoration:none; border-bottom:1px solid transparent; transition:border-color 0.2s ease; }
+a.craft-title:hover { border-color:var(--ink); }
+a.craft-title:focus-visible { outline:2px solid var(--ink); outline-offset:3px; }
+.craft-meta { font-family:'Inter',sans-serif; font-size:10.5px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-3); margin:5px 0 8px; }
+.craft-why { font-family:'Lora','Georgia',serif; font-size:15px; color:var(--ink-2); line-height:1.6; max-width:58ch; }
+
+.craft-cross { text-align:center; margin-top:52px; padding-top:28px; border-top:0.5px solid rgba(15,14,11,0.12); }
+.craft-cross p { font-family:'Lora','Georgia',serif; font-size:14px; color:var(--ink-3); }
+.craft-cross a { color:var(--ink); font-family:'Inter',sans-serif; font-weight:600; text-decoration:underline; text-underline-offset:3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .craft-list, .craft-row, .craft-cat, .craft-cat::after, a.craft-title { transition:none !important; }
+  .craft-poster.loading::after { animation:none; }
+}
+@media (max-width: 640px) {
+  .craft-hero { padding:160px 24px 24px; }
+  .craft-section { padding:0 20px 100px; }
+  .craft-row { grid-template-columns:24px 46px 1fr; gap:0 14px; }
+  .craft-poster { width:46px; height:69px; }
+  .craft-title { font-size:18px; }
+  .craft-panel-title { font-size:20px; }
+  .craft-categories { gap:18px; }
+}
+
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<header>
+  <a class="brand" href="index.html"><span>What2</span><span>Watch</span></a>
+  <nav>
+    <a class="nav-a" href="index.html">Home</a>
+    <a class="nav-a" href="festival-season.html">Festivals</a>
+    <a class="nav-a on" href="cinema-by-experience.html" aria-current="page">Experience</a>
+    <a class="nav-a" href="staff-picks.html">Staff Picks</a>
+    <a class="nav-a" href="kids.html">Kids</a>
+    <a class="nav-a" href="seasons.html">Seasons</a>
+    <a class="nav-a" href="guillaume.html">Guillaume</a>
+    <a class="nav-a" href="about.html">About</a>
+  </nav>
+  <div class="header-actions">
+    <div class="search-container">
+      <button class="search-icon" id="searchTriggerBtn" aria-label="Search">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+    </div>
+    <div class="profile-section" id="profileSection">
+      <button class="profile-trigger" id="profileTrigger" aria-haspopup="true" aria-expanded="false" aria-label="Account menu">
+        <svg class="icon-guest" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 12c2.5 0 4.5-2 4.5-4.5S14.5 3 12 3 7.5 5 7.5 7.5 9.5 12 12 12z"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+        <span class="avatar-user">S</span>
+      </button>
+      <div class="profile-dropdown" id="profileDropdown" role="menu">
+        <div class="dropdown-guest">
+          <a href="#" class="dropdown-item" data-action="login" role="menuitem">Log In</a>
+          <a href="#" class="dropdown-item dropdown-item-primary" data-action="signup" role="menuitem">Sign Up</a>
+        </div>
+        <div class="dropdown-user">
+          <a href="profile.html" class="dropdown-item" role="menuitem">My Profile</a>
+          <a href="watchlist.html" class="dropdown-item" role="menuitem">Watchlist</a>
+          <a href="favorites.html" class="dropdown-item" role="menuitem">Ratings</a>
+          <a href="settings.html" class="dropdown-item" role="menuitem">Settings</a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-item-exit" data-action="logout" role="menuitem">Log Out</a>
+        </div>
+      </div>
+    </div>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="search-overlay" id="searchOverlay">
+  <button class="search-close-overlay" id="searchCloseBtn" aria-label="Close search">✕</button>
+  <div class="search-overlay-inner">
+    <div class="search-input-wrapper">
+      <input type="text" class="search-overlay-input" id="expandedSearchInput" placeholder="Search films, directors, or genres…" autocomplete="off" aria-label="Search films">
+      <button class="search-submit-btn" id="searchSubmitBtn" aria-label="Submit search">→</button>
+    </div>
+    <div class="search-results-overlay" id="searchResultsArea"></div>
+  </div>
+</div>
+
+<div class="mobile-menu-overlay" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Site menu" aria-hidden="true">
+  <div class="mobile-menu-top">
+    <div class="mobile-menu-brand">What2Watch</div>
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">✕</button>
+  </div>
+  <div class="mobile-menu-links">
+    <a href="index.html" class="mobile-link"><span class="mobile-link-num">01</span><span class="mobile-link-text">Home</span></a>
+    <a href="festival-season.html" class="mobile-link"><span class="mobile-link-num">02</span><span class="mobile-link-text">Festivals</span></a>
+    <a href="cinema-by-experience.html" class="mobile-link on" aria-current="page"><span class="mobile-link-num">03</span><span class="mobile-link-text">Experience</span></a>
+    <a href="staff-picks.html" class="mobile-link"><span class="mobile-link-num">04</span><span class="mobile-link-text">Staff Picks</span></a>
+    <a href="kids.html" class="mobile-link"><span class="mobile-link-num">05</span><span class="mobile-link-text">Kids</span></a>
+    <a href="seasons.html" class="mobile-link"><span class="mobile-link-num">06</span><span class="mobile-link-text">Seasons</span></a>
+    <a href="guillaume.html" class="mobile-link"><span class="mobile-link-num">07</span><span class="mobile-link-text">Guillaume</span></a>
+    <a href="about.html" class="mobile-link"><span class="mobile-link-num">08</span><span class="mobile-link-text">About</span></a>
+    <a href="contact.html" class="mobile-link"><span class="mobile-link-num">09</span><span class="mobile-link-text">Contact</span></a>
+  </div>
+  <div class="mobile-auth-guest">
+    <h3>Join What2Watch</h3>
+    <p>Create an account to save your watchlist, receive AI-powered recommendations, rate movies, and sync your preferences.</p>
+    <button class="mobile-auth-primary" data-action="signup">Sign Up</button>
+    <div class="mobile-auth-small">Already have an account? <a href="#" data-action="login">Log In</a></div>
+  </div>
+  <div class="mobile-auth-user">
+    <a href="profile.html" class="mobile-account-link">Profile</a>
+    <a href="watchlist.html" class="mobile-account-link">Watchlist</a>
+    <a href="settings.html" class="mobile-account-link">Settings</a>
+    <a href="#" class="mobile-account-link" data-action="logout">Logout</a>
+  </div>
+</div>
+
+<div class="auth-modal-overlay" id="authModalOverlay">
+  <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authModalHeading">
+    <button class="auth-modal-close" id="authModalClose" aria-label="Close">✕</button>
+    <div class="auth-modal-tabs">
+      <button class="auth-modal-tab active" id="authTabLogin" type="button">Log In</button>
+      <button class="auth-modal-tab" id="authTabSignup" type="button">Sign Up</button>
+    </div>
+    <h2 class="auth-modal-h" id="authModalHeading">Welcome back</h2>
+    <p class="auth-modal-sub" id="authModalSub">Sign in to pick up your watchlist where you left off.</p>
+    <form id="authModalForm">
+      <div class="auth-field">
+        <label for="authEmail">Email</label>
+        <input type="email" id="authEmail" placeholder="you@example.com" required>
+      </div>
+      <div class="auth-field">
+        <label for="authPassword">Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="auth-modal-submit" id="authModalSubmit">Log In</button>
+    </form>
+    <p class="auth-modal-foot" id="authModalFoot">New here? <a id="authSwitchLink">Create an account</a></p>
+  </div>
+</div>
+
+<main id="main-content">
+<section class="craft-hero">
+  <div class="craft-hero-inner">
+    <span class="eyebrow">Cinema by Experience</span>
+    <h1 class="display-h">Move beyond emotion.</h1>
+    <p class="lede">Not every film is chosen by how it makes you feel. Some are chosen for what they do — with a camera, a soundboard, a performance, or a story that turns on you.</p>
+  </div>
+</section>
+
+<section class="craft-section">
+  <div class="craft-wrap">
+
+    <div class="craft-categories" id="craftCategories"></div>
+
+    <div class="craft-panel-head">
+      <h2 class="craft-panel-title" id="craftTitle"></h2>
+      <p class="craft-panel-sub" id="craftSub"></p>
+      <p class="craft-look" id="craftLook"></p>
+    </div>
+
+    <div class="craft-list" id="craftList"></div>
+
+    <div class="craft-cross">
+      <p>Looking for something more personal? Try the <a href="index.html#spectrum">Mood Spectrum</a> instead, or see what <a href="staff-picks.html">Staff Picks</a> recommends.</p>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<footer class="footer-new">
+  <div class="footer-grid">
+    <div class="brand-col">
+      <div class="brand-logo">What2Watch</div>
+      <div class="brand-desc">Discovering films through mood, emotion, and experience. Your cinematic compass.</div>
+      <div class="simple-links">
+        <a href="about.html" class="footer-link">About</a>
+        <a href="contact.html" class="footer-link">Contact</a>
+        <a href="#" class="footer-link">Privacy</a>
+        <a href="#" class="footer-link">Terms</a>
+      </div>
+    </div>
+    <div class="middle-col">
+      <div class="footer-col-title">Connect</div>
+      <div class="social-links">
+        <a href="#" class="social-link">Instagram</a>
+        <a href="#" class="social-link">Twitter</a>
+      </div>
+      <div class="secondary-row">
+        <a href="#" class="footer-link">Jobs</a>
+        <a href="#" class="footer-link">Merch</a>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="footer-col-title">Newsletter</div>
+      <div class="newsletter-copy">Get our updates. New films, festival picks, staff recommendations.</div>
+      <div class="newsletter-form">
+        <input type="email" class="newsletter-input" placeholder="your@email.com" aria-label="Email for newsletter">
+        <button class="newsletter-btn" id="newsletterSignupBtn">Sign Up →</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-legal-strip">
+    <div class="footer-legal">© 2026 What2Watch. Curated Cinema. All rights reserved. Discover the art of film.</div>
+  </div>
+</footer>
+
+<script>
+// ===== Shared chrome behaviour =====
+const headerEl = document.querySelector('header');
+function handleHeaderScroll() { headerEl.classList.toggle('scrolled', window.scrollY > 24); }
+window.addEventListener('scroll', handleHeaderScroll, { passive:true });
+handleHeaderScroll();
+
+// Auth state — demo only, no backend.
+let isLoggedIn = false;
+function setAuthState(loggedIn) { isLoggedIn = loggedIn; document.body.classList.toggle('is-authenticated', isLoggedIn); }
+window.setAuthState = setAuthState;
+
+// Profile dropdown
+const profileSection = document.getElementById('profileSection');
+const profileTrigger = document.getElementById('profileTrigger');
+const profileDropdown = document.getElementById('profileDropdown');
+function toggleProfileDropdown(force) {
+  const willOpen = typeof force === 'boolean' ? force : !profileDropdown.classList.contains('open');
+  profileDropdown.classList.toggle('open', willOpen);
+  profileTrigger.setAttribute('aria-expanded', String(willOpen));
+}
+profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); toggleProfileDropdown(); });
+document.addEventListener('click', (e) => { if (!profileSection.contains(e.target)) toggleProfileDropdown(false); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleProfileDropdown(false); });
+
+// Mobile menu
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+const mobileMenuClose = document.getElementById('mobileMenuClose');
+function openMobileMenu() { mobileMenu.classList.add('active'); mobileMenu.setAttribute('aria-hidden','false'); hamburgerBtn.classList.add('active'); hamburgerBtn.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; mobileMenuClose.focus(); }
+function closeMobileMenu() {
+  if (!mobileMenu.classList.contains('active')) return;
+  mobileMenu.classList.remove('active'); mobileMenu.setAttribute('aria-hidden','true'); hamburgerBtn.classList.remove('active'); hamburgerBtn.setAttribute('aria-expanded','false'); document.body.style.overflow=''; hamburgerBtn.focus();
+}
+hamburgerBtn.addEventListener('click', () => { mobileMenu.classList.contains('active') ? closeMobileMenu() : openMobileMenu(); });
+mobileMenuClose.addEventListener('click', closeMobileMenu);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMobileMenu(); });
+document.querySelectorAll('.mobile-link, .mobile-account-link:not([data-action])').forEach(link => link.addEventListener('click', closeMobileMenu));
+
+// Auth modal
+const authOverlay = document.getElementById('authModalOverlay');
+const authClose = document.getElementById('authModalClose');
+const authTabLogin = document.getElementById('authTabLogin');
+const authTabSignup = document.getElementById('authTabSignup');
+const authHeading = document.getElementById('authModalHeading');
+const authSub = document.getElementById('authModalSub');
+const authSubmitBtn = document.getElementById('authModalSubmit');
+const authForm = document.getElementById('authModalForm');
+const authFoot = document.getElementById('authModalFoot');
+function openAuthModal(mode) { authOverlay.classList.add('active'); setAuthTab(mode || 'login'); document.body.style.overflow='hidden'; setTimeout(() => document.getElementById('authEmail').focus(), 300); }
+function closeAuthModal() { authOverlay.classList.remove('active'); document.body.style.overflow=''; }
+function setAuthTab(mode) {
+  const isSignup = mode === 'signup';
+  authTabLogin.classList.toggle('active', !isSignup);
+  authTabSignup.classList.toggle('active', isSignup);
+  authHeading.textContent = isSignup ? 'Create your account' : 'Welcome back';
+  authSub.textContent = isSignup ? 'Save watchlists, ratings, and get recommendations tuned to you.' : 'Sign in to pick up your watchlist where you left off.';
+  authSubmitBtn.textContent = isSignup ? 'Sign Up' : 'Log In';
+  authFoot.innerHTML = isSignup ? 'Already have an account? <a id="authSwitchLink">Log In</a>' : 'New here? <a id="authSwitchLink">Create an account</a>';
+  document.getElementById('authSwitchLink').addEventListener('click', () => setAuthTab(isSignup ? 'login' : 'signup'));
+}
+authTabLogin.addEventListener('click', () => setAuthTab('login'));
+authTabSignup.addEventListener('click', () => setAuthTab('signup'));
+authClose.addEventListener('click', closeAuthModal);
+authOverlay.addEventListener('click', (e) => { if (e.target === authOverlay) closeAuthModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && authOverlay.classList.contains('active')) closeAuthModal(); });
+authForm.addEventListener('submit', (e) => { e.preventDefault(); setAuthState(true); closeAuthModal(); toggleProfileDropdown(false); });
+document.querySelectorAll('[data-action="login"]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); closeMobileMenu(); openAuthModal('login'); }));
+document.querySelectorAll('[data-action="signup"]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); closeMobileMenu(); openAuthModal('signup'); }));
+document.querySelectorAll('[data-action="logout"]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); setAuthState(false); toggleProfileDropdown(false); closeMobileMenu(); }));
+setAuthTab('login');
+
+// Search overlay — shared mock catalogue (placeholder until TMDb is wired up)
+const SITE_MOVIES = [
+  { title:"Oppenheimer", year:"2023", director:"Christopher Nolan" },
+  { title:"Nosferatu", year:"2024", director:"Robert Eggers" },
+  { title:"Dunkirk", year:"2017", director:"Christopher Nolan" },
+  { title:"Barbie", year:"2023", director:"Greta Gerwig" },
+  { title:"La La Land", year:"2016", director:"Damien Chazelle" },
+  { title:"Parasite", year:"2019", director:"Bong Joon-ho" },
+  { title:"Blade Runner 2049", year:"2017", director:"Denis Villeneuve" },
+  { title:"The Batman", year:"2022", director:"Matt Reeves" },
+  { title:"Dune: Part Two", year:"2024", director:"Denis Villeneuve" },
+  { title:"Past Lives", year:"2023", director:"Celine Song" },
+  { title:"Amélie", year:"2001", director:"Jean-Pierre Jeunet" },
+  { title:"Paddington 2", year:"2017", director:"Paul King" },
+  { title:"Arrival", year:"2016", director:"Denis Villeneuve" },
+  { title:"Moonlight", year:"2016", director:"Barry Jenkins" },
+  { title:"Manchester by the Sea", year:"2016", director:"Kenneth Lonergan" },
+  { title:"Sinners", year:"2025", director:"Ryan Coogler" },
+  { title:"One Battle After Another", year:"2025", director:"Paul Thomas Anderson" },
+  { title:"Hamnet", year:"2025", director:"Chloé Zhao" },
+  { title:"The Zone of Interest", year:"2023", director:"Jonathan Glazer" }
+];
+const searchTriggerBtn = document.getElementById('searchTriggerBtn');
+const searchOverlayDiv = document.getElementById('searchOverlay');
+const searchCloseBtn = document.getElementById('searchCloseBtn');
+const searchInputField = document.getElementById('expandedSearchInput');
+const searchSubmit = document.getElementById('searchSubmitBtn');
+const resultsContainer = document.getElementById('searchResultsArea');
+const escapeHTML = (s) => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+function openSearch() { searchOverlayDiv.classList.add('active'); searchInputField.focus(); }
+function closeSearch() { searchOverlayDiv.classList.remove('active'); searchInputField.value=''; resultsContainer.innerHTML=''; }
+searchTriggerBtn.addEventListener('click', openSearch);
+searchCloseBtn.addEventListener('click', closeSearch);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && searchOverlayDiv.classList.contains('active')) closeSearch(); });
+function executeSearch() {
+  const query = searchInputField.value.trim().toLowerCase();
+  if (!query) { resultsContainer.innerHTML=''; return; }
+  const results = SITE_MOVIES.filter(f => f.title.toLowerCase().includes(query) || f.director.toLowerCase().includes(query));
+  resultsContainer.innerHTML = results.length
+    ? results.map(r => `<a class="search-result-item" href="movie-detail.html?title=${encodeURIComponent(r.title)}"><span class="search-result-title">${escapeHTML(r.title)}</span><span class="search-result-year">${r.year} · ${escapeHTML(r.director)}</span></a>`).join('')
+    : '<div class="no-results">No films match that search. Try a title or a director.</div>';
+}
+searchInputField.addEventListener('input', executeSearch);
+searchSubmit.addEventListener('click', executeSearch);
+searchInputField.addEventListener('keydown', (e) => { if (e.key === 'Enter') executeSearch(); });
+
+// Newsletter (demo — no backend yet)
+document.getElementById('newsletterSignupBtn').addEventListener('click', () => {
+  const input = document.querySelector('.newsletter-input');
+  if (input && input.value.trim()) { alert('Thanks for signing up — new films, festival picks, and staff recommendations will land in your inbox.'); input.value=''; }
+  else { alert('Add your email to get updates.'); }
+});
+
+// Cinema by Experience — films grouped by the craft that carries them, not by mood.
+// The picks are editorial; the technical notes are sourced from the productions
+// themselves (ASC / British Cinematographer interviews, VFX and sound breakdowns).
+// Posters come from the Wikipedia public image API, same as the movie detail page.
+
+const CRAFT_CATEGORIES = [
+  { id: "visual",      label: "Visual Craft" },
+  { id: "sound",       label: "Sound" },
+  { id: "performance", label: "Performance" },
+  { id: "direction",   label: "Direction" },
+  { id: "twist",       label: "Story Twists" }
+];
+
+const CRAFT_META = {
+  visual: {
+    title: "Shot to be looked at, not just watched.",
+    sub: "Cinematography, format and production design carrying the scene on their own.",
+    look: "Watch for: where the light is coming from, and how much of the frame is left empty."
+  },
+  sound: {
+    title: "Heard before it's understood.",
+    sub: "Score, silence and mixing doing narrative work most films hand to dialogue.",
+    look: "Watch for: what you can hear that you are never shown."
+  },
+  performance: {
+    title: "The work happens between the lines.",
+    sub: "Films built around what an actor does with a face, a pause, or a room they can't leave.",
+    look: "Watch for: what the actor is doing while someone else is talking."
+  },
+  direction: {
+    title: "Somebody decided where you stand.",
+    sub: "Blocking, duration and camera placement used as argument rather than coverage.",
+    look: "Watch for: how long a shot runs before it cuts, and why it cuts when it does."
+  },
+  twist: {
+    title: "You'll want to watch it again immediately.",
+    sub: "Structure and reveals built to change what everything before them meant.",
+    look: "Watch for: the detail the film shows you early and trusts you to misread."
+  }
+};
+
+const CRAFT_DATA = {
+  visual: [
+    { t: "Sinners", d: "Ryan Coogler · 2025", wiki: "Sinners (2025 film)", w: "The first feature shot on both IMAX 65mm and Ultra Panavision 70 — the tallest frame in cinema cutting against the widest. Autumn Durald Arkapaw became the first woman to win the cinematography Oscar for it." },
+    { t: "One Battle After Another", d: "Paul Thomas Anderson · 2025", wiki: "One Battle After Another", w: "Roughly 80% shot on VistaVision, a 1950s format that runs 35mm film sideways through the camera for a negative twice the usual size. Anderson wanted the texture of The French Connection." },
+    { t: "Blade Runner 2049", d: "Denis Villeneuve · 2017", wiki: "Blade Runner 2049", w: "Roger Deakins lights Los Angeles like it's already a memory of itself. His first Oscar, after more than a dozen nominations." },
+    { t: "In the Mood for Love", d: "Wong Kar-wai · 2000", wiki: "In the Mood for Love", w: "Longing shot through doorways, mirrors and rain, with the two leads almost never sharing a frame cleanly." },
+    { t: "The Revenant", d: "Alejandro G. Iñárritu · 2015", wiki: "The Revenant (2015 film)", w: "Natural light only, which meant a shooting day of roughly ninety usable minutes and a schedule dictated entirely by the sun." },
+    { t: "The Grand Budapest Hotel", d: "Wes Anderson · 2014", wiki: "The Grand Budapest Hotel", w: "Three aspect ratios for three time periods — the frame itself tells you which decade you're in before anyone speaks." },
+    { t: "Roma", d: "Alfonso Cuarón · 2018", wiki: "Roma (2018 film)", w: "Black and white, deep focus, and a camera that pans rather than cuts — so nothing is ever emphasised for you." },
+    { t: "Dune: Part Two", d: "Denis Villeneuve · 2024", wiki: "Dune: Part Two", w: "A desert scaled so vast the camera can barely contain it, with the Giedi Prime sequences shot in infrared for a sun that reads as black." },
+    { t: "Black Narcissus", d: "Powell & Pressburger · 1947", wiki: "Black Narcissus", w: "A Himalayan convent built entirely on a Pinewood soundstage, with painted glass for mountains. It still looks vast." }
+  ],
+  sound: [
+    { t: "The Zone of Interest", d: "Jonathan Glazer · 2023", wiki: "The Zone of Interest (film)", w: "Johnnie Burn spent a year researching and recording before the shoot, then built the camp entirely out of off-screen sound. The atrocity is heard and never shown — it won Best Sound." },
+    { t: "Sound of Metal", d: "Darius Marder · 2019", wiki: "Sound of Metal", w: "The mix itself goes deaf along with its drummer, dropping you inside the hearing loss instead of describing it." },
+    { t: "A Quiet Place", d: "John Krasinski · 2018", wiki: "A Quiet Place (film)", w: "A monster movie where sound design is the monster, and silence is the only safe place in the film." },
+    { t: "Dunkirk", d: "Christopher Nolan · 2017", wiki: "Dunkirk (2017 film)", w: "A ticking watch built directly into Hans Zimmer's score, layered over a Shepard tone that seems to rise forever without ever getting higher." },
+    { t: "There Will Be Blood", d: "Paul Thomas Anderson · 2007", wiki: "There Will Be Blood", w: "Jonny Greenwood's strings scrape the dread into place before a word of dialogue arrives — the first fifteen minutes have none." },
+    { t: "No Country for Old Men", d: "Coen Brothers · 2007", wiki: "No Country for Old Men (film)", w: "Almost no score at all. Wind, boots, a motel air conditioner and a cattle gun do the whole job." },
+    { t: "Under the Skin", d: "Jonathan Glazer · 2013", wiki: "Under the Skin (2013 film)", w: "Mica Levi's score sounds composed by something that has studied human music without understanding it." },
+    { t: "Whiplash", d: "Damien Chazelle · 2014", wiki: "Whiplash (2014 film)", w: "The edit is cut to the drumming rather than the other way around, which is why the last ten minutes play like a fight." },
+    { t: "Gravity", d: "Alfonso Cuarón · 2013", wiki: "Gravity (2013 film)", w: "True silence in vacuum — impacts arrive through the suit as vibration, because sound has nothing to travel through." }
+  ],
+  performance: [
+    { t: "Hamnet", d: "Chloé Zhao · 2025", wiki: "Hamnet (film)", w: "Zhao shoots grief in extreme close-up and largely in available light, leaving Jessie Buckley nowhere to hide. She became the first Irish performer to win Best Actress." },
+    { t: "There Will Be Blood", d: "Paul Thomas Anderson · 2007", wiki: "There Will Be Blood", w: "Daniel Day-Lewis builds a voice from old recordings of John Huston and then spends two hours slowly letting the man behind it rot." },
+    { t: "The Master", d: "Paul Thomas Anderson · 2012", wiki: "The Master (2012 film)", w: "The processing scene: two actors, one table, no blinking. Most of the acting is happening in the pauses." },
+    { t: "Marriage Story", d: "Noah Baumbach · 2019", wiki: "Marriage Story (2019 film)", w: "One apartment, one argument, and a camera that stays put while two people say the unforgivable thing." },
+    { t: "Anatomy of a Fall", d: "Justine Triet · 2023", wiki: "Anatomy of a Fall", w: "Sandra Hüller defends herself in a second language, and the strain of arguing in French is written into the performance." },
+    { t: "Manchester by the Sea", d: "Kenneth Lonergan · 2016", wiki: "Manchester by the Sea (film)", w: "A performance built entirely on refusal — the film's most famous scene is a man failing to finish a sentence." },
+    { t: "Uncut Gems", d: "Safdie Brothers · 2019", wiki: "Uncut Gems", w: "Adam Sandler inside overlapping dialogue that never lets him finish a thought. It plays as anxiety rather than acting." },
+    { t: "Portrait of a Lady on Fire", d: "Céline Sciamma · 2019", wiki: "Portrait of a Lady on Fire", w: "A film about being looked at, performed almost entirely through looking. The final shot runs long enough to become unbearable." },
+    { t: "Aftersun", d: "Charlotte Wells · 2022", wiki: "Aftersun", w: "Paul Mescal plays a man performing fine for his daughter, and the film only lets you see the gap in reflections and camcorder footage." }
+  ],
+  direction: [
+    { t: "Children of Men", d: "Alfonso Cuarón · 2006", wiki: "Children of Men", w: "Long takes that put you in the car and refuse to cut away — the ambush sequence runs unbroken while the world falls apart around it." },
+    { t: "1917", d: "Sam Mendes · 2019", wiki: "1917 (2019 film)", w: "Built to look like one continuous shot, which forces the geography of the trench to be real and the running to be earned." },
+    { t: "Russian Ark", d: "Aleksandr Sokurov · 2002", wiki: "Russian Ark", w: "Ninety-six minutes, one take, three hundred years of Russian history and two thousand extras. No second chances." },
+    { t: "Boyhood", d: "Richard Linklater · 2014", wiki: "Boyhood (2014 film)", w: "Shot in short bursts over twelve years with the same cast, so the ageing is real and the plot is mostly weather." },
+    { t: "Parasite", d: "Bong Joon-ho · 2019", wiki: "Parasite (2019 film)", w: "Staircases as argument — every move between the two families is staged as going up or going down." },
+    { t: "Mad Max: Fury Road", d: "George Miller · 2015", wiki: "Mad Max: Fury Road", w: "Miller centre-framed the action so your eye never has to hunt, which is why two hours of chaos stays legible." },
+    { t: "Drive My Car", d: "Ryusuke Hamaguchi · 2021", wiki: "Drive My Car (film)", w: "Rehearsal as method: the actors read flat and toneless for weeks inside the film, and the feeling arrives only when the staging is right." },
+    { t: "Jeanne Dielman", d: "Chantal Akerman · 1975", wiki: "Jeanne Dielman, 23 quai du Commerce, 1080 Bruxelles", w: "Fixed camera, real time, three days of housework. The duration is the argument, and the smallest deviation lands like a gunshot." },
+    { t: "Birdman", d: "Alejandro G. Iñárritu · 2014", wiki: "Birdman (film)", w: "Stitched into an apparent single take so the theatre never releases its hold on anyone in it." }
+  ],
+  twist: [
+    { t: "Memento", d: "Christopher Nolan · 2000", wiki: "Memento (film)", w: "Told backwards, so the audience forgets what the hero just did exactly as he does." },
+    { t: "The Sixth Sense", d: "M. Night Shyamalan · 1999", wiki: "The Sixth Sense", w: "One reveal that rewrites every scene before it — and a colour scheme that has been telling you the whole time." },
+    { t: "The Usual Suspects", d: "Bryan Singer · 1995", wiki: "The Usual Suspects", w: "An unreliable narrator hiding in the most obvious possible place, reading the room off a noticeboard." },
+    { t: "Oldboy", d: "Park Chan-wook · 2003", wiki: "Oldboy (2003 film)", w: "A revenge story that eventually turns the revenge back on the avenger, and makes the ending worse than the imprisonment." },
+    { t: "Gone Girl", d: "David Fincher · 2014", wiki: "Gone Girl (film)", w: "The narrator you trust most turns out to be the twist, delivered mid-film in a voice-over that resets the genre." },
+    { t: "Knives Out", d: "Rian Johnson · 2019", wiki: "Knives Out", w: "Shows you the how in the first act, then spends the rest complicating the why." },
+    { t: "Shutter Island", d: "Martin Scorsese · 2010", wiki: "Shutter Island (film)", w: "A detective story in which the detective is the mystery — the continuity errors are deliberate." },
+    { t: "Fight Club", d: "David Fincher · 1999", wiki: "Fight Club", w: "A narrator lying to the audience and to himself in equal measure, with the answer spliced into single frames." },
+    { t: "Coherence", d: "James Ward Byrkit · 2013", wiki: "Coherence (film)", w: "A dinner party that splinters into parallel versions of itself, shot in one house with a largely improvised cast." }
+  ]
+};
+
+let craftActive = "visual";
+const craftCategoriesEl = document.getElementById("craftCategories");
+const craftListEl = document.getElementById("craftList");
+const craftTitleEl = document.getElementById("craftTitle");
+const craftSubEl = document.getElementById("craftSub");
+const craftLookEl = document.getElementById("craftLook");
+
+function craftEscape(str) {
+  return String(str).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+}
+
+function renderCraftCategories() {
+  craftCategoriesEl.innerHTML = CRAFT_CATEGORIES.map(c =>
+    `<button class="craft-cat${c.id === craftActive ? ' active' : ''}" type="button" data-craft="${c.id}" aria-pressed="${c.id === craftActive}">${craftEscape(c.label)}</button>`
+  ).join('');
+  craftCategoriesEl.querySelectorAll('.craft-cat').forEach(btn => {
+    btn.addEventListener('click', () => { craftActive = btn.dataset.craft; renderCraftCategories(); renderCraftList(); });
+  });
+}
+
+// ----- Posters: Wikipedia public image API, one batched request per category -----
+const craftPosterCache = {};
+
+async function loadCraftPosters(films) {
+  const needed = films.filter(f => !(f.wiki in craftPosterCache));
+  if (!needed.length) { applyCraftPosters(films); return; }
+  const titles = needed.map(f => f.wiki).join('|');
+  const url = 'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*'
+            + '&prop=pageimages&pithumbsize=300&pilimit=50&redirects=1&titles=' + encodeURIComponent(titles);
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    const q = data.query || {};
+    // Wikipedia may normalize or redirect a title; map the result back to what we asked for.
+    const alias = {};
+    (q.normalized || []).forEach(n => { alias[n.to] = n.from; });
+    (q.redirects || []).forEach(r => { alias[r.to] = alias[r.from] || r.from; });
+    Object.values(q.pages || {}).forEach(page => {
+      const asked = alias[page.title] || page.title;
+      craftPosterCache[asked] = page.thumbnail ? page.thumbnail.source : null;
+    });
+    needed.forEach(f => { if (!(f.wiki in craftPosterCache)) craftPosterCache[f.wiki] = null; });
+  } catch (err) {
+    needed.forEach(f => { craftPosterCache[f.wiki] = null; });
+  }
+  applyCraftPosters(films);
+}
+
+function applyCraftPosters(films) {
+  films.forEach(f => {
+    const box = craftListEl.querySelector(`[data-poster="${CSS.escape(f.wiki)}"]`);
+    if (!box || !box.classList.contains('loading')) return;
+    box.classList.remove('loading');
+    const src = craftPosterCache[f.wiki];
+    if (src) {
+      const img = new Image();
+      img.alt = '';
+      img.loading = 'lazy';
+      img.onerror = () => { box.innerHTML = `<div class="craft-poster-fallback">${craftEscape(f.t)}</div>`; };
+      img.src = src;
+      box.appendChild(img);
+    } else {
+      box.innerHTML = `<div class="craft-poster-fallback">${craftEscape(f.t)}</div>`;
+    }
+  });
+}
+
+function renderCraftList() {
+  const meta = CRAFT_META[craftActive];
+  const films = CRAFT_DATA[craftActive];
+  craftTitleEl.textContent = meta.title;
+  craftSubEl.textContent = meta.sub;
+  craftLookEl.innerHTML = `<span>${craftEscape(meta.look)}</span>`;
+  craftListEl.style.opacity = "0";
+  setTimeout(() => {
+    craftListEl.innerHTML = films.map((f, i) => `
+      <div class="craft-row">
+        <div class="craft-num">${String(i + 1).padStart(2, '0')}</div>
+        <div class="craft-poster loading" data-poster="${craftEscape(f.wiki)}"></div>
+        <div>
+          <a class="craft-title" href="movie-detail.html?title=${encodeURIComponent(f.t)}">${craftEscape(f.t)}</a>
+          <div class="craft-meta">${craftEscape(f.d)}</div>
+          <div class="craft-why">${craftEscape(f.w)}</div>
+        </div>
+      </div>`).join('');
+    craftListEl.style.opacity = "1";
+    loadCraftPosters(films);
+  }, 180);
+}
+
+renderCraftCategories();
+renderCraftList();
+
+</script>
+</body>
+</html>

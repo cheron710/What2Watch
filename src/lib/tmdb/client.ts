@@ -23,8 +23,9 @@ async function tmdbFetch<T>(
     return cached.data as T;
   }
 
+  const apiKey = process.env.TMDB_API_KEY || "a57cb6fe3fcb73178efd632e0af61151";
   const url = new URL(`${TMDB_BASE}${endpoint}`);
-  url.searchParams.set("api_key", process.env.TMDB_API_KEY!);
+  url.searchParams.set("api_key", apiKey);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, String(v)));
 
   try {

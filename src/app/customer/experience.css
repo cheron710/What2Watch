@@ -1,0 +1,356 @@
+/* src/app/customer/experience.css */
+/* Styles extracted and modernized from cinema-by-experience.html concept */
+
+:root {
+  --exp-paper: var(--color-bg, #F0EBE0);
+  --exp-paper-2: var(--color-bg-2, #E9E3D7);
+  --exp-ink: var(--color-text, #0F0E0B);
+  --exp-ink-2: var(--color-text-2, #3A3830);
+  --exp-ink-3: var(--color-text-3, #8A8780);
+  --exp-rule: var(--color-border, rgba(15,14,11,0.14));
+  --exp-rule-soft: var(--color-hairline, rgba(15,14,11,0.08));
+}
+
+.exp-page {
+  min-height: 100vh;
+  background: var(--exp-paper);
+  color: var(--exp-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hero Section */
+.craft-hero {
+  padding: 140px 52px 40px;
+  background: var(--exp-paper);
+  text-align: center;
+}
+
+.craft-hero-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.craft-eyebrow {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--exp-ink-3);
+  margin-bottom: 22px;
+}
+
+.craft-display-h {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: clamp(40px, 6vw, 68px);
+  line-height: 1.05;
+  color: var(--exp-ink);
+  margin-bottom: 26px;
+}
+
+.craft-lede {
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 1.65;
+  color: var(--exp-ink-2);
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+/* Craft Section & Container */
+.craft-section {
+  padding: 20px 52px 140px;
+  background: var(--exp-paper);
+}
+
+.craft-wrap {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+/* Category Tabs */
+.craft-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  justify-content: center;
+  margin-bottom: 48px;
+  border-bottom: 0.5px solid var(--exp-rule-soft);
+  padding-bottom: 16px;
+}
+
+.craft-cat {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--exp-ink-3);
+  background: none;
+  border: none;
+  padding: 6px 0 10px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.craft-cat::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--exp-ink);
+  transition: width 0.25s ease;
+}
+
+.craft-cat:hover {
+  color: var(--exp-ink);
+}
+
+.craft-cat.active {
+  color: var(--exp-ink);
+}
+
+.craft-cat.active::after {
+  width: 100%;
+}
+
+.craft-cat:focus-visible {
+  outline: 2px solid var(--exp-ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Panel Header */
+.craft-panel-head {
+  border-bottom: 0.5px solid var(--exp-rule);
+  padding-bottom: 20px;
+  margin-bottom: 8px;
+}
+
+.craft-panel-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--exp-ink);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.craft-panel-sub {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--exp-ink-2);
+  max-width: 65ch;
+  line-height: 1.6;
+}
+
+.craft-look {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--exp-ink-3);
+  margin-top: 14px;
+}
+
+.craft-look span {
+  color: var(--exp-ink-2);
+}
+
+/* Craft List & Rows */
+.craft-list {
+  transition: opacity 0.3s ease;
+}
+
+.craft-row {
+  display: grid;
+  grid-template-columns: 36px 64px 1fr;
+  gap: 0 22px;
+  align-items: start;
+  padding: 24px 0;
+  border-bottom: 0.5px solid var(--exp-rule-soft);
+  transition: padding-left 0.25s ease, background-color 0.25s ease;
+}
+
+.craft-row:last-child {
+  border-bottom: 0.5px solid var(--exp-rule);
+}
+
+.craft-row:hover {
+  padding-left: 6px;
+}
+
+.craft-num {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--exp-ink-3);
+  padding-top: 5px;
+}
+
+.craft-poster-link {
+  display: block;
+  position: relative;
+  width: 60px;
+  height: 90px;
+  border-radius: var(--radius-sm, 6px);
+  overflow: hidden;
+  background: var(--exp-paper-2);
+  border: 0.5px solid var(--exp-rule);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s var(--ease-out, ease), box-shadow 0.25s ease;
+}
+
+.craft-poster-link:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+}
+
+.craft-poster-img {
+  object-fit: cover;
+}
+
+.craft-rating-badge {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  background: rgba(15, 14, 11, 0.88);
+  color: #fff;
+  font-size: 8.5px;
+  font-weight: 700;
+  padding: 2px 4px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.craft-poster-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 6px;
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--exp-ink-3);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.craft-movie-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.craft-title-link {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--exp-ink);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  line-height: 1.25;
+  transition: color 0.15s ease;
+}
+
+.craft-title-link:hover {
+  color: var(--color-accent, #FF4D2D);
+}
+
+.craft-title-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 21px;
+  color: var(--exp-ink);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.craft-meta {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--exp-ink-3);
+  margin: 5px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.craft-db-tag {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--exp-ink) 8%, transparent);
+  color: var(--exp-ink-2);
+}
+
+.craft-why {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--exp-ink-2);
+  line-height: 1.65;
+  max-width: 62ch;
+}
+
+/* Cross links */
+.craft-cross {
+  text-align: center;
+  margin-top: 52px;
+  padding-top: 28px;
+  border-top: 0.5px solid var(--exp-rule);
+}
+
+.craft-cross p {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--exp-ink-3);
+}
+
+.craft-cross a {
+  color: var(--exp-ink);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .craft-hero {
+    padding: 110px 20px 28px;
+  }
+  .craft-section {
+    padding: 0 20px 100px;
+  }
+  .craft-row {
+    grid-template-columns: 28px 52px 1fr;
+    gap: 0 14px;
+  }
+  .craft-poster-link {
+    width: 52px;
+    height: 78px;
+  }
+  .craft-title-link, .craft-title-text {
+    font-size: 18px;
+  }
+  .craft-panel-title {
+    font-size: 21px;
+  }
+  .craft-categories {
+    gap: 18px;
+  }
+}

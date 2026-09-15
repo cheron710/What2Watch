@@ -168,6 +168,8 @@ function writeMockDb(data: any) {
       fs.mkdirSync(dir, { recursive: true });
     }
     fs.writeFileSync(MOCK_DB_PATH, JSON.stringify(data, null, 2), "utf8");
+    cachedDbData = data;
+    lastReadTime = Date.now();
   } catch (e) {
     console.error("Write mock database error:", e);
   }
@@ -498,9 +500,64 @@ export async function deleteUser(id: string, email?: string): Promise<boolean> {
   }
 }
 
-// ── 3. CURATION MODULES (Staff Picks) ───────────────────────────────
+// ── 3. CURATION MODULES (Staff Picks / Dev Team Members) ────────────
+const DEFAULT_STAFF_MEMBERS = [
+  {
+    id: "dev-1",
+    name: "Tim Bradford",
+    role: "Founder & Lead Developer",
+    initial: "TB",
+    note: "I look for films that trust their audience — the ones that leave room for you to feel your way through.",
+    pick: "Manchester by the Sea, Oppenheimer",
+    tmdbId: 334543,
+    is_published: true,
+    movies: [334543, 872585]
+  },
+  {
+    id: "dev-2",
+    name: "Alex Rivera",
+    role: "Frontend & UI/UX Lead",
+    initial: "AR",
+    note: "Cinema should move like music. I look for bold formal swings, rich color palettes, and perfect rhythmic editing.",
+    pick: "La La Land, Grand Budapest Hotel",
+    tmdbId: 313369,
+    is_published: true,
+    movies: [313369, 120467]
+  },
+  {
+    id: "dev-3",
+    name: "Sarah Chen",
+    role: "Backend & AI Systems Lead",
+    note: "Films that explore language, time, and consciousness get me every time. Intelligent science fiction at its peak.",
+    pick: "Arrival, Blade Runner 2049",
+    initial: "SC",
+    tmdbId: 329865,
+    is_published: true,
+    movies: [329865, 335984]
+  },
+  {
+    id: "dev-4",
+    name: "Marcus Vance",
+    role: "Infrastructure & Data Engineer",
+    initial: "MV",
+    note: "Atmosphere and scale matter most. When world-building and sound design carry you into another world, that's pure film.",
+    pick: "Blade Runner 2049, Dunkirk, 1917",
+    tmdbId: 335984,
+    is_published: true,
+    movies: [335984, 374720, 530915]
+  }
+];
+
 export async function getStaffPicks(): Promise<any[]> {
-  const getFallback = () => getTable("staff_picks", []);
+  const getFallback = () => {
+    const db = readMockDb();
+    if (db["staff_picks"] === undefined) {
+      saveTable("staff_picks", DEFAULT_STAFF_MEMBERS);
+      return DEFAULT_STAFF_MEMBERS;
+    }
+    return db["staff_picks"];
+  };
+
   if (!isSupabaseConfigured) return getFallback();
 
   return withSupabaseTimeout(
@@ -508,9 +565,10 @@ export async function getStaffPicks(): Promise<any[]> {
       const supabase = await getSupabaseClient();
       if (!supabase) return getFallback();
       const { data, error } = await supabase.from("staff_pick_collections").select("*, staff_pick_movies(movie_id, sort_order)");
-      if (error) throw error;
+      if (error || !data || data.length === 0) return getFallback();
       return data.map((d: any) => ({
         ...d,
+        tmdbId: d.tmdbId || (d.staff_pick_movies?.[0]?.movie_id ?? null),
         movies: d.staff_pick_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
       }));
     },
@@ -519,39 +577,62 @@ export async function getStaffPicks(): Promise<any[]> {
 }
 
 export async function saveStaffPick(collection: any): Promise<any> {
-  if (!isSupabaseConfigured) {
-    const list = getTable("staff_picks", []);
-    const idx = list.findIndex((c: any) => c.id === collection.id);
-    if (idx > -1) {
-      list[idx] = collection;
-    } else {
-      collection.id = `col-${Math.random().toString(36).substr(2, 9)}`;
-      list.push(collection);
-    }
-    saveTable("staff_picks", list);
-    return collection;
+  const list = getTable("staff_picks", DEFAULT_STAFF_MEMBERS);
+  const idx = list.findIndex((c: any) => String(c.id) === String(collection.id));
+  if (idx > -1) {
+    list[idx] = collection;
+  } else {
+    collection.id = collection.id || `dev-${Math.random().toString(36).substr(2, 9)}`;
+    list.push(collection);
   }
-  const supabase = await getSupabaseClient();
-  if (!supabase) return collection;
-  const { data: col, error: colErr } = await supabase.from("staff_pick_collections").upsert({
-    id: collection.id || undefined,
-    title: collection.title,
-    description: collection.description,
-    featured_banner_url: collection.featured_banner_url,
-    is_published: collection.is_published
-  }).select().single();
-  if (colErr) throw colErr;
+  saveTable("staff_picks", list);
 
-  await supabase.from("staff_pick_movies").delete().eq("collection_id", col.id);
-  if (collection.movies && collection.movies.length > 0) {
-    const inserts = collection.movies.map((mid: number, idx: number) => ({
-      collection_id: col.id,
-      movie_id: mid,
-      sort_order: idx
-    }));
-    await supabase.from("staff_pick_movies").insert(inserts);
-  }
-  return { ...col, movies: collection.movies };
+  if (!isSupabaseConfigured) return collection;
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return collection;
+      const { data: col, error: colErr } = await supabase.from("staff_pick_collections").upsert({
+        id: collection.id || undefined,
+        title: collection.title || collection.name,
+        description: collection.description || collection.note,
+        featured_banner_url: collection.featured_banner_url || "",
+        is_published: collection.is_published
+      }).select().single();
+      if (colErr) throw colErr;
+
+      await supabase.from("staff_pick_movies").delete().eq("collection_id", col.id);
+      if (collection.movies && collection.movies.length > 0) {
+        const inserts = collection.movies.map((mid: number, idx: number) => ({
+          collection_id: col.id,
+          movie_id: mid,
+          sort_order: idx
+        }));
+        await supabase.from("staff_pick_movies").insert(inserts);
+      }
+      return { ...col, movies: collection.movies };
+    },
+    () => collection
+  );
+}
+
+export async function deleteStaffPick(id: string): Promise<boolean> {
+  const list = getTable("staff_picks", DEFAULT_STAFF_MEMBERS);
+  const filtered = list.filter((c: any) => String(c.id) !== String(id));
+  saveTable("staff_picks", filtered);
+
+  if (!isSupabaseConfigured) return true;
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return true;
+      await supabase.from("staff_pick_collections").delete().eq("id", id);
+      return true;
+    },
+    () => true
+  );
 }
 
 // ── 4. FESTIVALS CURATION ──────────────────────────────────────────
