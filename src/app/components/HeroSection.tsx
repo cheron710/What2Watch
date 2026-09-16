@@ -15,24 +15,24 @@ export default function HeroSection({ initialMovies = [] }: HeroSectionProps) {
 
   const heroFilms = initialMovies.length > 0
     ? initialMovies.map(m => {
-        const rawBg = m.backdrop_path || m.poster_path;
-        const bgUrl = rawBg
-          ? (rawBg.startsWith("http") ? rawBg : tmdbImageUrl(rawBg, "w1280"))
-          : "";
+      const rawBg = m.backdrop_path || m.poster_path;
+      const bgUrl = rawBg
+        ? (rawBg.startsWith("http") ? rawBg : tmdbImageUrl(rawBg, "w1280"))
+        : "";
 
-        const ratingVal = m.vote_average
-          ? Number(m.vote_average).toFixed(1)
-          : (m.recommendation_score ? (Number(m.recommendation_score) / 10).toFixed(1) : null);
+      const ratingVal = m.vote_average
+        ? Number(m.vote_average).toFixed(1)
+        : (m.recommendation_score ? (Number(m.recommendation_score) / 10).toFixed(1) : null);
 
-        return {
-          id: m.id,
-          title: m.title,
-          year: m.release_date ? m.release_date.split("-")[0] : "N/A",
-          director: m.director || "Various",
-          rating: ratingVal,
-          bg: bgUrl
-        };
-      })
+      return {
+        id: m.id,
+        title: m.title,
+        year: m.release_date ? m.release_date.split("-")[0] : "N/A",
+        director: m.director || "Various",
+        rating: ratingVal,
+        bg: bgUrl
+      };
+    })
     : [];
 
   const [activeFilm, setActiveFilm] = useState(heroFilms[0] || null);

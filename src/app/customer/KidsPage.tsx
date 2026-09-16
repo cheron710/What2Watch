@@ -137,108 +137,7 @@ const CLASSIC_DECORATIONS: Record<string, { tagColor: string; sceneClass: string
   }
 };
 
-const SPOTLIGHT_ITEMS = [
-  {
-    id: 12,
-    name: "Finding Nemo",
-    meta: "2003 · Andrew Stanton · Pixar",
-    quote: "A father's love takes him to the bottom of the ocean and back — and teaches him to let go.",
-    reasons: [
-      { color: "#5BB8F5", text: "Dory teaches that it's okay to ask for help — and to laugh while doing it" },
-      { color: "#69D97D", text: "Stunning underwater world that makes the ocean feel like a magical place" },
-      { color: "#FFD54F", text: "A simple message about bravery that kids carry long after the credits roll" }
-    ],
-    badges: [
-      { bg: "rgba(91,184,245,.18)", color: "#5BB8F5", label: "All Ages" },
-      { bg: "rgba(105,217,125,.18)", color: "#69D97D", label: "Family Friendly" },
-      { bg: "rgba(255,213,79,.18)", color: "#FFD54F", label: "Adventure" }
-    ],
-    bg: "linear-gradient(160deg,#0077BE 0%,#00A8CC 40%,#00C9A7 100%)",
-    inner: (
-      <>
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '30%', background: 'rgba(0,40,60,.5)', borderRadius: '60% 60% 0 0' }}></div>
-        <div style={{ position: 'absolute', borderRadius: '50%', border: '2px solid rgba(255,255,255,.5)', background: 'rgba(255,255,255,.1)', width: 22, height: 22, top: '14%', left: '10%', animation: 'floatC 4s ease-in-out infinite' }}></div>
-        <div style={{ position: 'absolute', borderRadius: '50%', border: '2px solid rgba(255,255,255,.5)', background: 'rgba(255,255,255,.1)', width: 12, height: 12, top: '30%', right: '16%', animation: 'floatC 5s .6s ease-in-out infinite' }}></div>
-        <div style={{ position: 'absolute', borderRadius: '50%', border: '2px solid rgba(255,255,255,.5)', background: 'rgba(255,255,255,.1)', width: 30, height: 30, top: '50%', left: '55%', animation: 'floatC 6s 1.2s ease-in-out infinite' }}></div>
-        <span style={{ position: 'absolute', bottom: 0, left: '2%', fontSize: 48 }}>🪸</span>
-        <span style={{ position: 'absolute', bottom: 0, left: '18%', fontSize: 42 }}>🌿</span>
-        <span style={{ position: 'absolute', bottom: 0, right: '14%', fontSize: 46 }}>🪸</span>
-        <span style={{ position: 'absolute', bottom: 0, right: '2%', fontSize: 40 }}>🌿</span>
-        <span style={{ position: 'absolute', bottom: '26%', left: '6%', fontSize: 34, animation: 'wibble 5s ease-in-out infinite' }}>🌱</span>
-        <span style={{ position: 'absolute', bottom: '50%', left: '8%', fontSize: 36, animation: 'drift 6s 1.5s ease-in-out infinite' }}>🐢</span>
-        <span style={{ position: 'absolute', bottom: '40%', right: '8%', fontSize: 48, animation: 'drift 5s .8s ease-in-out infinite' }}>🐟</span>
-        <span style={{ position: 'absolute', bottom: '34%', left: '50%', transform: 'translateX(-50%)', fontSize: 74, animation: 'drift 4s ease-in-out infinite' }}>🐠</span>
-        <div className="sp-shimmer"></div>
-      </>
-    )
-  },
-  {
-    id: 129,
-    name: "Spirited Away",
-    meta: "2001 · Hayao Miyazaki · Studio Ghibli",
-    quote: "A girl walks into another world and discovers she's braver than she ever knew.",
-    reasons: [
-      { color: "#B57BF7", text: "A rare animated film that respects children's intelligence and imagination" },
-      { color: "#FF8FAB", text: "Breathtaking hand-drawn animation — every frame is a painting" },
-      { color: "#5BB8F5", text: "Chihiro's courage grows quietly, showing kids that bravery isn't loud" }
-    ],
-    badges: [
-      { bg: "rgba(181,123,247,.18)", color: "#B57BF7", label: "6+" },
-      { bg: "rgba(255,143,171,.18)", color: "#FF8FAB", label: "Magical" },
-      { bg: "rgba(91,184,245,.18)", color: "#5BB8F5", label: "Masterpiece" }
-    ],
-    bg: "linear-gradient(180deg,#2D1B5E 0%,#6B3F9E 40%,#C4689B 70%,#F4A0B5 100%)",
-    inner: (
-      <>
-        <div style={{ position: 'absolute', top: '12%', right: '20%', width: 56, height: 56, borderRadius: '50%', background: '#FFF9C4', boxShadow: '0 0 28px rgba(255,249,196,.5)' }}></div>
-        <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 150, height: 110, background: '#E8B86D' }}>
-          <div style={{ position: 'absolute', top: -28, left: -13, right: -13, height: 38, background: '#C0392B', clipPath: 'polygon(0 100%,50% 0,100% 100%)' }}></div>
-          <div style={{ position: 'absolute', top: -52, left: 15, right: 15, height: 34, background: '#922B21', clipPath: 'polygon(0 100%,50% 0,100% 100%)' }}></div>
-          <div style={{ position: 'absolute', bottom: 18, left: 15, width: 20, height: 26, background: '#FFD95A', borderRadius: 2 }}></div>
-          <div style={{ position: 'absolute', bottom: 18, left: 64, width: 20, height: 26, background: '#FFD95A', borderRadius: 2 }}></div>
-          <div style={{ position: 'absolute', bottom: 18, right: 15, width: 20, height: 26, background: '#FFD95A', borderRadius: 2 }}></div>
-        </div>
-        <span style={{ position: 'absolute', top: '38%', left: '14%', fontSize: 26, animation: 'floatB 4s ease-in-out infinite' }}>🏮</span>
-        <span style={{ position: 'absolute', top: '28%', right: '16%', fontSize: 26, animation: 'floatB 5s 1s ease-in-out infinite' }}>🏮</span>
-        <span style={{ position: 'absolute', bottom: '44%', left: '48%', transform: 'translateX(-50%)', fontSize: 38, animation: 'bounce 3.5s ease-in-out infinite' }}>🧒</span>
-        <div className="sp-shimmer"></div>
-      </>
-    )
-  },
-  {
-    id: 354912,
-    name: "Coco",
-    meta: "2017 · Lee Unkrich · Pixar",
-    quote: "The dead are only truly gone when the living stop remembering them.",
-    reasons: [
-      { color: "#FF8FAB", text: "Celebrates family and culture with a warmth that makes every heart full" },
-      { color: "#FFD54F", text: "One of the most visually dazzling animated films ever made" },
-      { color: "#FF7E5F", text: "Teaches children about love, memory, and what it means to follow your dream" }
-    ],
-    badges: [
-      { bg: "rgba(255,143,171,.18)", color: "#FF8FAB", label: "5+" },
-      { bg: "rgba(255,126,95,.18)", color: "#FF7E5F", label: "Emotional" },
-      { bg: "rgba(255,213,79,.18)", color: "#FFD54F", label: "Musical" }
-    ],
-    bg: "linear-gradient(180deg,#0D0221 0%,#1A0A3D 30%,#6B2D8B 60%,#F7A800 100%)",
-    inner: (
-      <>
-        <div style={{ position: 'absolute', top: '10%', left: '15%', width: 42, height: 42, borderRadius: '50%', background: '#FFF9C4', boxShadow: '0 0 16px rgba(255,249,196,.5)' }}></div>
-        <span style={{ position: 'absolute', top: '8%', left: '40%', fontSize: 14, color: '#FFD700' }}>★</span>
-        <span style={{ position: 'absolute', top: '15%', right: '25%', fontSize: 14, color: '#FFD700' }}>★</span>
-        <span style={{ position: 'absolute', top: '5%', right: '50%', fontSize: 14, color: '#FFD700' }}>★</span>
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '28%', background: '#1A0A3D' }}></div>
-        <div style={{ position: 'absolute', bottom: '28%', left: 0, right: 0, height: 14, background: '#F7A800' }}></div>
-        <span style={{ position: 'absolute', bottom: '26%', left: '5%', fontSize: 26 }}>🌸</span>
-        <span style={{ position: 'absolute', bottom: '22%', left: '22%', fontSize: 22 }}>🌸</span>
-        <span style={{ position: 'absolute', bottom: '26%', right: '22%', fontSize: 24 }}>🌸</span>
-        <span style={{ position: 'absolute', bottom: '26%', right: '6%', fontSize: 22 }}>🌸</span>
-        <span style={{ position: 'absolute', bottom: '38%', left: '48%', transform: 'translateX(-50%)', fontSize: 52, animation: 'bounce 3s ease-in-out infinite' }}>🎸</span>
-        <div className="sp-shimmer"></div>
-      </>
-    )
-  }
-];
+
 
 interface KidsPageProps {
   initialCategories?: any[];
@@ -332,12 +231,81 @@ export default function KidsPage({ initialCategories = [], allMovies = [] }: Kid
     router.push(`/movie/${movieId}`);
   };
 
+  const [dailyFeaturedItems, setDailyFeaturedItems] = useState<any[]>([]);
+  const [spotlightLoaded, setSpotlightLoaded] = useState<boolean>(false);
+  const [todayDateStr, setTodayDateStr] = useState<string>("");
+  const [slideDir, setSlideDir] = useState<"slide-in-right" | "slide-in-left">("slide-in-right");
+  const [slideKey, setSlideKey] = useState<number>(0);
+  const [timerProgress, setTimerProgress] = useState<number>(0);
+  const [isHoveredSpotlight, setIsHoveredSpotlight] = useState<boolean>(false);
+
+  // Fetch Daily Featured TMDB Pick — ONLY show Admin-curated movies, no hardcoded fallback
+  useEffect(() => {
+    async function loadDailyFeatured() {
+      try {
+        const res = await fetch("/api/kids/daily-featured", { cache: "no-store" });
+        const data = await res.json();
+        if (data && data.items) {
+          setDailyFeaturedItems(data.items);
+          setTodayDateStr(data.todayDate || "");
+          if (data.items.length > 0 && data.todayIndex !== undefined) {
+            setSpotlightIdx(data.todayIndex % data.items.length);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load daily featured kids movie:", e);
+      } finally {
+        setSpotlightLoaded(true);
+      }
+    }
+    loadDailyFeatured();
+  }, []);
+
+  // Only show Admin-curated movies — never fall back to hardcoded items
+  const spotlightList = dailyFeaturedItems;
+
+  // 10-Second Auto Rotation Timer
+  useEffect(() => {
+    if (isHoveredSpotlight) return;
+
+    const intervalTime = 10000; // 10 seconds
+    const stepTime = 100;
+    const stepIncrement = (stepTime / intervalTime) * 100;
+
+    const timer = setInterval(() => {
+      setTimerProgress((prev) => {
+        if (prev >= 100) {
+          setSlideDir("slide-in-right");
+          setSlideKey((k) => k + 1);
+          setSpotlightIdx((idx) => spotlightList.length > 0 ? (idx + 1) % spotlightList.length : 0);
+          return 0;
+        }
+        return prev + stepIncrement;
+      });
+    }, stepTime);
+
+    return () => clearInterval(timer);
+  }, [isHoveredSpotlight, spotlightList.length]);
+
   const handlePrevSpotlight = () => {
-    setSpotlightIdx((prev) => (prev - 1 + SPOTLIGHT_ITEMS.length) % SPOTLIGHT_ITEMS.length);
+    setSlideDir("slide-in-left");
+    setSlideKey((k) => k + 1);
+    setTimerProgress(0);
+    setSpotlightIdx((prev) => (prev - 1 + spotlightList.length) % spotlightList.length);
   };
 
   const handleNextSpotlight = () => {
-    setSpotlightIdx((prev) => (prev + 1) % SPOTLIGHT_ITEMS.length);
+    setSlideDir("slide-in-right");
+    setSlideKey((k) => k + 1);
+    setTimerProgress(0);
+    setSpotlightIdx((prev) => (prev + 1) % spotlightList.length);
+  };
+
+  const handleDotClick = (idx: number) => {
+    setSlideDir(idx > spotlightIdx ? "slide-in-right" : "slide-in-left");
+    setSlideKey((k) => k + 1);
+    setTimerProgress(0);
+    setSpotlightIdx(idx);
   };
 
   const handleAskGuillaume = (e: React.FormEvent) => {
@@ -356,7 +324,8 @@ export default function KidsPage({ initialCategories = [], allMovies = [] }: Kid
     setCurrentPage(1);
   };
 
-  const currentSpotlight = SPOTLIGHT_ITEMS[spotlightIdx];
+  const safeSpotlightIdx = spotlightList.length > 0 ? spotlightIdx % spotlightList.length : 0;
+  const currentSpotlight = spotlightList.length > 0 ? spotlightList[safeSpotlightIdx] : null;
 
   return (
     <div className="kids-page">
@@ -513,66 +482,206 @@ export default function KidsPage({ initialCategories = [], allMovies = [] }: Kid
         )}
       </section>
 
-      {/* SPOTLIGHT SECTION */}
-      <section id="spotlight">
-        <div className="spotlight-inner">
-          <span className="spotlight-label">✦ This Week&apos;s Featured Pick</span>
-          <h2 className="spotlight-title">
-            Our editors recommend<br />
-            <span>{currentSpotlight.name}</span>
-          </h2>
+      {/* SPOTLIGHT SECTION — ONLY shows Admin-curated movies */}
+      {spotlightLoaded && spotlightList.length > 0 && currentSpotlight && (
+        <section id="spotlight">
+          <div className="spotlight-inner">
+            <span className="spotlight-label">
+              ✦ TODAY&apos;S FEATURED KIDS PICK {todayDateStr ? `(${todayDateStr})` : ""}
+            </span>
+            <h2 className="spotlight-title">
+              Our editors recommend<br />
+              <span>{currentSpotlight?.title || currentSpotlight?.name}</span>
+            </h2>
 
-          <div className="spotlight-card">
-            <div className="spotlight-scene" style={{ background: currentSpotlight.bg }}>
-              {currentSpotlight.inner}
-            </div>
-            <div className="spotlight-info">
-              <div className="sp-pick-tag">⭐ Editor&apos;s Pick</div>
+            <div
+              className={`spotlight-card ${slideDir}`}
+              key={`spotlight-slide-${slideKey}-${spotlightIdx}`}
+              onMouseEnter={() => setIsHoveredSpotlight(true)}
+              onMouseLeave={() => setIsHoveredSpotlight(false)}
+            >
               <div
-                className="sp-film-title"
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleMovieClick(currentSpotlight.id)}
+                className="spotlight-scene overflow-hidden relative"
+                style={{
+                  background: currentSpotlight?.backdropPath
+                    ? `linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(13,13,26,0.9)), url(${currentSpotlight.backdropPath}) center/cover no-repeat`
+                    : currentSpotlight?.bg || "linear-gradient(160deg,#0077BE 0%,#00A8CC 40%,#00C9A7 100%)",
+                  minHeight: 440,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 24,
+                }}
               >
-                {currentSpotlight.name}
-              </div>
-              <div className="sp-film-year">{currentSpotlight.meta}</div>
-              <blockquote className="sp-pull-quote">&quot;{currentSpotlight.quote}&quot;</blockquote>
-
-              <div className="sp-why-title">Why your little ones will love it</div>
-              <div className="sp-reasons">
-                {currentSpotlight.reasons.map((r, i) => (
-                  <div className="sp-reason" key={i}>
-                    <div className="sp-reason-dot" style={{ background: r.color }} />
-                    <span className="sp-reason-text">{r.text}</span>
+                {currentSpotlight?.posterPath ? (
+                  <div
+                    className="relative group cursor-pointer"
+                    onClick={() => handleMovieClick(currentSpotlight.id)}
+                  >
+                    <img
+                      src={currentSpotlight.posterPath}
+                      alt={currentSpotlight.title || currentSpotlight.name}
+                      style={{
+                        width: 170,
+                        height: 250,
+                        objectFit: "cover",
+                        borderRadius: 16,
+                        boxShadow: "0 12px 32px rgba(0,0,0,0.6)",
+                        border: "3px solid rgba(255,255,255,0.2)",
+                        transition: "transform 0.3s ease",
+                      }}
+                      className="hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-white font-black text-xs bg-[#FF7E5F] px-4 py-2 rounded-full shadow-lg">
+                        ▶ View Movie
+                      </span>
+                    </div>
                   </div>
-                ))}
+                ) : (
+                  currentSpotlight?.inner
+                )}
+
+                {currentSpotlight?.isToday && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 16,
+                      left: 16,
+                      background: "#FF7E5F",
+                      color: "#fff",
+                      fontWeight: 900,
+                      fontSize: "11px",
+                      padding: "5px 14px",
+                      borderRadius: 20,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+                    }}
+                  >
+                    ✨ TODAY&apos;S DAILY SELECTION
+                  </div>
+                )}
+
+                {currentSpotlight?.rating && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: 16,
+                      right: 16,
+                      background: "rgba(0,0,0,0.75)",
+                      backdropFilter: "blur(6px)",
+                      color: "#FFD54F",
+                      fontWeight: 900,
+                      fontSize: "12px",
+                      padding: "4px 12px",
+                      borderRadius: 20,
+                      border: "1px solid rgba(255,213,79,0.3)",
+                    }}
+                  >
+                    ★ {currentSpotlight.rating} / 10 (TMDB)
+                  </div>
+                )}
               </div>
 
-              <div className="sp-age-row">
-                {currentSpotlight.badges.map((b, i) => (
-                  <span className="sp-badge" key={i} style={{ background: b.bg, color: b.color }}>
-                    {b.label}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="spotlight-nav">
-            <button className="sp-nav-btn" onClick={handlePrevSpotlight}>←</button>
-            <div className="sp-dots">
-              {SPOTLIGHT_ITEMS.map((_, i) => (
+              <div className="spotlight-info">
+                <div className="sp-pick-tag flex items-center gap-2">
+                  <span>⭐ DAILY EDITOR&apos;S PICK</span>
+                  {todayDateStr && <span style={{ opacity: 0.75, fontSize: "10px" }}>· {todayDateStr}</span>}
+                </div>
                 <div
-                  key={i}
-                  className={`sp-dot${i === spotlightIdx ? " on" : ""}`}
-                  onClick={() => setSpotlightIdx(i)}
-                />
-              ))}
+                  className="sp-film-title"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleMovieClick(currentSpotlight?.id)}
+                >
+                  {currentSpotlight?.title || currentSpotlight?.name}
+                </div>
+                <div className="sp-film-year">
+                  {currentSpotlight?.year} · ⭐ {currentSpotlight?.rating} / 10 · {currentSpotlight?.genres || currentSpotlight?.meta}
+                </div>
+                <blockquote className="sp-pull-quote">
+                  &quot;{currentSpotlight?.tagline || currentSpotlight?.quote || currentSpotlight?.overview}&quot;
+                </blockquote>
+
+                <div className="sp-why-title">Why your little ones will love it</div>
+                <div className="sp-reasons">
+                  {currentSpotlight?.highlight ? (
+                    <>
+                      <div className="sp-reason">
+                        <div className="sp-reason-dot" style={{ background: "#5BB8F5" }} />
+                        <span className="sp-reason-text">{currentSpotlight.highlight}</span>
+                      </div>
+                      <div className="sp-reason">
+                        <div className="sp-reason-dot" style={{ background: "#69D97D" }} />
+                        <span className="sp-reason-text">A famous animated masterpiece retrieved live from TMDB</span>
+                      </div>
+                      <div className="sp-reason">
+                        <div className="sp-reason-dot" style={{ background: "#FFD54F" }} />
+                        <span className="sp-reason-text">Over {currentSpotlight.voteCount || 1000}+ positive community ratings on TMDB</span>
+                      </div>
+                    </>
+                  ) : (
+                    currentSpotlight?.reasons?.map((r: any, i: number) => (
+                      <div className="sp-reason" key={i}>
+                        <div className="sp-reason-dot" style={{ background: r.color }} />
+                        <span className="sp-reason-text">{r.text}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                <div className="sp-age-row flex items-center justify-between mt-4">
+                  <div className="flex gap-2">
+                    <span className="sp-badge" style={{ background: "rgba(91,184,245,.18)", color: "#5BB8F5" }}>
+                      {currentSpotlight?.age || "All Ages"}
+                    </span>
+                    <span className="sp-badge" style={{ background: "rgba(105,217,125,.18)", color: "#69D97D" }}>
+                      Family Friendly
+                    </span>
+                    <span className="sp-badge" style={{ background: "rgba(255,126,95,.18)", color: "#FF7E5F" }}>
+                      TMDB Pick
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleMovieClick(currentSpotlight?.id)}
+                    style={{
+                      padding: "8px 20px",
+                      borderRadius: 20,
+                      border: "none",
+                      background: "#FF7E5F",
+                      color: "#fff",
+                      fontWeight: 800,
+                      fontSize: "12px",
+                      cursor: "pointer",
+                      boxShadow: "0 4px 12px rgba(255,126,95,0.4)",
+                    }}
+                  >
+                    🍿 View Details →
+                  </button>
+                </div>
+              </div>
+
+              {/* 10-Second Auto-Rotation Timer Progress Bar */}
+              <div className="spotlight-timer-bar" style={{ width: `${timerProgress}%` }} />
             </div>
-            <button className="sp-nav-btn" onClick={handleNextSpotlight}>→</button>
+
+            <div className="spotlight-nav">
+              <button type="button" className="sp-nav-btn" onClick={handlePrevSpotlight}>←</button>
+              <div className="sp-dots">
+                {spotlightList.map((_: any, i: number) => (
+                  <div
+                    key={i}
+                    className={`sp-dot${i === safeSpotlightIdx ? " on" : ""}`}
+                    onClick={() => handleDotClick(i)}
+                  />
+                ))}
+              </div>
+              <button type="button" className="sp-nav-btn" onClick={handleNextSpotlight}>→</button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* GUILLAUME KIDS SECTION */}
       <section id="kids-guillaume" className="kids-section">

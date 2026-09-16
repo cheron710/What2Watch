@@ -2,12 +2,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getKids, saveKids, getMovies } from "@/services/adminService";
+import { getKids, saveKids, getMovies, getKidsSpotlight, saveKidsSpotlight, searchTMDb, getTMDbDetail } from "@/services/adminService";
+import { tmdbImageUrl } from "@/lib/tmdb/client";
 import DataTable, { Column } from "@/components/admin/tables/DataTable";
 import { useToast } from "@/components/admin/layout/AdminLayout";
 import { InputField, TextareaField, SelectField, TagInputField } from "@/components/admin/forms/FormFields";
 import { Modal } from "@/components/admin/dialogs/Dialogs";
-import { Plus, Edit2, Loader2, ListOrdered, ArrowUp, ArrowDown, Trash2, ShieldAlert } from "lucide-react";
+import { Plus, Edit2, Loader2, ListOrdered, ArrowUp, ArrowDown, Trash2, ShieldAlert, Sparkles, Search, Star } from "lucide-react";
 
 export default function KidsPage() {
   const { showToast } = useToast();
@@ -15,6 +16,14 @@ export default function KidsPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [movies, setMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Spotlight State
+  const [spotlightIds, setSpotlightIds] = useState<number[]>([]);
+  const [spotlightItems, setSpotlightItems] = useState<any[]>([]);
+  const [spotlightLoading, setSpotlightLoading] = useState(false);
+  const [tmdbQuery, setTmdbQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchingTmdb, setSearchingTmdb] = useState(false);
 
   // Modals
   const [editOpen, setEditOpen] = useState(false);
@@ -33,12 +42,53 @@ export default function KidsPage() {
   const [saving, setSaving] = useState(false);
   const [selectedMovieId, setSelectedMovieId] = useState<number | "">("");
 
+  const loadSpotlightData = async (currentIds?: number[]) => {
+    setSpotlightLoading(true);
+    try {
+      const ids = currentIds || (await getKidsSpotlight());
+      setSpotlightIds(ids);
+
+      const items = await Promise.all(
+        ids.map(async (mid) => {
+          try {
+            // Use server action to fetch TMDB details (getMovieDetail is server-only)
+            const detail = await getTMDbDetail(mid);
+            return {
+              id: detail.id,
+              title: detail.title,
+              release_date: detail.release_date || "",
+              poster_path: detail.poster_path,
+              vote_average: detail.vote_average || 8.0,
+              overview: detail.overview || ""
+            };
+          } catch (e) {
+            const found = movies.find((m) => m.id === mid);
+            return {
+              id: mid,
+              title: found ? found.title : `TMDB Movie ${mid}`,
+              release_date: found?.release_date || "",
+              poster_path: found?.poster_path || null,
+              vote_average: found?.vote_average || 8.0,
+              overview: found?.overview || ""
+            };
+          }
+        })
+      );
+      setSpotlightItems(items);
+    } catch (e) {
+      console.error("Failed to load kids spotlight:", e);
+    } finally {
+      setSpotlightLoading(false);
+    }
+  };
+
   const loadData = async () => {
     setLoading(true);
     try {
       const [list, movs] = await Promise.all([getKids(), getMovies()]);
       setCategories(list);
       setMovies(movs);
+      await loadSpotlightData();
     } catch (e) {
       showToast("Failed to fetch kids categories.", "error");
     } finally {
@@ -49,6 +99,61 @@ export default function KidsPage() {
   useEffect(() => {
     loadData();
   }, []);
+
+  const handleSearchTmdb = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tmdbQuery.trim()) return;
+    setSearchingTmdb(true);
+    try {
+      const res = await searchTMDb(tmdbQuery.trim());
+      setSearchResults(res);
+    } catch (err) {
+      showToast("TMDB search failed.", "error");
+    } finally {
+      setSearchingTmdb(false);
+    }
+  };
+
+  const MAX_SPOTLIGHT_MOVIES = 4;
+
+  const handleAddSpotlight = async (movie: any) => {
+    if (spotlightIds.length >= MAX_SPOTLIGHT_MOVIES) {
+      showToast(`Maximum ${MAX_SPOTLIGHT_MOVIES} movies allowed in Spotlight. Remove one first.`, "warning");
+      return;
+    }
+    if (spotlightIds.includes(movie.id)) {
+      showToast(`"${movie.title}" is already in the Spotlight!`, "warning");
+      return;
+    }
+    const nextIds = [...spotlightIds, movie.id];
+    setSpotlightIds(nextIds);
+    await saveKidsSpotlight(nextIds);
+    showToast(`Added "${movie.title}" to Kids Spotlight. Live instantly!`, "success");
+    setTmdbQuery("");
+    setSearchResults([]);
+    await loadSpotlightData(nextIds);
+  };
+
+  const handleRemoveSpotlight = async (movieId: number) => {
+    const nextIds = spotlightIds.filter((id) => id !== movieId);
+    setSpotlightIds(nextIds);
+    await saveKidsSpotlight(nextIds);
+    showToast("Removed movie from Kids Spotlight. Live instantly!", "success");
+    await loadSpotlightData(nextIds);
+  };
+
+  const handleMoveSpotlight = async (index: number, direction: "up" | "down") => {
+    const list = [...spotlightIds];
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (target < 0 || target >= list.length) return;
+    const temp = list[index];
+    list[index] = list[target];
+    list[target] = temp;
+    setSpotlightIds(list);
+    await saveKidsSpotlight(list);
+    showToast("Updated Kids Spotlight sequence.", "success");
+    await loadSpotlightData(list);
+  };
 
   const handleOpenEdit = (item?: any) => {
     setSelectedMovieId("");
@@ -202,6 +307,194 @@ export default function KidsPage() {
           <Plus size={16} />
           <span>New Age Group</span>
         </button>
+      </div>
+
+      {/* SPOTLIGHT / HIGHLIGHTS CURATION SECTION */}
+      <div className="p-6 border border-[var(--admin-border)] rounded-xl bg-[var(--admin-card-bg)] space-y-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--admin-border)] pb-4">
+          <div>
+            <h2 className="text-lg font-bold flex items-center gap-2 text-[var(--admin-text)]">
+              <Sparkles size={18} className="text-amber-500" />
+              <span>Kids Spotlight / Highlights Manager</span>
+            </h2>
+            <p className="text-xs text-[var(--admin-text-muted)]">
+              Curate the exact movies that rotate on the public Kids Corner spotlight banner. Add, remove, or reorder movies live!
+            </p>
+          </div>
+          <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0 self-start sm:self-auto">
+            {spotlightIds.length} / {MAX_SPOTLIGHT_MOVIES} {spotlightIds.length === 1 ? "Movie" : "Movies"} in Spotlight
+          </span>
+        </div>
+
+        {/* Search TMDB to add movies */}
+        <div className="space-y-3">
+          <form onSubmit={handleSearchTmdb} className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--admin-text-muted)]" size={15} />
+              <input
+                type="text"
+                placeholder="Search TMDB for kids movies (e.g., Toy Story, Moana, Frozen, Cars)..."
+                value={tmdbQuery}
+                onChange={(e) => setTmdbQuery(e.target.value)}
+                className="admin-input pl-9 w-full"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={searchingTmdb || !tmdbQuery.trim()}
+              className="admin-btn admin-btn-primary px-5 cursor-pointer flex items-center gap-1.5 disabled:opacity-40"
+            >
+              {searchingTmdb ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
+              <span>Search TMDB</span>
+            </button>
+          </form>
+
+          {/* Search Results Dropdown / Grid */}
+          {searchResults.length > 0 && (
+            <div className="p-4 border border-[var(--admin-border)] rounded-lg bg-[var(--admin-input-bg)] space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-[var(--admin-text-muted)]">
+                  TMDB Results for &quot;{tmdbQuery}&quot;:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSearchResults([])}
+                  className="text-xs text-[var(--admin-text-muted)] hover:underline"
+                >
+                  Close results
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto pr-1 admin-scrollbar">
+                {searchResults.map((m) => {
+                  const isAdded = spotlightIds.includes(m.id);
+                  const atMax = spotlightIds.length >= MAX_SPOTLIGHT_MOVIES;
+                  return (
+                    <div
+                      key={m.id}
+                      className="flex items-center gap-3 p-2 border border-[var(--admin-border)] rounded bg-[var(--admin-card-bg)] hover:border-[var(--admin-accent)] transition-colors"
+                    >
+                      {m.poster_path ? (
+                        <img src={m.poster_path} alt={m.title} className="w-10 h-14 object-cover rounded shrink-0" />
+                      ) : (
+                        <div className="w-10 h-14 bg-black/10 dark:bg-white/10 rounded flex items-center justify-center shrink-0 text-xs">
+                          🎬
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0 text-xs">
+                        <div className="font-bold text-[var(--admin-text)] truncate">{m.title}</div>
+                        <div className="text-[var(--admin-text-muted)]">
+                          {m.release_date?.split("-")[0] || "N/A"} · ⭐ {m.vote_average?.toFixed(1) || "7.5"}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleAddSpotlight(m)}
+                        disabled={isAdded || atMax}
+                        className={`px-2.5 py-1 text-[11px] font-bold rounded cursor-pointer shrink-0 ${
+                          isAdded || atMax
+                            ? "bg-black/10 dark:bg-white/10 text-[var(--admin-text-muted)] cursor-not-allowed"
+                            : "bg-amber-500 hover:bg-amber-600 text-white"
+                        }`}
+                      >
+                        {isAdded ? "Added" : atMax ? "Max 4" : "+ Add"}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Current Spotlight Movies List */}
+        <div className="space-y-3">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)] flex items-center gap-1.5">
+            <ListOrdered size={14} />
+            <span>Current Spotlight Rotation ({spotlightItems.length} active)</span>
+          </h3>
+
+          {spotlightLoading ? (
+            <div className="flex items-center justify-center py-8 gap-2 text-[var(--admin-text-muted)] text-xs">
+              <Loader2 size={16} className="animate-spin text-amber-500" />
+              <span>Loading Spotlight movies...</span>
+            </div>
+          ) : spotlightItems.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {spotlightItems.map((item, idx) => (
+                <div
+                  key={item.id}
+                  className="flex flex-col border border-[var(--admin-border)] rounded-lg bg-[var(--admin-input-bg)] p-3 relative group overflow-hidden"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="relative shrink-0">
+                      {item.poster_path ? (
+                        <img
+                          src={item.poster_path}
+                          alt={item.title}
+                          className="w-14 h-20 object-cover rounded shadow-sm"
+                        />
+                      ) : (
+                        <div className="w-14 h-20 bg-gradient-to-br from-amber-500 to-orange-600 rounded flex items-center justify-center text-xl text-white font-bold">
+                          🎬
+                        </div>
+                      )}
+                      <span className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-amber-500 text-white font-black text-[10px] flex items-center justify-center shadow">
+                        {idx + 1}
+                      </span>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-xs text-[var(--admin-text)] truncate">{item.title}</h4>
+                      <p className="text-[11px] text-[var(--admin-text-muted)] mt-0.5">
+                        {item.release_date?.split("-")[0] || "Release N/A"}
+                      </p>
+                      <div className="flex items-center gap-1 text-[11px] font-semibold text-amber-500 mt-1">
+                        <Star size={11} className="fill-amber-500" />
+                        <span>{item.vote_average ? Number(item.vote_average).toFixed(1) : "8.0"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-[var(--admin-border)] pt-2.5 mt-3">
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => handleMoveSpotlight(idx, "up")}
+                        disabled={idx === 0}
+                        className="p-1 rounded text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] disabled:opacity-30 cursor-pointer"
+                        title="Move Left/Up"
+                      >
+                        <ArrowUp size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMoveSpotlight(idx, "down")}
+                        disabled={idx === spotlightItems.length - 1}
+                        className="p-1 rounded text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] disabled:opacity-30 cursor-pointer"
+                        title="Move Right/Down"
+                      >
+                        <ArrowDown size={13} />
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveSpotlight(item.id)}
+                      className="px-2 py-1 text-[11px] font-semibold text-red-500 hover:bg-red-500/10 rounded flex items-center gap-1 cursor-pointer"
+                      title="Remove from Spotlight"
+                    >
+                      <Trash2 size={12} />
+                      <span>Remove</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 text-center text-xs text-[var(--admin-text-muted)] border border-dashed border-[var(--admin-border)] rounded-lg">
+              No movies currently in Spotlight. Search TMDB above to add movies.
+            </div>
+          )}
+        </div>
       </div>
 
       {loading ? (

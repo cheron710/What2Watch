@@ -1,19 +1,19 @@
 // src/app/admin/staff-picks/page.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { getStaffPicks, saveStaffPick, deleteStaffPick, getMovies } from "@/services/adminService";
+import React, { useState, useEffect, useRef } from "react";
+import { getStaffPicks, saveStaffPick, deleteStaffPick, getMovies, searchTmdbMovies } from "@/services/adminService";
 import DataTable, { Column } from "@/components/admin/tables/DataTable";
 import { useToast } from "@/components/admin/layout/AdminLayout";
 import { InputField, TextareaField, SelectField } from "@/components/admin/forms/FormFields";
 import { Modal, ConfirmDialog } from "@/components/admin/dialogs/Dialogs";
-import { Plus, Edit2, Loader2, Trash2, Film, X } from "lucide-react";
+import { Plus, Edit2, Loader2, Trash2, Film, X, Search, Upload, Image as ImageIcon } from "lucide-react";
 
 export default function StaffPicksAdminPage() {
   const { showToast } = useToast();
 
   const [staffMembers, setStaffMembers] = useState<any[]>([]);
-  const [movies, setMovies] = useState<any[]>([]);
+  const [cachedMovies, setCachedMovies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Modals
@@ -21,12 +21,13 @@ export default function StaffPicksAdminPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [activeItem, setActiveItem] = useState<any>(null);
 
-  // Form
+  // Form state
   const [formValues, setFormValues] = useState<{
     id: string;
     name: string;
     role: string;
     initial: string;
+    avatar_url: string;
     note: string;
     pick: string;
     movies: number[];
@@ -36,24 +37,37 @@ export default function StaffPicksAdminPage() {
     name: "",
     role: "",
     initial: "",
+    avatar_url: "",
     note: "",
     pick: "",
     movies: [],
     is_published: true,
   });
 
-  const [selectedMovieIdInput, setSelectedMovieIdInput] = useState<string>("");
-  const [customTmdbInput, setCustomTmdbInput] = useState<string>("");
+  // TMDB Live Search state
+  const [tmdbSearchQuery, setTmdbSearchQuery] = useState("");
+  const [tmdbSearchResults, setTmdbSearchResults] = useState<any[]>([]);
+  const [tmdbSearching, setTmdbSearching] = useState(false);
+  const [tmdbMovieMap, setTmdbMovieMap] = useState<Record<number, any>>({});
 
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const loadData = async () => {
     setLoading(true);
     try {
       const [members, movs] = await Promise.all([getStaffPicks(), getMovies()]);
       setStaffMembers(members);
-      setMovies(movs);
+      setCachedMovies(movs);
+
+      // Populate local movie map for quick title/poster lookups
+      const map: Record<number, any> = {};
+      movs.forEach((m) => {
+        map[Number(m.id)] = m;
+      });
+      setTmdbMovieMap((prev) => ({ ...map, ...prev }));
     } catch (e) {
       showToast("Failed to fetch dev team curation data.", "error");
     } finally {
@@ -65,19 +79,44 @@ export default function StaffPicksAdminPage() {
     loadData();
   }, []);
 
+  // Debounced TMDB Live Search
+  useEffect(() => {
+    if (!tmdbSearchQuery.trim()) {
+      setTmdbSearchResults([]);
+      setTmdbSearching(false);
+      return;
+    }
+
+    setTmdbSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const results = await searchTmdbMovies(tmdbSearchQuery.trim());
+        setTmdbSearchResults(results);
+      } catch (err) {
+        setTmdbSearchResults([]);
+      } finally {
+        setTmdbSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [tmdbSearchQuery]);
+
   const handleOpenEdit = (item?: any) => {
-    setSelectedMovieIdInput("");
-    setCustomTmdbInput("");
+    setTmdbSearchQuery("");
+    setTmdbSearchResults([]);
     if (item) {
       setActiveItem(item);
       const mList = Array.isArray(item.movies) && item.movies.length > 0
         ? item.movies.map((m: any) => Number(m))
         : (item.tmdbId ? [Number(item.tmdbId)] : []);
+
       setFormValues({
         id: item.id,
         name: item.name || item.title || "",
         role: item.role || item.description || "",
         initial: item.initial || "",
+        avatar_url: item.avatar_url || item.avatar || item.featured_banner_url || "",
         note: item.note || item.description || "",
         pick: item.pick || "",
         movies: mList,
@@ -90,6 +129,7 @@ export default function StaffPicksAdminPage() {
         name: "",
         role: "Developer",
         initial: "",
+        avatar_url: "",
         note: "",
         pick: "",
         movies: [],
@@ -105,18 +145,34 @@ export default function StaffPicksAdminPage() {
     setDeleteOpen(true);
   };
 
-  const handleAddMovie = (idToAdd: number) => {
-    if (!idToAdd || isNaN(idToAdd)) return;
-    if (formValues.movies.includes(idToAdd)) {
-      showToast("Movie is already added to this developer's picks.", "warning");
+  // Add movie selected from TMDB Search
+  const handleSelectTmdbMovie = (movie: any) => {
+    const movieId = Number(movie.id);
+    if (formValues.movies.includes(movieId)) {
+      showToast(`"${movie.title}" is already in this developer's picks.`, "warning");
       return;
     }
+
+    // Cache details for badge display
+    setTmdbMovieMap((prev) => ({
+      ...prev,
+      [movieId]: {
+        id: movieId,
+        title: movie.title,
+        poster_path: movie.poster_path,
+        release_date: movie.release_date,
+        vote_average: movie.vote_average,
+      },
+    }));
+
     setFormValues((prev) => ({
       ...prev,
-      movies: [...prev.movies, idToAdd],
+      movies: [...prev.movies, movieId],
     }));
-    setSelectedMovieIdInput("");
-    setCustomTmdbInput("");
+
+    setTmdbSearchQuery("");
+    setTmdbSearchResults([]);
+    showToast(`Added "${movie.title}" to assigned picks.`, "info");
   };
 
   const handleRemoveMovie = (idToRemove: number) => {
@@ -124,6 +180,32 @@ export default function StaffPicksAdminPage() {
       ...prev,
       movies: prev.movies.filter((id) => id !== idToRemove),
     }));
+  };
+
+  // Image Upload Handler (File -> Base64)
+  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      showToast("Please select a valid image file.", "error");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("Image size must be less than 5MB.", "warning");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setFormValues((prev) => ({ ...prev, avatar_url: result }));
+        showToast("Profile image uploaded successfully.", "success");
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSaveSubmit = async (e: React.FormEvent) => {
@@ -150,6 +232,7 @@ export default function StaffPicksAdminPage() {
         title: formValues.name.trim(),
         role: formValues.role.trim(),
         initial: computedInitial,
+        avatar_url: formValues.avatar_url.trim(),
         note: formValues.note.trim(),
         description: formValues.note.trim(),
         pick: formValues.pick.trim(),
@@ -159,9 +242,9 @@ export default function StaffPicksAdminPage() {
       };
 
       await saveStaffPick(payload);
-      showToast(`Saved dev team picks for "${formValues.name}".`, "success");
+      showToast(`Saved dev team roster for "${formValues.name}".`, "success");
       setEditOpen(false);
-      loadData();
+      await loadData();
     } catch (e) {
       showToast("Staff pick save failed.", "error");
     } finally {
@@ -173,7 +256,6 @@ export default function StaffPicksAdminPage() {
     if (!activeItem?.id) return;
     const targetId = String(activeItem.id);
     setDeleting(true);
-    // Optimistic update
     setStaffMembers((prev) => prev.filter((m) => String(m.id) !== targetId));
     try {
       await deleteStaffPick(targetId);
@@ -188,11 +270,16 @@ export default function StaffPicksAdminPage() {
     }
   };
 
-  // Helper to find movie title from cached list or format TMDB ID
-  const getMovieLabel = (tmdbId: number) => {
-    const found = movies.find((m) => Number(m.id) === Number(tmdbId));
-    if (found) return found.title;
-    return `TMDB ID: ${tmdbId}`;
+  // Helper to format TMDB poster image URL
+  const getPosterUrl = (path?: string) => {
+    if (!path) return null;
+    if (path.startsWith("http")) return path;
+    return `https://image.tmdb.org/t/p/w92${path}`;
+  };
+
+  // Helper to get movie title from cache or local map
+  const getMovieData = (tmdbId: number) => {
+    return tmdbMovieMap[Number(tmdbId)] || cachedMovies.find((m) => Number(m.id) === Number(tmdbId)) || null;
   };
 
   // Columns definition for DataTable
@@ -201,19 +288,26 @@ export default function StaffPicksAdminPage() {
       id: "name",
       label: "Developer / Team Member",
       sortable: true,
-      render: (row) => (
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[var(--admin-accent,#FF4D2D)] text-white font-extrabold text-xs flex items-center justify-center shrink-0">
-            {row.initial || (row.name || row.title || "D").slice(0, 2).toUpperCase()}
-          </div>
-          <div>
-            <div className="font-bold text-[var(--admin-text)]">{row.name || row.title}</div>
-            <div className="text-[10px] text-[var(--admin-text-muted)] font-mono uppercase tracking-wider">
-              {row.role || "Developer"}
+      render: (row) => {
+        const avatarSrc = row.avatar_url || row.avatar || row.featured_banner_url || "";
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-[var(--admin-accent,#FF4D2D)] text-white font-extrabold text-xs flex items-center justify-center shrink-0 overflow-hidden border border-white/10">
+              {avatarSrc ? (
+                <img src={avatarSrc} alt={row.name || row.title} className="w-full h-full object-cover" />
+              ) : (
+                row.initial || (row.name || row.title || "D").slice(0, 2).toUpperCase()
+              )}
+            </div>
+            <div>
+              <div className="font-bold text-[var(--admin-text)]">{row.name || row.title}</div>
+              <div className="text-[10px] text-[var(--admin-text-muted)] font-mono uppercase tracking-wider">
+                {row.role || "Developer"}
+              </div>
             </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       id: "pick",
@@ -229,15 +323,19 @@ export default function StaffPicksAdminPage() {
               <span className="text-xs text-gray-400 italic">No films assigned</span>
             ) : (
               <div className="flex flex-wrap gap-1.5 max-w-xs">
-                {mList.map((id) => (
-                  <span
-                    key={id}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-black/5 dark:bg-white/10 text-[var(--admin-text)] border border-black/5 dark:border-white/10"
-                  >
-                    <Film size={11} className="text-[var(--admin-accent)] shrink-0" />
-                    <span className="truncate max-w-[130px]">{getMovieLabel(id)}</span>
-                  </span>
-                ))}
+                {mList.map((id) => {
+                  const mData = getMovieData(id);
+                  const title = mData?.title || `TMDB ID: ${id}`;
+                  return (
+                    <span
+                      key={id}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-black/5 dark:bg-white/10 text-[var(--admin-text)] border border-black/5 dark:border-white/10"
+                    >
+                      <Film size={11} className="text-[var(--admin-accent)] shrink-0" />
+                      <span className="truncate max-w-[130px]">{title}</span>
+                    </span>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -276,14 +374,14 @@ export default function StaffPicksAdminPage() {
           <button
             onClick={() => handleOpenEdit(row)}
             className="p-1.5 rounded text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition"
-            title="Edit Developer Pick"
+            title="Edit Developer Roster"
           >
             <Edit2 size={14} />
           </button>
           <button
             onClick={(e) => handleOpenDelete(row, e)}
             className="p-1.5 rounded text-red-500 hover:bg-red-500/10 cursor-pointer transition"
-            title="Delete Developer Pick"
+            title="Delete Developer"
           >
             <Trash2 size={14} />
           </button>
@@ -299,7 +397,7 @@ export default function StaffPicksAdminPage() {
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">Staff &amp; Dev Team Picks</h1>
           <p className="text-sm text-[var(--admin-text-muted)]">
-            Manage developer team members and assign 1 or multiple TMDB suggested films displayed on the public Staff Picks page.
+            Manage developer team members, upload profile avatars, and assign suggested films directly from the live TMDB database.
           </p>
         </div>
         <button
@@ -334,6 +432,57 @@ export default function StaffPicksAdminPage() {
         title={activeItem ? `Edit Developer Roster: ${activeItem.name || activeItem.title}` : "Add Developer Team Member"}
       >
         <form onSubmit={handleSaveSubmit} className="space-y-5">
+          {/* Avatar Image Upload Section */}
+          <div className="p-4 rounded-xl border border-[var(--admin-border)] bg-black/5 dark:bg-white/5 space-y-3">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">
+              Developer Profile Photo / Avatar
+            </label>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-[var(--admin-accent,#FF4D2D)] text-white font-black text-xl flex items-center justify-center shrink-0 overflow-hidden border-2 border-white/20 shadow-md">
+                {formValues.avatar_url ? (
+                  <img src={formValues.avatar_url} alt="Avatar preview" className="w-full h-full object-cover" />
+                ) : (
+                  formValues.initial || (formValues.name || "D").slice(0, 2).toUpperCase()
+                )}
+              </div>
+              <div className="flex-1 space-y-2 w-full">
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageFileUpload}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="admin-btn admin-btn-secondary text-xs px-3 py-1.5 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Upload size={13} />
+                    <span>Upload Photo</span>
+                  </button>
+                  {formValues.avatar_url && (
+                    <button
+                      type="button"
+                      onClick={() => setFormValues((prev) => ({ ...prev, avatar_url: "" }))}
+                      className="text-xs text-red-500 hover:text-red-700 hover:underline cursor-pointer"
+                    >
+                      Remove Photo
+                    </button>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  placeholder="Or paste image URL (https://...)"
+                  value={formValues.avatar_url}
+                  onChange={(e) => setFormValues({ ...formValues, avatar_url: e.target.value })}
+                  className="admin-input text-xs w-full"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2">
               <InputField
@@ -371,83 +520,115 @@ export default function StaffPicksAdminPage() {
             />
           </div>
 
-          {/* Assigned Movies Section (Multiple Films per Staff Member) */}
-          <div className="space-y-3 p-4 rounded-xl border border-[var(--admin-border)] bg-black/5 dark:bg-white/5">
+          {/* TMDB Movie Search Section (The ONLY way to add movies) */}
+          <div className="space-y-3 p-4 rounded-xl border border-[var(--admin-border)] bg-black/5 dark:bg-white/5 relative">
             <div className="flex items-center justify-between">
               <label className="block text-xs font-bold uppercase tracking-wider text-[var(--admin-text-muted)]">
                 Assigned TMDB Suggested Films ({formValues.movies.length})
               </label>
               <span className="text-[11px] text-[var(--admin-text-muted)] font-mono">
-                Staff can suggest 1 or multiple films
+                Search &amp; select from TMDB
               </span>
             </div>
 
             {/* List of currently assigned movies */}
             {formValues.movies.length > 0 ? (
               <div className="flex flex-wrap gap-2 pt-1">
-                {formValues.movies.map((id) => (
-                  <div
-                    key={id}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-zinc-800 text-[var(--admin-text)] border border-[var(--admin-border)] shadow-sm"
-                  >
-                    <Film size={13} className="text-[var(--admin-accent)] shrink-0" />
-                    <span>{getMovieLabel(id)}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveMovie(id)}
-                      className="ml-1 text-red-500 hover:text-red-700 hover:bg-red-500/10 p-0.5 rounded cursor-pointer transition"
-                      title="Remove film"
+                {formValues.movies.map((id) => {
+                  const mData = getMovieData(id);
+                  const title = mData?.title || `TMDB ID: ${id}`;
+                  return (
+                    <div
+                      key={id}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-zinc-800 text-[var(--admin-text)] border border-[var(--admin-border)] shadow-sm"
                     >
-                      <X size={13} />
-                    </button>
-                  </div>
-                ))}
+                      <Film size={13} className="text-[var(--admin-accent)] shrink-0" />
+                      <span>{title}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveMovie(id)}
+                        className="ml-1 text-red-500 hover:text-red-700 hover:bg-red-500/10 p-0.5 rounded cursor-pointer transition"
+                        title="Remove film"
+                      >
+                        <X size={13} />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <div className="text-xs text-gray-400 italic py-1">
-                No films assigned yet. Select a movie below to add to this developer's picks.
+                No films assigned yet. Search TMDB database below to add suggested movies.
               </div>
             )}
 
-            {/* Add movie controls */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div>
-                <select
-                  value={selectedMovieIdInput}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setSelectedMovieIdInput(val);
-                    if (val) handleAddMovie(Number(val));
-                  }}
-                  className="admin-input w-full text-xs"
-                >
-                  <option value="">+ Select from cached TMDB movies...</option>
-                  {movies.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.title} ({m.release_date?.split("-")[0] || "N/A"}) — ID: {m.id}
-                    </option>
-                  ))}
-                </select>
+            {/* Live TMDB Search Input */}
+            <div className="relative pt-2">
+              <div className="relative flex items-center">
+                <Search size={14} className="absolute left-3 text-[var(--admin-text-muted)] pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Type movie title to search TMDB database (e.g. Oppenheimer, Interstellar)..."
+                  value={tmdbSearchQuery}
+                  onChange={(e) => setTmdbSearchQuery(e.target.value)}
+                  className="admin-input pl-9 pr-8 w-full text-xs"
+                />
+                {tmdbSearching && (
+                  <Loader2 size={14} className="absolute right-3 animate-spin text-[var(--admin-accent)]" />
+                )}
+                {tmdbSearchQuery && !tmdbSearching && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTmdbSearchQuery("");
+                      setTmdbSearchResults([]);
+                    }}
+                    className="absolute right-3 text-gray-400 hover:text-gray-600"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
               </div>
 
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="Or enter TMDB ID..."
-                  value={customTmdbInput}
-                  onChange={(e) => setCustomTmdbInput(e.target.value)}
-                  className="admin-input flex-1 text-xs"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (customTmdbInput) handleAddMovie(Number(customTmdbInput));
-                  }}
-                  className="admin-btn admin-btn-secondary text-xs px-3 py-1 cursor-pointer shrink-0"
-                >
-                  Add ID
-                </button>
-              </div>
+              {/* Search Results Dropdown List */}
+              {tmdbSearchResults.length > 0 && (
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-zinc-900 border border-[var(--admin-border)] rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto divide-y divide-black/5 dark:divide-white/5 animate-fadeIn">
+                  {tmdbSearchResults.map((m) => {
+                    const poster = getPosterUrl(m.poster_path);
+                    const year = m.release_date ? m.release_date.split("-")[0] : "N/A";
+                    const isAdded = formValues.movies.includes(Number(m.id));
+
+                    return (
+                      <div
+                        key={m.id}
+                        onClick={() => !isAdded && handleSelectTmdbMovie(m)}
+                        className={`flex items-center gap-3 p-2.5 transition ${
+                          isAdded
+                            ? "opacity-50 cursor-not-allowed bg-black/5 dark:bg-white/5"
+                            : "hover:bg-[var(--admin-accent)]/10 cursor-pointer"
+                        }`}
+                      >
+                        <div className="w-8 h-12 bg-black/20 rounded overflow-hidden shrink-0 flex items-center justify-center">
+                          {poster ? (
+                            <img src={poster} alt={m.title} className="w-full h-full object-cover" />
+                          ) : (
+                            <ImageIcon size={14} className="text-gray-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold text-xs text-[var(--admin-text)] truncate">{m.title}</div>
+                          <div className="text-[10px] text-[var(--admin-text-muted)] font-mono">
+                            Release: {year} • TMDB ID: {m.id} • Rating: ★ {m.vote_average ? Number(m.vote_average).toFixed(1) : "N/A"}
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-extrabold uppercase px-2 py-1 rounded bg-[var(--admin-accent)] text-white shrink-0">
+                          {isAdded ? "Added" : "+ Add"}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 

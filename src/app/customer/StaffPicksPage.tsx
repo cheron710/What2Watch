@@ -85,11 +85,14 @@ export default async function StaffPicksPage() {
           }
         }
 
+        const avatarUrl = dev.avatar_url || dev.avatar || dev.featured_banner_url || "";
+
         return {
           id: dev.id,
           name,
           role,
           initial,
+          avatarUrl,
           note,
           rawPickStr,
           picks: resolvedMovies,
@@ -142,7 +145,13 @@ export default async function StaffPicksPage() {
           <div className="ed-grid ed-grid-3">
             {teamMembers.map((c) => (
               <article key={c.id || c.name} className="staff-card">
-                <div className="staff-avatar">{c.initial}</div>
+                <div className="staff-avatar overflow-hidden flex items-center justify-center">
+                  {c.avatarUrl ? (
+                    <img src={c.avatarUrl} alt={c.name} className="w-full h-full object-cover" />
+                  ) : (
+                    c.initial
+                  )}
+                </div>
                 <h3 className="staff-name">{c.name}</h3>
                 <span className="staff-role">{c.role}</span>
                 <p className="staff-note">“{c.note}”</p>

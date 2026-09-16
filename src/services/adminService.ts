@@ -155,7 +155,8 @@ function readMockDb() {
       { id: "em-1", name: "Joy", slug: "joy", description: "Bright, uplifting cinema that fills the heart.", featured_movie_id: 313369, movies: [313369] },
       { id: "em-2", name: "Grief", slug: "grief", description: "Resonant, cathartic explorations of loss and letting go.", featured_movie_id: 939243, movies: [939243] },
       { id: "em-3", name: "Nostalgia", slug: "nostalgia", description: "Warm reflections of yesteryear and memory.", featured_movie_id: null, movies: [313369, 939243] }
-    ]
+    ],
+    kids_spotlight: []
   };
   writeMockDb(initial);
   return initial;
@@ -507,6 +508,7 @@ const DEFAULT_STAFF_MEMBERS = [
     name: "Tim Bradford",
     role: "Founder & Lead Developer",
     initial: "TB",
+    avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
     note: "I look for films that trust their audience — the ones that leave room for you to feel your way through.",
     pick: "Manchester by the Sea, Oppenheimer",
     tmdbId: 334543,
@@ -518,6 +520,7 @@ const DEFAULT_STAFF_MEMBERS = [
     name: "Alex Rivera",
     role: "Frontend & UI/UX Lead",
     initial: "AR",
+    avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
     note: "Cinema should move like music. I look for bold formal swings, rich color palettes, and perfect rhythmic editing.",
     pick: "La La Land, Grand Budapest Hotel",
     tmdbId: 313369,
@@ -528,6 +531,7 @@ const DEFAULT_STAFF_MEMBERS = [
     id: "dev-3",
     name: "Sarah Chen",
     role: "Backend & AI Systems Lead",
+    avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
     note: "Films that explore language, time, and consciousness get me every time. Intelligent science fiction at its peak.",
     pick: "Arrival, Blade Runner 2049",
     initial: "SC",
@@ -540,6 +544,7 @@ const DEFAULT_STAFF_MEMBERS = [
     name: "Marcus Vance",
     role: "Infrastructure & Data Engineer",
     initial: "MV",
+    avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400",
     note: "Atmosphere and scale matter most. When world-building and sound design carry you into another world, that's pure film.",
     pick: "Blade Runner 2049, Dunkirk, 1917",
     tmdbId: 335984,
@@ -547,6 +552,19 @@ const DEFAULT_STAFF_MEMBERS = [
     movies: [335984, 374720, 530915]
   }
 ];
+
+import { searchMovies as tmdbSearchMovies } from "@/lib/tmdb/client";
+
+export async function searchTmdbMovies(query: string): Promise<any[]> {
+  if (!query || !query.trim()) return [];
+  try {
+    const res = await tmdbSearchMovies(query.trim());
+    return res.results || [];
+  } catch (err) {
+    console.error("TMDB search error in server action:", err);
+    return [];
+  }
+}
 
 export async function getStaffPicks(): Promise<any[]> {
   const getFallback = () => {
@@ -568,6 +586,7 @@ export async function getStaffPicks(): Promise<any[]> {
       if (error || !data || data.length === 0) return getFallback();
       return data.map((d: any) => ({
         ...d,
+        avatar_url: d.avatar_url || d.featured_banner_url || "",
         tmdbId: d.tmdbId || (d.staff_pick_movies?.[0]?.movie_id ?? null),
         movies: d.staff_pick_movies.sort((a: any, b: any) => a.sort_order - b.sort_order).map((m: any) => m.movie_id)
       }));
@@ -597,7 +616,7 @@ export async function saveStaffPick(collection: any): Promise<any> {
         id: collection.id || undefined,
         title: collection.title || collection.name,
         description: collection.description || collection.note,
-        featured_banner_url: collection.featured_banner_url || "",
+        featured_banner_url: collection.avatar_url || collection.featured_banner_url || "",
         is_published: collection.is_published
       }).select().single();
       if (colErr) throw colErr;
@@ -611,7 +630,7 @@ export async function saveStaffPick(collection: any): Promise<any> {
         }));
         await supabase.from("staff_pick_movies").insert(inserts);
       }
-      return { ...col, movies: collection.movies };
+      return { ...col, avatar_url: collection.avatar_url, movies: collection.movies };
     },
     () => collection
   );
@@ -910,6 +929,54 @@ export async function saveKids(cat: any): Promise<any> {
   return { ...col, movies: cat.movies, movie_details: cat.movie_details };
 }
 
+export async function getKidsSpotlight(): Promise<number[]> {
+  const getFallback = () => {
+    const db = readMockDb();
+    if (db["kids_spotlight"] === undefined) {
+      // Start with empty spotlight — Admin must explicitly add movies
+      saveTable("kids_spotlight", []);
+      return [];
+    }
+    return db["kids_spotlight"];
+  };
+
+  if (!isSupabaseConfigured) return getFallback();
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return getFallback();
+      const { data, error } = await supabase.from("kids_spotlight").select("movie_id").order("sort_order", { ascending: true });
+      if (error || !data || data.length === 0) return getFallback();
+      return data.map((d: any) => Number(d.movie_id));
+    },
+    getFallback
+  );
+}
+
+export async function saveKidsSpotlight(movieIds: number[]): Promise<number[]> {
+  saveTable("kids_spotlight", movieIds);
+
+  if (!isSupabaseConfigured) return movieIds;
+
+  return withSupabaseTimeout(
+    async () => {
+      const supabase = await getSupabaseClient();
+      if (!supabase) return movieIds;
+      await supabase.from("kids_spotlight").delete().neq("movie_id", 0);
+      if (movieIds.length > 0) {
+        const inserts = movieIds.map((mid, idx) => ({
+          movie_id: mid,
+          sort_order: idx
+        }));
+        await supabase.from("kids_spotlight").insert(inserts);
+      }
+      return movieIds;
+    },
+    () => movieIds
+  );
+}
+
 // ── 8. EMOTIONAL SPECTRUM SERVICE ─────────────────────────────────
 export async function getEmotions(): Promise<any[]> {
   const getFallback = () => getTable("emotions", []);
@@ -1158,6 +1225,24 @@ export async function searchTMDb(query: string): Promise<any[]> {
   } catch (e) {
     console.error("TMDb search error:", e);
     return [];
+  }
+}
+
+// Server-safe TMDb movie detail fetcher (for use in client components via server action)
+export async function getTMDbDetail(tmdbId: number): Promise<any> {
+  try {
+    const detail = await tmdbClientGetDetail(tmdbId);
+    return {
+      id: detail.id,
+      title: detail.title,
+      release_date: detail.release_date || "",
+      poster_path: detail.poster_path ? tmdbClientImageUrl(detail.poster_path, "w185") : null,
+      vote_average: detail.vote_average || 8.0,
+      overview: detail.overview || ""
+    };
+  } catch (e) {
+    console.error("getTMDbDetail error for id", tmdbId, e);
+    return { id: tmdbId, title: `TMDB Movie ${tmdbId}`, release_date: "", poster_path: null, vote_average: 8.0, overview: "" };
   }
 }
 
